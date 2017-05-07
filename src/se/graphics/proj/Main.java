@@ -1,6 +1,5 @@
 package se.graphics.proj;
 
-
 import processing.core.PApplet;
 
 /**
@@ -61,5 +60,4 @@ public class Main extends PApplet {
         System.out.println("saving image as " + name);
         saveFrame(name);
     }
-    
 }
