@@ -5,17 +5,17 @@ import processing.core.PApplet;
 
 public class Main extends PApplet {
     
-    private final static int SIZE = 1600;
-    private final static int RESOLUTION = 400;
+    private final static int size = 1600;
+    private final static int resolution = 400;
     
-    private Vector3 C = new Vector3(0f, 0f, -3.1f);
+    private final static Vector3 camera = new Vector3(0f, 0f, -3.1f);
     
     public static void main(String[] args) {
         PApplet.main("se.graphics.proj.Main");
     }
     
     public void settings() {
-        size(SIZE, SIZE);
+        size(size, size);
     }
     
     public void setup() {
@@ -29,6 +29,13 @@ public class Main extends PApplet {
         
         long dt = t - System.currentTimeMillis();
         System.out.println("time " + dt + " ms");
+    }
+    
+    public void drawPixel(int i, int j, Vector3 color) {
+        int ratio = size / resolution;
+        
+        fill(255 * color.x(), 255 * color.y(), 255 * color.z());
+        rect(i * ratio, j * ratio, ratio, ratio);
     }
     
     public void mousePressed() {
