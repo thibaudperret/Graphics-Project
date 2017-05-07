@@ -151,7 +151,7 @@ public final class Loader {
         return triangles;
     }
     
-    public static List<Sphere> thibaudBox() {
+    public static List<Sphere> sphereTest() {
         if (spheres.isEmpty()) {            
             spheres.add(sphere(vec3(0f, 0f, 0f), 0.05f, white));
             spheres.add(sphere(vec3(0f, 0f, 0.8f), 0.4f, blue));

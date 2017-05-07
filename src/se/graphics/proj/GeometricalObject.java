@@ -7,16 +7,22 @@ import se.graphics.proj.Vector3;
 public abstract class GeometricalObject {
     
     private final Vector3 color;
+    private final boolean isLight;
 
     public abstract boolean isTriangle();
     public abstract boolean isSphere();
     
-    public GeometricalObject(Vector3 color) {
+    public GeometricalObject(Vector3 color, boolean isLight) {
         this.color = color;
+        this.isLight = isLight;
     }
     
     public Vector3 color() {
         return color;
+    }
+    
+    public boolean isLight() {
+        return isLight;
     }
     
     public Triangle asTriangle() {
