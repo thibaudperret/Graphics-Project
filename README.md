@@ -13,7 +13,7 @@ More info: https://en.wikipedia.org/wiki/Path_tracing
 More info: https://en.wikipedia.org/wiki/Photon_mapping
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the PERRET-RIGORI-MASSEMIN License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Contributors:
 * Thibaud Perret: thibaudp@kth.se
