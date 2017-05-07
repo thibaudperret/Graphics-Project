@@ -32,6 +32,7 @@ public final class Loader {
 
     /**
      * Lazy evaluation of the Cornell Box
+     * @return a list of triangles representing the Cornell Box
      */
     public static List<Triangle> cornellBox() {
         if (triangles.isEmpty()) {
@@ -151,6 +152,10 @@ public final class Loader {
         return triangles;
     }
     
+    /**
+     * Lazy evalution of a sphere testing model
+     * @return a list of spheres
+     */
     public static List<Sphere> sphereTest() {
         if (spheres.isEmpty()) {            
             spheres.add(sphere(vec3(0f, 0f, 0f), 0.05f, white));

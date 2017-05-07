@@ -25,6 +25,10 @@ public abstract class GeometricalObject {
         return isLight;
     }
     
+    /**
+     * Transforms the object into a instance of the Triangle class
+     * @return the Triangle version of the object if it is indeed a Triangle
+     */
     public Triangle asTriangle() {
         if (isTriangle()) {
             return (Triangle) this;
@@ -33,6 +37,10 @@ public abstract class GeometricalObject {
         }
     }
     
+    /**
+     * Transforms the object into a instance of the Sphere class
+     * @return the Sphere version of the object if it is indeed a Sphere
+     */
     public Sphere asSphere() {
         if (isSphere()) {
             return (Sphere) this;
