@@ -15,7 +15,7 @@ public class Main extends PApplet {
     /**
      * The resolution of the windo, not to be confused with the size
      */
-    private final static int resolution = 400;
+    private final static int resolution = 100;
     
     /**
      * The focal length of the camera
@@ -35,7 +35,7 @@ public class Main extends PApplet {
     /**
      * The max number of rebounds of a ray
      */
-    private final static int numberRebounds = 3;
+    private final static int numberRebounds = 1;
     
     public static void main(String[] args) {
         PApplet.main("se.graphics.proj.Main");
@@ -56,15 +56,17 @@ public class Main extends PApplet {
         
         for (int x = 0; x < resolution; ++x) {
             for (int y = 0; y < resolution; ++y) {
-                Ray r = new Ray(camera, new Vector3(x - size / 2, y - size / 2, f));
+                Ray r = new Ray(camera, new Vector3(x - resolution / 2, y - resolution / 2, f));
                 Vector3 color = Vector3.zeros();
                 for (int i = 0; i < n; ++i) {
                     color = color.plus(tracePath(r, numberRebounds).times(1f / n));
                 }
+
+                drawPixel(x, y, color);
             }
         }
         
-        long dt = t - System.currentTimeMillis();
+        long dt = System.currentTimeMillis() - t;
         System.out.println("time " + dt + " ms");
     }
     
@@ -74,11 +76,10 @@ public class Main extends PApplet {
         }
         
         Intersection intersection = Intersection.invalidIntersection();
-        Item closest;
+        Item closest = null;
         
-        for (Item item : Loader.cornellBox()) {
+        for (Item item : Loader.testModel()) {
             Intersection current = item.intersection(ray);
-            
             if (current.valid() && current.distance() < intersection.distance()) {
                 intersection = current;
                 closest = item;
@@ -87,15 +88,19 @@ public class Main extends PApplet {
         
         if (intersection.valid()) {
             if (closest.isLight()) {
+                System.out.println("YO");
                 Light light = closest.asLight();
                 return light.color().times(2 * light.power());
             } else {
                 Vector3 normal = closest.shape().normalAt(intersection.position());
                 Ray rebound = Ray.generateRandomRay(intersection.position(), normal);
                 Material material = closest.asPhysicalObject().material();
-                return tracePath(rebound, numberSteps - 1).times(2 * (1 - material.absorptionCoef()) * material.diffuseCoef() * normal.dot(rebound.direction()));
+                
+                Vector3 rrrr = tracePath(rebound, numberSteps - 1).times(2 * (1 - material.absorptionCoef()) * material.diffuseCoef() * normal.dot(rebound.direction()));
+                return rrrr;
             }
         } else {
+            System.out.println("BLAKC");
             return Color.BLACK;
         }
     }

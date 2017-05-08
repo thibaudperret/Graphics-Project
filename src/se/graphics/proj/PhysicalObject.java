@@ -9,7 +9,7 @@ public final class PhysicalObject extends Item {
         this.material = material;
     }
     
-    public static  PhysicalObject physicalTriangle(Triangle triangle, Material material) {
+    public static PhysicalObject physicalTriangle(Triangle triangle, Material material) {
         return new PhysicalObject(triangle, material);
     }
     
@@ -24,6 +24,11 @@ public final class PhysicalObject extends Item {
     @Override
     public boolean isPhysical() {
         return true;
+    }
+    
+    @Override
+    public boolean isLight() {
+        return false;
     }
 
 }

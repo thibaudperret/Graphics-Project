@@ -15,16 +15,14 @@ public final class Triangle extends Shape {
         this.v1 = v1;
         this.v2 = v2;
         this.v3 = v3;
-        
-        this.normal = normal();
+
+        Vector3 e1 = v2.minus(v1).normalise();
+        Vector3 e2 = v3.minus(v1).normalise();
+        this.normal = e1.cross(e2).normalise();
     }
     
     public Triangle(float v1x, float v1y, float v1z, float v2x, float v2y, float v2z, float v3x, float v3y, float v3z) {
-        this.v1 = new Vector3(v1x, v1y, v1z);
-        this.v2 = new Vector3(v2x, v2y, v2z);
-        this.v3 = new Vector3(v2x, v3y, v3z);
-        
-        this.normal = normal();
+        this(new Vector3(v1x, v1y, v1z), new Vector3(v2x, v2y, v2z), new Vector3(v2x, v3y, v3z));
     }
     
     /**
@@ -51,6 +49,10 @@ public final class Triangle extends Shape {
             float f = v3.minus(v2).cross(position.minus(v2)).dot(n);
             float g = v1.minus(v3).cross(position.minus(v3)).dot(n);
             
+            if (d > 0.00001) {
+                ret = new Intersection(true, position, d);
+            }
+            
             if (d > 0.00001 && e >= 0 && f >= 0 && g >= 0) {
                 ret = new Intersection(true, position, d);
             }
@@ -73,12 +75,6 @@ public final class Triangle extends Shape {
     
     public List<Vector3> vertices() {
         return Arrays.asList(v1, v2, v3);
-    }
-    
-    public Vector3 normal() {
-        Vector3 e1 = v2.minus(v1);
-        Vector3 e2 = v3.minus(v1);
-        return e1.cross(e2).normalise();
     }
     
     public Vector3 normalAt(Vector3 position) {

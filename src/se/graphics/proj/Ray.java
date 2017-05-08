@@ -7,14 +7,14 @@ public class Ray {
     
     public Ray(Vector3 position, Vector3 direction) {
         this.position = position;
-        this.direction = direction;
+        this.direction = direction.normalise();
     }
     
     /**
      * For lazy people
      */
     public static Ray ray(Vector3 position, Vector3 direction) {
-        return new Ray(position, direction);
+        return new Ray(position, direction.normalise());
     }
     
     public Vector3 position(){

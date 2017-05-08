@@ -20,6 +20,11 @@ public class Light extends Item {
     }
     
     @Override
+    public boolean isPhysical() {
+        return false;
+    }
+    
+    @Override
     public boolean isLight() {
         return true;
     }

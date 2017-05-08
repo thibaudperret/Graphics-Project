@@ -23,7 +23,7 @@ public class Material {
             throw new IllegalArgumentException("invalid coefficients");
         }
         
-        if(reflectance == null || medium == null) {
+        if(reflectance == null) {
             throw new IllegalArgumentException();
         }
         
@@ -43,7 +43,7 @@ public class Material {
     }
     
     public static Material tradeOff(Vector3 reflectance) {
-        return new Material(reflectance, null, 0.5f, 0.5f, 0.2f);
+        return new Material(reflectance, null, 0.8f, 0.2f, 0.2f);
     }
     
     public Vector3 reflectance() {
