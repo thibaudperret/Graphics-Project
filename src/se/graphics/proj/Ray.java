@@ -26,15 +26,15 @@ public class Ray {
     }
     
     public static Ray generateRandomRay(Vector3 position, Vector3 normal){
-        Vector3 axis = new Vector3(-normal.y(), normal.x(), 0);
-        
+        float phiN = (float) Math.atan2(normal.y(), normal.x());
+
         float theta = (float) (Math.random() * 2 * Math.PI);
-        float phi = (float) (Math.random() * Math.PI / 2);
+        float phi = phiN + (float) (((Math.random() * 2) - 1) * Math.PI / 2);
         
         Vector3 newDirection = new Vector3(
-                                            (float) (axis.x() * Math.sin(theta) * Math.sin(phi)),
-                                            (float) (axis.y() * Math.sin(theta) * Math.cos(phi)),
-                                            (float) (axis.z() * Math.cos(theta))
+                                            (float) (Math.sin(phi) * Math.sin(theta)),
+                                            (float) (Math.sin(phi) * Math.cos(theta)),
+                                            (float) (Math.cos(phi))
                                             ).normalise();
         
         return new Ray(position, newDirection);

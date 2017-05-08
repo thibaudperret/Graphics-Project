@@ -30,7 +30,7 @@ public class Main extends PApplet {
     /**
      * The number of rays
      */
-    private final static int n = 10;
+    private final static int n = 100;
     
     /**
      * The max number of rebounds of a ray
@@ -95,11 +95,8 @@ public class Main extends PApplet {
                 Ray rebound = Ray.generateRandomRay(intersection.position(), normal);
                 Material material = closest.asPhysicalObject().material();
                 
-                
-                // TODO: remettre beau
                 float f = 2 * (1 - material.absorptionCoef()) * material.diffuseCoef() * normal.dot(rebound.direction());
-                Vector3 rrrr = tracePath(rebound, numberSteps - 1).times(f);
-                return rrrr;
+                return tracePath(rebound, numberSteps - 1).times(f);
             }
         } else {
             return Color.BLACK;
