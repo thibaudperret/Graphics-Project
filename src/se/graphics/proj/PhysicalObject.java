@@ -9,6 +9,14 @@ public final class PhysicalObject extends Item {
         this.material = material;
     }
     
+    public static  PhysicalObject physicalTriangle(Triangle triangle, Material material) {
+        return new PhysicalObject(triangle, material);
+    }
+    
+    public static PhysicalObject physicalSphere(Sphere sphere, Material material) {
+        return new PhysicalObject(sphere, material);
+    }
+    
     public Material material() {
         return material;
     }
