@@ -15,7 +15,7 @@ public class Main extends PApplet {
     /**
      * The resolution of the windo, not to be confused with the size
      */
-    private final static int resolution = 100;
+    private final static int resolution = 1600;
     
     /**
      * The focal length of the camera
@@ -30,12 +30,12 @@ public class Main extends PApplet {
     /**
      * The number of rays
      */
-    private final static int n = 100;
+    private final static int n = 10;
     
     /**
      * The max number of rebounds of a ray
      */
-    private final static int numberRebounds = 3;
+    private final static int numberRebounds = 2;
     
     public static void main(String[] args) {
         PApplet.main("se.graphics.proj.Main");
@@ -87,16 +87,22 @@ public class Main extends PApplet {
         }
         
         if (intersection.valid()) {
+            float r = (float) Math.random();
+            
             if (closest.isLight()) {
                 Light light = closest.asLight();
-                return light.color().times(2 * light.power());
+                return light.color().times(light.power());
             } else {
-                Vector3 normal = closest.shape().normalAt(intersection.position());
-                Ray rebound = Ray.generateRandomRay(intersection.position(), normal);
-                Material material = closest.asPhysicalObject().material();
-                
-                float f = 2 * (1 - material.absorptionCoef()) * material.diffuseCoef() * normal.dot(rebound.direction());
-                return tracePath(rebound, numberSteps - 1).times(f);
+                if (r < 0.5) {
+                    return closest.asPhysicalObject().material().reflectance().times(2f);
+                } else {
+                    Vector3 normal = closest.shape().normalAt(intersection.position());
+                    Ray rebound = Ray.generateRandomRay(intersection.position(), normal);
+                    Material material = closest.asPhysicalObject().material();
+                    
+                    float f = 2 * (1 - material.absorptionCoef()) * material.diffuseCoef() * normal.dot(rebound.direction());
+                    return tracePath(rebound, numberSteps - 1).times(f);
+                }
             }
         } else {
             return Color.BLACK;

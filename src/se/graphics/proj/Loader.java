@@ -38,12 +38,12 @@ public final class Loader {
             items.add(PhysicalObject.physicalTriangle(new Triangle(C, B, A), Material.tradeOff(Color.GREEN)));
             items.add(PhysicalObject.physicalTriangle(new Triangle(C, D, B), Material.tradeOff(Color.GREEN)));
             // Left wall
-            items.add(PhysicalObject.physicalTriangle(new Triangle(A, E, C), Material.tradeOff(Color.PURPLE)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(C, E, G), Material.tradeOff(Color.PURPLE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(A, E, C), Material.tradeOff(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(C, E, G), Material.tradeOff(Color.WHITE)));
 
             // Right wall
-            items.add(PhysicalObject.physicalTriangle(new Triangle(F, B, D), Material.tradeOff(Color.YELLOW)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(H, F, D), Material.tradeOff(Color.YELLOW)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(F, B, D), Material.tradeOff(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(H, F, D), Material.tradeOff(Color.WHITE)));
 
             // Ceiling
             items.add(new Light(new Triangle(E, F, G), 14f, Color.WHITE));
