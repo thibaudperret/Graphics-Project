@@ -26,9 +26,10 @@ public class Ray {
     }
     
     public static Ray generateRandomRay(Vector3 position, Vector3 normal){
-        float phiN = (float) Math.atan2(normal.y(), normal.x());
+//        float phiN = (float) Math.atan2(normal.y(), normal.x());
+        float phiN = (float) Math.acos(-normal.z());
 
-        float theta = (float) (Math.random() * 2 * Math.PI);
+        float theta = (float) (Math.random() * Math.PI);
         float phi = phiN + (float) (((Math.random() * 2) - 1) * Math.PI / 2);
         
         Vector3 newDirection = new Vector3(
