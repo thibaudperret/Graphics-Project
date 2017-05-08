@@ -11,31 +11,18 @@ import java.util.stream.Collectors;
 
 public final class Loader {
 
-    private static List<Triangle> triangles = new ArrayList<>();
-    private static List<Sphere> spheres = new ArrayList<>();
+    private static List<Item> items = new ArrayList<>();
     
-
-    private static final float a = 0.15f;
-    private static final float b = 0.75f;
-
-    private static Vector3 red = vec3(b, a, a);
-    private static Vector3 yellow = vec3(b, b, a);
-    private static Vector3 green = vec3(a, b, a);
-    private static Vector3 cyan = vec3(a, b, b);
-    private static Vector3 blue = vec3(a, a, b);
-    private static Vector3 purple = vec3(b, a, b);
-    private static Vector3 white = vec3(b, b, b);
-
     private Loader() {
-
+        
     }
 
     /**
      * Lazy evaluation of the Cornell Box
-     * @return a list of triangles representing the Cornell Box
+     * @return a list of items representing the Cornell Box
      */
     public static List<Triangle> cornellBox() {
-        if (triangles.isEmpty()) {
+        if (items.isEmpty()) {
             final float L = 555; // Length of Cornell Box side            
 
             // ------------------- BOX -------------------
@@ -50,24 +37,23 @@ public final class Loader {
             Vector3 H = vec3(0, L, L);
             
             // Floor
-            triangles.add(triangle(C, B, A, green));
-            triangles.add(triangle(C, D, B, green));
-
+            items.add(PhysicalObject.physicalTriangle(new Triangle(C, B, A), Material.tradeOff(Color.GREEN)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(C, D, B), Material.tradeOff(Color.GREEN)));
             // Left wall
-            triangles.add(triangle(A, E, C, purple));
-            triangles.add(triangle(C, E, G, purple));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(A, E, C), Material.tradeOff(Color.PURPLE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(C, E, G), Material.tradeOff(Color.PURPLE)));
 
             // Right wall
-            triangles.add(triangle(F, B, D, yellow));
-            triangles.add(triangle(H, F, D, yellow));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(F, B, D), Material.tradeOff(Color.YELLOW)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(H, F, D), Material.tradeOff(Color.YELLOW)));
 
             // Ceiling
-            triangles.add(triangle(E, F, G, cyan));
-            triangles.add(triangle(F, H, G, cyan));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, F, G), Material.tradeOff(Color.CYAN)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(F, H, G), Material.tradeOff(Color.CYAN)));
 
             // Back wall
-            triangles.add(triangle(G, D, C, white));
-            triangles.add(triangle(G, H, D, white));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, D, C), Material.tradeOff(Color.ORANGE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, D), Material.tradeOff(Color.ORANGE)));
 
             // ------------------- BL1 -------------------
             A = vec3(290, 0, 114);
@@ -81,24 +67,24 @@ public final class Loader {
             H = vec3(82, 165, 225);
             
             // Front
-            triangles.add(triangle(E, B, A, red));
-            triangles.add(triangle(E, F, B, red));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, B, A), Material.tradeOff(Color.RED)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, F, B), Material.tradeOff(Color.RED)));
 
             // Front
-            triangles.add(triangle(F, D, B, red));
-            triangles.add(triangle(F, H, D, red));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(F, D, B), Material.tradeOff(Color.RED)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(F, H, D), Material.tradeOff(Color.RED)));
 
             // Back
-            triangles.add(triangle(H, C, D, red));
-            triangles.add(triangle(H, G, C, red));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(H, C, D), Material.tradeOff(Color.RED)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(H, G, C), Material.tradeOff(Color.RED)));
 
             // Left
-            triangles.add(triangle(G, E, C, red));
-            triangles.add(triangle(E, A, C, red));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, E, C), Material.tradeOff(Color.RED)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, A, C), Material.tradeOff(Color.RED)));
 
             // Top
-            triangles.add(triangle(G, F, E, red));
-            triangles.add(triangle(G, H, F, red));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, F, E), Material.tradeOff(Color.RED)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, F), Material.tradeOff(Color.RED)));
 
             // ------------------- BL2 -------------------
             A = vec3(423, 0, 247);
@@ -112,57 +98,65 @@ public final class Loader {
             H = vec3(314, 330, 456);
 
             // Front
-            triangles.add(triangle(E, B, A, blue));
-            triangles.add(triangle(E, F, B, blue));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, B, A), Material.tradeOff(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, F, B), Material.tradeOff(Color.BLUE)));
 
             // Front
-            triangles.add(triangle(F, D, B, blue));
-            triangles.add(triangle(F, H, D, blue));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(F, D, B), Material.tradeOff(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(F, H, D), Material.tradeOff(Color.BLUE)));
 
             // Back
-            triangles.add(triangle(H, C, D, blue));
-            triangles.add(triangle(H, G, C, blue));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(H, C, D), Material.tradeOff(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(H, G, C), Material.tradeOff(Color.BLUE)));
 
             // Left
-            triangles.add(triangle(G, E, C, blue));
-            triangles.add(triangle(E, A, C, blue));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, E, C), Material.tradeOff(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, A, C), Material.tradeOff(Color.BLUE)));
 
             // Top
-            triangles.add(triangle(G, F, E, blue));
-            triangles.add(triangle(G, H, F, blue));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, F, E), Material.tradeOff(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, F), Material.tradeOff(Color.BLUE)));
             
-            triangles = triangles.stream().map(t -> {
-                Vector3 v1 = t.v1();
-                Vector3 v2 = t.v2();
-                Vector3 v3 = t.v3();
-
-                v1 = v1.times(2f / 555).minus(ones()).times(-1f);
-                v2 = v2.times(2f / 555).minus(ones()).times(-1f);
-                v3 = v3.times(2f / 555).minus(ones()).times(-1f);
+            items = items.stream().map(t -> {
+                if(t.shape().isTriangle()) {
+                    Vector3 v1 = t.v1();
+                    Vector3 v2 = t.v2();
+                    Vector3 v3 = t.v3();
+                    
+                    v1 = v1.times(2f / 555).minus(ones()).times(-1f);
+                    v2 = v2.times(2f / 555).minus(ones()).times(-1f);
+                    v3 = v3.times(2f / 555).minus(ones()).times(-1f);
+                    if(t.isPhysical()) {
+                        Item r = PhysicalObject.physicalTriangle(new Triangle(v1.x(), v1.y(), -v1.z(),
+                                v2.x(), v2.y(), -v2.z(),
+                                v3.x(), v3.y(), -v3.z()), t.asPhysicalObject().material());
+      
+                    }
+                    
+                    
+                    return r;
+                }
                 
-                Triangle r = new Triangle(v1.x(), v1.y(), -v1.z(),
-                                          v2.x(), v2.y(), -v2.z(),
-                                          v3.x(), v3.y(), -v3.z(),
-                                          t.color());
-                          
-                return r;
+                return t;
+                
             }).collect(Collectors.toList());
+             
         }
 
-        return triangles;
+        return items;
     }
     
     /**
      * Lazy evalution of a sphere testing model
-     * @return a list of spheres
+     * @return a list of items
      */
     public static List<Sphere> sphereTest() {
-        if (spheres.isEmpty()) {            
-            spheres.add(sphere(vec3(0f, 0f, 0f), 0.05f, white));
-            spheres.add(sphere(vec3(0f, 0f, 0.8f), 0.4f, blue));
+        if (items.isEmpty()) {            
+            items.add(sphere(vec3(0f, 0f, 0f), 0.05f, white));
+            items.add(sphere(vec3(0f, 0f, 0.8f), 0.4f, blue));
         }
         
-        return spheres;
+        return items;
     }
 
 }

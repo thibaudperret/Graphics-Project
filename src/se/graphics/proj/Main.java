@@ -1,7 +1,5 @@
 package se.graphics.proj;
 
-import java.awt.Color;
-
 import processing.core.PApplet;
 
 /**

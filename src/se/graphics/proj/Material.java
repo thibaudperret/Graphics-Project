@@ -8,6 +8,8 @@ public class Material {
     private float specularCoef;
     private float absorptionCoef;
     
+    
+        
     public Material(Vector3 reflectance, Medium medium, float diffuseCoef, float specularCoef, float absorptionCoef) {
         
         if(       (diffuseCoef + specularCoef != 1.) 
@@ -30,6 +32,18 @@ public class Material {
         this.diffuseCoef = diffuseCoef;
         this.specularCoef = specularCoef;
         this.absorptionCoef = absorptionCoef;        
+    }
+    
+    public static Material idealDiffuse(Vector3 reflectance) {
+        return new Material(reflectance, null, 1f, 0f, 0.2f);
+    }
+    
+    public static Material idealSpecular(Vector3 reflectance) {
+        return new Material(reflectance, null, 0f, 1f, 0.2f);
+    }
+    
+    public static Material tradeOff(Vector3 reflectance) {
+        return new Material(reflectance, null, 0.5f, 0.5f, 0.2f);
     }
     
     public Vector3 reflectance() {
