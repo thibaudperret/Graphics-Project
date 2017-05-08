@@ -1,5 +1,6 @@
 package se.graphics.proj;
 
+import se.graphics.proj.Intersection;
 import se.graphics.proj.GeometricalObject;
 import se.graphics.proj.Sphere;
 import se.graphics.proj.Vector3;
@@ -31,6 +32,31 @@ public final class Sphere extends GeometricalObject {
      */
     public static Sphere sphere(Vector3 c, float r, Vector3 color, boolean isLight) {
         return new Sphere(c, r, color, isLight);
+    }
+    
+    public Intersection intersection(Vector3 start, Vector3 direction) {
+        Intersection ret = Intersection.invalidIntersection();
+        
+        Vector3 v = start.minus(c);
+        
+        float b = 2f * (direction.dot(v));
+        float c = v.dot(v) - r * r;
+        
+        float delta = b * b - 4 * c;
+        
+        if (delta >= 0) {
+            float d = (float) (- (b + Math.sqrt(delta)) / 2f);
+//            if (d < 0) {
+//                d = (float) (- (b - Math.sqrt(delta)) / 2f);
+//            }
+            
+            if (d > 0) {
+                Vector3 position = start.plus(direction.times(d));
+                ret = new Intersection(true, position, d);
+            }
+        }
+        
+        return ret;
     }
     
     public Vector3 c() {

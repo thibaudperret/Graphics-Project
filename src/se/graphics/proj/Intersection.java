@@ -8,17 +8,15 @@ public final class Intersection {
     private final boolean valid;
     private final Vector3 position;
     private final float distance;
-    private final int index;
     
-    public Intersection(boolean valid, Vector3 position, float distance, int index) {
+    public Intersection(boolean valid, Vector3 position, float distance) {
         this.valid = valid;
         this.position = position;
         this.distance = distance;
-        this.index = index;
     }
     
     public static Intersection invalidIntersection() {
-        return new Intersection(false, null, Float.MAX_VALUE, 0);
+        return new Intersection(false, null, Float.MAX_VALUE);
     }
 
     public boolean valid() {
@@ -31,10 +29,6 @@ public final class Intersection {
     
     public float distance() {
         return distance;
-    }
-    
-    public int index() {
-        return index;
     }
 
 }

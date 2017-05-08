@@ -12,6 +12,8 @@ public abstract class GeometricalObject {
     public abstract boolean isTriangle();
     public abstract boolean isSphere();
     
+    public abstract Intersection intersection(Vector3 start, Vector3 direction);
+    
     public GeometricalObject(Vector3 color, boolean isLight) {
         this.color = color;
         this.isLight = isLight;
