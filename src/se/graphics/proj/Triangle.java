@@ -19,7 +19,7 @@ public final class Triangle extends Shape {
         this.normal = normal();
     }
     
-    public Triangle(float v1x, float v1y, float v1z, float v2x, float v2y, float v2z, float v3x, float v3y, float v3z, float c1, float c2, float c3) {
+    public Triangle(float v1x, float v1y, float v1z, float v2x, float v2y, float v2z, float v3x, float v3y, float v3z) {
         this.v1 = new Vector3(v1x, v1y, v1z);
         this.v2 = new Vector3(v2x, v2y, v2z);
         this.v3 = new Vector3(v2x, v3y, v3z);

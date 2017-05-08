@@ -21,7 +21,7 @@ public final class Loader {
      * Lazy evaluation of the Cornell Box
      * @return a list of items representing the Cornell Box
      */
-    public static List<Triangle> cornellBox() {
+    public static List<Item> cornellBox() {
         if (items.isEmpty()) {
             final float L = 555; // Length of Cornell Box side            
 
@@ -119,25 +119,36 @@ public final class Loader {
             
             items = items.stream().map(t -> {
                 if(t.shape().isTriangle()) {
-                    Vector3 v1 = t.v1();
-                    Vector3 v2 = t.v2();
-                    Vector3 v3 = t.v3();
+                    Vector3 v1 = t.shape().asTriangle().v1();
+                    Vector3 v2 = t.shape().asTriangle().v2();
+                    Vector3 v3 = t.shape().asTriangle().v3();
                     
                     v1 = v1.times(2f / 555).minus(ones()).times(-1f);
                     v2 = v2.times(2f / 555).minus(ones()).times(-1f);
                     v3 = v3.times(2f / 555).minus(ones()).times(-1f);
+                    
+                    Item r;
+                    
                     if(t.isPhysical()) {
-                        Item r = PhysicalObject.physicalTriangle(new Triangle(v1.x(), v1.y(), -v1.z(),
+                        r = PhysicalObject.physicalTriangle(new Triangle(v1.x(), v1.y(), -v1.z(),
                                 v2.x(), v2.y(), -v2.z(),
                                 v3.x(), v3.y(), -v3.z()), t.asPhysicalObject().material());
       
-                    }
-                    
+                    } else {
+                        r = new Light(new Triangle(v1.x(), v1.y(), -v1.z(),
+                                v2.x(), v2.y(), -v2.z(),
+                                v3.x(), v3.y(), -v3.z()), t.asLight().power(), t.asLight().color());
+                    }                    
                     
                     return r;
+                    
+                } else {
+                    
+                    return t;
+                    
                 }
                 
-                return t;
+                
                 
             }).collect(Collectors.toList());
              
@@ -150,13 +161,6 @@ public final class Loader {
      * Lazy evalution of a sphere testing model
      * @return a list of items
      */
-    public static List<Sphere> sphereTest() {
-        if (items.isEmpty()) {            
-            items.add(sphere(vec3(0f, 0f, 0f), 0.05f, white));
-            items.add(sphere(vec3(0f, 0f, 0.8f), 0.4f, blue));
-        }
-        
-        return items;
-    }
+  
 
 }
