@@ -35,7 +35,7 @@ public class Main extends PApplet {
     /**
      * The max number of rebounds of a ray
      */
-    private final static int numberRebounds = 1;
+    private final static int numberRebounds = 3;
     
     public static void main(String[] args) {
         PApplet.main("se.graphics.proj.Main");
@@ -78,7 +78,7 @@ public class Main extends PApplet {
         Intersection intersection = Intersection.invalidIntersection();
         Item closest = null;
         
-        for (Item item : Loader.testModel()) {
+        for (Item item : Loader.cornellBox()) {
             Intersection current = item.intersection(ray);
             if (current.valid() && current.distance() < intersection.distance()) {
                 intersection = current;
@@ -88,7 +88,6 @@ public class Main extends PApplet {
         
         if (intersection.valid()) {
             if (closest.isLight()) {
-                System.out.println("YO");
                 Light light = closest.asLight();
                 return light.color().times(2 * light.power());
             } else {
@@ -96,11 +95,13 @@ public class Main extends PApplet {
                 Ray rebound = Ray.generateRandomRay(intersection.position(), normal);
                 Material material = closest.asPhysicalObject().material();
                 
-                Vector3 rrrr = tracePath(rebound, numberSteps - 1).times(2 * (1 - material.absorptionCoef()) * material.diffuseCoef() * normal.dot(rebound.direction()));
+                
+                // TODO: remettre beau
+                float f = 2 * (1 - material.absorptionCoef()) * material.diffuseCoef() * normal.dot(rebound.direction());
+                Vector3 rrrr = tracePath(rebound, numberSteps - 1).times(f);
                 return rrrr;
             }
         } else {
-            System.out.println("BLAKC");
             return Color.BLACK;
         }
     }

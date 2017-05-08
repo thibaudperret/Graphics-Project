@@ -48,10 +48,10 @@ public final class Triangle extends Shape {
             float e = v2.minus(v1).cross(position.minus(v1)).dot(n);
             float f = v3.minus(v2).cross(position.minus(v2)).dot(n);
             float g = v1.minus(v3).cross(position.minus(v3)).dot(n);
-            
-            if (d > 0.00001) {
-                ret = new Intersection(true, position, d);
-            }
+//            
+//            if (d > 0.00001) {
+//                ret = new Intersection(true, position, d);
+//            }
             
             if (d > 0.00001 && e >= 0 && f >= 0 && g >= 0) {
                 ret = new Intersection(true, position, d);
