@@ -35,7 +35,7 @@ public class Ray {
                                             (float) (axis.x() * Math.sin(theta) * Math.sin(phi)),
                                             (float) (axis.y() * Math.sin(theta) * Math.cos(phi)),
                                             (float) (axis.z() * Math.cos(theta))
-                                            );
+                                            ).normalise();
         
         return new Ray(position, newDirection);
     }
