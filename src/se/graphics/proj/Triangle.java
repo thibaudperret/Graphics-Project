@@ -9,16 +9,22 @@ public final class Triangle extends Shape {
     private final Vector3 v2;
     private final Vector3 v3;
     
+    private final Vector3 normal;
+    
     public Triangle(Vector3 v1, Vector3 v2, Vector3 v3) {
         this.v1 = v1;
         this.v2 = v2;
         this.v3 = v3;
+        
+        this.normal = normal();
     }
     
     public Triangle(float v1x, float v1y, float v1z, float v2x, float v2y, float v2z, float v3x, float v3y, float v3z, float c1, float c2, float c3) {
         this.v1 = new Vector3(v1x, v1y, v1z);
         this.v2 = new Vector3(v2x, v2y, v2z);
         this.v3 = new Vector3(v2x, v3y, v3z);
+        
+        this.normal = normal();
     }
     
     /**
@@ -34,7 +40,7 @@ public final class Triangle extends Shape {
         
         Intersection ret = Intersection.invalidIntersection();
         
-        Vector3 n = normal();
+        Vector3 n = normal;
         float a = (v1.minus(start)).dot(n);
         float b = direction.dot(n);
         
@@ -73,6 +79,10 @@ public final class Triangle extends Shape {
         Vector3 e1 = v2.minus(v1);
         Vector3 e2 = v3.minus(v1);
         return e1.cross(e2).normalise();
+    }
+    
+    public Vector3 normalAt(Vector3 position) {
+        return normal;
     }
 
     @Override

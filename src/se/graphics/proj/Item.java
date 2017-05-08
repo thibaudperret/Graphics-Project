@@ -16,8 +16,28 @@ public abstract class Item {
         return false;
     }
     
+    public Shape shape() {
+        return shape;
+    }
+    
     public Intersection intersection(Ray ray) {
         return shape.intersection(ray);
+    }
+    
+    public Light asLight() {
+        if (isLight()) {
+            return (Light) this;
+        } else {
+            throw new IllegalStateException("cannot interpret item as light");
+        }
+    }
+    
+    public PhysicalObject asPhysicalObject() {
+        if (isPhysical()) {
+            return (PhysicalObject) this;
+        } else {
+            throw new IllegalStateException("cannot interpret item as physical object");
+        }
     }
     
 }

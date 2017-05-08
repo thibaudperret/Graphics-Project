@@ -11,6 +11,7 @@ public abstract class Shape {
     }
     
     public abstract Intersection intersection(Ray ray);
+    public abstract Vector3 normalAt(Vector3 position);
     
     /**
      * Transforms the object into a instance of the Triangle class

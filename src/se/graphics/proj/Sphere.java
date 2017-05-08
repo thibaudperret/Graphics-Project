@@ -2,12 +2,12 @@ package se.graphics.proj;
 
 public final class Sphere extends Shape {
     
-    private final Vector3 c;
-    private final float r;
+    private final Vector3 center;
+    private final float radius;
     
     public Sphere(Vector3 c, float r) {
-        this.c = c;
-        this.r = r;
+        this.center = c;
+        this.radius = r;
     }
     
     /**
@@ -23,10 +23,10 @@ public final class Sphere extends Shape {
         
         Intersection ret = Intersection.invalidIntersection();
         
-        Vector3 v = start.minus(c);
+        Vector3 v = start.minus(center);
         
         float b = 2f * (direction.dot(v));
-        float c = v.dot(v) - r * r;
+        float c = v.dot(v) - radius * radius;
         
         float delta = b * b - 4 * c;
         
@@ -46,11 +46,15 @@ public final class Sphere extends Shape {
     }
     
     public Vector3 c() {
-        return c;
+        return center;
     }
     
     public float r() {
-        return r;
+        return radius;
+    }
+    
+    public Vector3 normalAt(Vector3 position) {
+        return position.minus(center).normalise();
     }
 
     @Override
