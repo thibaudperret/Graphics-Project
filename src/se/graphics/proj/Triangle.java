@@ -3,6 +3,9 @@ package se.graphics.proj;
 import java.util.Arrays;
 import java.util.List;
 
+import se.graphics.proj.Intersection;
+import se.graphics.proj.Vector3;
+
 public final class Triangle extends GeometricalObject {
     
     private final Vector3 v1;
@@ -50,6 +53,28 @@ public final class Triangle extends GeometricalObject {
      */
     public static Triangle triangle(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 color) {
         return new Triangle(v1, v2, v3, color);
+    }
+    
+    public Intersection intersection(Vector3 start, Vector3 direction) {
+        Intersection ret = Intersection.invalidIntersection();
+        
+        Vector3 n = normal();
+        float a = (v1.minus(start)).dot(n);
+        float b = direction.dot(n);
+        
+        if (b != 0) {
+            float d = a / b;
+            Vector3 position = start.plus(direction.times(d));
+            float e = v2.minus(v1).cross(position.minus(v1)).dot(n);
+            float f = v3.minus(v2).cross(position.minus(v2)).dot(n);
+            float g = v1.minus(v3).cross(position.minus(v3)).dot(n);
+            
+            if (d > 0.00001 && e >= 0 && f >= 0 && g >= 0) {
+                ret = new Intersection(true, position, d);
+            }
+        }
+        
+        return ret;
     }
     
     public Vector3 v1() {
