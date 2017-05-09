@@ -15,7 +15,7 @@ public class Main extends PApplet {
     /**
      * The resolution of the windo, not to be confused with the size
      */
-    private final static int resolution = 200;
+    private final static int resolution = 800;
     
     /**
      * The focal length of the camera
@@ -101,7 +101,7 @@ public class Main extends PApplet {
                     Material material = closest.asPhysicalObject().material();
                     
                     float f = 2 * (1 - material.absorptionCoef()) * material.diffuseCoef() * normal.dot(rebound.direction());
-                    return tracePath(rebound, numberSteps - 1).times(f);
+                    return tracePath(rebound, numberSteps - 1)/*.times(f)*/;
                 }
             }
         } else {
