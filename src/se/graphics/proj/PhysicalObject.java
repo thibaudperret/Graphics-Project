@@ -30,5 +30,10 @@ public final class PhysicalObject extends Item {
     public boolean isLight() {
         return false;
     }
+    
+    @Override
+    public boolean isLamp() {
+        return false;
+    }
 
 }

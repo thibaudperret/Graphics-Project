@@ -15,7 +15,7 @@ public class Main extends PApplet {
     /**
      * The resolution of the windo, not to be confused with the size
      */
-    private final static int resolution = 800;
+    private final static int resolution = 300;
     
     /**
      * The focal length of the camera

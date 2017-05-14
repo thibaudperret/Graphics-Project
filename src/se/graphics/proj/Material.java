@@ -1,16 +1,15 @@
 package se.graphics.proj;
 
-public class Material {
+public abstract class Material {
 
     private Vector3 reflectance;
-    private Medium medium;
     private float diffuseCoef;
     private float specularCoef;
     private float absorptionCoef;
     
     
         
-    public Material(Vector3 reflectance, Medium medium, float diffuseCoef, float specularCoef, float absorptionCoef) {
+    public Material(Vector3 reflectance, float diffuseCoef, float specularCoef, float absorptionCoef) {
         
         if(       (diffuseCoef + specularCoef != 1.) 
                 || diffuseCoef    > 1. 
@@ -28,31 +27,17 @@ public class Material {
         }
         
         this.reflectance = reflectance;
-        this.medium = medium;
         this.diffuseCoef = diffuseCoef;
         this.specularCoef = specularCoef;
         this.absorptionCoef = absorptionCoef;        
     }
     
-    public static Material idealDiffuse(Vector3 reflectance) {
-        return new Material(reflectance, null, 1f, 0f, 0.2f);
-    }
-    
-    public static Material idealSpecular(Vector3 reflectance) {
-        return new Material(reflectance, null, 0f, 1f, 0.2f);
-    }
-    
-    public static Material tradeOff(Vector3 reflectance) {
-        return new Material(reflectance, null, 0.8f, 0.2f, 0.2f);
-    }
+
     
     public Vector3 reflectance() {
         return reflectance;
     }
     
-    public Medium medium() {
-        return medium;
-    }
     
     public float diffuseCoef() {
         return diffuseCoef;
@@ -66,27 +51,14 @@ public class Material {
         return absorptionCoef;
     }
     
-    public Material setReflectance(Vector3 reflectance){
-        return new Material(reflectance, medium, diffuseCoef, specularCoef, absorptionCoef);
-    }
-    
-    public Material setMedium(Medium medium) {
-        return new Material(reflectance, medium, diffuseCoef, specularCoef, absorptionCoef);
-    }
-    
-    public Material setDiffuseCoef(float diffuseCoef) {
-        return new Material(reflectance, medium, diffuseCoef, specularCoef, absorptionCoef);
+    public abstract Material setReflectance(Vector3 reflectance);    
+    public abstract Material setDiffuseCoef(float diffuseCoef);    
+    public abstract Material setSpecularCoef(float specularCoef);    
+    public abstract Material setAbsorptionCoef(float absorptionCoef);
 
-    }
     
-    public Material setSpecularCoef(float specularCoef) {
-        return new Material(reflectance, medium, diffuseCoef, specularCoef, absorptionCoef);
-
-    }
+    public abstract boolean isOpaque();
+    public abstract boolean isTransparent();
     
-    public Material setAbsorptionCoef(float absorptionCoef) {
-        return new Material(reflectance, medium, diffuseCoef, specularCoef, absorptionCoef);
-
-    }
     
 }

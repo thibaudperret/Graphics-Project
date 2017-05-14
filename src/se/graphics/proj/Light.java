@@ -29,4 +29,9 @@ public class Light extends Item {
         return true;
     }
     
+    @Override   
+    public boolean isLamp() {
+        return false;
+    }
+    
 }

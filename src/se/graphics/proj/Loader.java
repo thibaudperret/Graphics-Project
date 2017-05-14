@@ -35,23 +35,23 @@ public final class Loader {
             Vector3 H = vec3(0, L, L).times(2f / 555).minus(ones()).entrywiseDot(new Vector3(-1f, -1f, 1f));
             
             // Floor
-            items.add(PhysicalObject.physicalTriangle(new Triangle(C, B, A), Material.tradeOff(Color.GREEN)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(C, D, B), Material.tradeOff(Color.GREEN)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(C, B, A), OpaqueObject.tradeOff(Color.GREEN)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(C, D, B), OpaqueObject.tradeOff(Color.GREEN)));
             // Left wall
-            items.add(PhysicalObject.physicalTriangle(new Triangle(A, E, C), Material.tradeOff(Color.WHITE)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(C, E, G), Material.tradeOff(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(A, E, C), OpaqueObject.tradeOff(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(C, E, G), OpaqueObject.tradeOff(Color.WHITE)));
 
             // Right wall
-            items.add(PhysicalObject.physicalTriangle(new Triangle(F, B, D), Material.tradeOff(Color.WHITE)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(H, F, D), Material.tradeOff(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(F, B, D), OpaqueObject.tradeOff(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(H, F, D), OpaqueObject.tradeOff(Color.WHITE)));
 
             // Ceiling
             items.add(new Light(new Triangle(E, F, G), 14f, Color.WHITE));
             items.add(new Light(new Triangle(F, H, G), 14f, Color.WHITE));
 
             // Back wall
-            items.add(PhysicalObject.physicalTriangle(new Triangle(G, D, C), Material.tradeOff(Color.ORANGE)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, D), Material.tradeOff(Color.ORANGE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, D, C), OpaqueObject.tradeOff(Color.ORANGE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, D), OpaqueObject.tradeOff(Color.ORANGE)));
 
             // ------------------- BL1 -------------------
             A = vec3(290, 0, 114).times(2f / 555).minus(ones()).entrywiseDot(new Vector3(-1f, -1f, 1f));
@@ -65,24 +65,24 @@ public final class Loader {
             H = vec3(82, 165, 225).times(2f / 555).minus(ones()).entrywiseDot(new Vector3(-1f, -1f, 1f));
             
             // Front
-            items.add(PhysicalObject.physicalTriangle(new Triangle(E, B, A), Material.tradeOff(Color.RED)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(E, F, B), Material.tradeOff(Color.RED)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, B, A), OpaqueObject.tradeOff(Color.RED)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, F, B), OpaqueObject.tradeOff(Color.RED)));
 
             // Front
-            items.add(PhysicalObject.physicalTriangle(new Triangle(F, D, B), Material.tradeOff(Color.RED)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(F, H, D), Material.tradeOff(Color.RED)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(F, D, B), OpaqueObject.tradeOff(Color.RED)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(F, H, D), OpaqueObject.tradeOff(Color.RED)));
 
             // Back
-            items.add(PhysicalObject.physicalTriangle(new Triangle(H, C, D), Material.tradeOff(Color.RED)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(H, G, C), Material.tradeOff(Color.RED)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(H, C, D), OpaqueObject.tradeOff(Color.RED)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(H, G, C), OpaqueObject.tradeOff(Color.RED)));
 
             // Left
-            items.add(PhysicalObject.physicalTriangle(new Triangle(G, E, C), Material.tradeOff(Color.RED)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(E, A, C), Material.tradeOff(Color.RED)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, E, C), OpaqueObject.tradeOff(Color.RED)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, A, C), OpaqueObject.tradeOff(Color.RED)));
 
             // Top
-            items.add(PhysicalObject.physicalTriangle(new Triangle(G, F, E), Material.tradeOff(Color.RED)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, F), Material.tradeOff(Color.RED)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, F, E), OpaqueObject.tradeOff(Color.RED)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, F), OpaqueObject.tradeOff(Color.RED)));
 
             // ------------------- BL2 -------------------
             A = vec3(423, 0, 247).times(2f / 555).minus(ones()).entrywiseDot(new Vector3(-1f, -1f, 1f));
@@ -96,24 +96,24 @@ public final class Loader {
             H = vec3(314, 330, 456).times(2f / 555).minus(ones()).entrywiseDot(new Vector3(-1f, -1f, 1f));
 
             // Front
-            items.add(PhysicalObject.physicalTriangle(new Triangle(E, B, A), Material.tradeOff(Color.BLUE)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(E, F, B), Material.tradeOff(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, B, A), OpaqueObject.tradeOff(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, F, B), OpaqueObject.tradeOff(Color.BLUE)));
 
             // Front
-            items.add(PhysicalObject.physicalTriangle(new Triangle(F, D, B), Material.tradeOff(Color.BLUE)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(F, H, D), Material.tradeOff(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(F, D, B), OpaqueObject.tradeOff(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(F, H, D), OpaqueObject.tradeOff(Color.BLUE)));
 
             // Back
-            items.add(PhysicalObject.physicalTriangle(new Triangle(H, C, D), Material.tradeOff(Color.BLUE)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(H, G, C), Material.tradeOff(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(H, C, D), OpaqueObject.tradeOff(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(H, G, C), OpaqueObject.tradeOff(Color.BLUE)));
 
             // Left
-            items.add(PhysicalObject.physicalTriangle(new Triangle(G, E, C), Material.tradeOff(Color.BLUE)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(E, A, C), Material.tradeOff(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, E, C), OpaqueObject.tradeOff(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, A, C), OpaqueObject.tradeOff(Color.BLUE)));
 
             // Top
-            items.add(PhysicalObject.physicalTriangle(new Triangle(G, F, E), Material.tradeOff(Color.BLUE)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, F), Material.tradeOff(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, F, E), OpaqueObject.tradeOff(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, F), OpaqueObject.tradeOff(Color.BLUE)));
             
 //            items = items.stream().map(t -> {
 //                if(t.shape().isTriangle()) {
@@ -156,7 +156,7 @@ public final class Loader {
     }
 
     public static List<Item> testModel() {
-        return Arrays.asList(new Light(new Triangle(-0.5f, -0.5f, 1f, 1f, 0f, 1f, 0f, 1f, 1f), 14f, Color.WHITE), new PhysicalObject(new Triangle(-1f, 0f, 2f, -1.5f, -0.33f, 2f, -0.33f, -1f, 2f), Material.tradeOff(Color.BLUE)));
+        return Arrays.asList(new Light(new Triangle(-0.5f, -0.5f, 1f, 1f, 0f, 1f, 0f, 1f, 1f), 14f, Color.WHITE), new PhysicalObject(new Triangle(-1f, 0f, 2f, -1.5f, -0.33f, 2f, -0.33f, -1f, 2f), OpaqueObject.tradeOff(Color.BLUE)));
     }
   
 

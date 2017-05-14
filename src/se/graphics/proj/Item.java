@@ -8,8 +8,9 @@ public abstract class Item {
         this.shape = shape;
     }
     
-    abstract public boolean isPhysical();    
+    abstract public boolean isPhysical();
     abstract public boolean isLight();
+    abstract public boolean isLamp();
     
     public Shape shape() {
         return shape;
