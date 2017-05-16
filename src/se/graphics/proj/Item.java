@@ -28,6 +28,14 @@ public abstract class Item {
         }
     }
     
+    public Lamp asLamp() {
+        if(isLamp()) {
+            return (Lamp)this;
+        } else {
+            throw new IllegalStateException("cannot interpret item as lamp");
+        }
+    }
+    
     public PhysicalObject asPhysicalObject() {
         if (isPhysical()) {
             return (PhysicalObject) this;

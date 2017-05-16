@@ -1,4 +1,4 @@
-package se.graphics.proj;
+    package se.graphics.proj;
 
 public final class Vector3 {
 

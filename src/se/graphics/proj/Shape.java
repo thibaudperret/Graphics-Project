@@ -1,7 +1,7 @@
 package se.graphics.proj;
 
 public abstract class Shape {
-        
+            
     public boolean isTriangle() {
         return false;
     }
@@ -12,6 +12,7 @@ public abstract class Shape {
     
     public abstract Intersection intersection(Ray ray);
     public abstract Vector3 normalAt(Vector3 position);
+    public abstract Vector3 getCenter();
     
     /**
      * Transforms the object into a instance of the Triangle class
@@ -36,5 +37,7 @@ public abstract class Shape {
             throw new IllegalStateException("cannot interpret triangle as sphere");
         }
     }
+    
+
     
 }

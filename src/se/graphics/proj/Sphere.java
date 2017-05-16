@@ -56,6 +56,10 @@ public final class Sphere extends Shape {
     public Vector3 normalAt(Vector3 position) {
         return position.minus(center).normalise();
     }
+    
+    public Vector3 getCenter() {
+        return center;
+    }
 
     @Override
     public boolean isSphere() {

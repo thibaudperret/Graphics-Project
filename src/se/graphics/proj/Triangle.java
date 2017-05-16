@@ -85,5 +85,9 @@ public final class Triangle extends Shape {
     public boolean isTriangle() {
         return true;
     }
+    
+    public Vector3 getCenter() {
+        return v1.plus(v2.times(0.5f).plus(v3.times(0.5f)));
+    }
 
 }

@@ -1,5 +1,7 @@
 package se.graphics.proj;
 
+import java.util.List;
+
 import processing.core.PApplet;
 
 /**
@@ -10,7 +12,7 @@ public class Main extends PApplet {
     /**
      * The size of the window, not to be confused with the resolution
      */
-    private final static int size = 1600;
+    private final static int size = 800;
     
     /**
      * The resolution of the windo, not to be confused with the size
@@ -30,7 +32,7 @@ public class Main extends PApplet {
     /**
      * The number of rays
      */
-    private final static int n = 10;
+    private final static int n = 30;
     
     /**
      * The max number of rebounds of a ray
@@ -59,9 +61,8 @@ public class Main extends PApplet {
                 Ray r = new Ray(camera, new Vector3(x - resolution / 2, y - resolution / 2, f));
                 Vector3 color = Vector3.zeros();
                 for (int i = 0; i < n; ++i) {
-                    color = color.plus(tracePath(r, numberRebounds).times(1f / n));
+                    color = color.plus(tracePathAugmented(r, numberRebounds).times(1f / n));
                 }
-
                 drawPixel(x, y, color);
             }
         }
@@ -108,6 +109,59 @@ public class Main extends PApplet {
             return Color.BLACK;
         }
     }
+
+    private static Vector3 tracePathAugmented (Ray ray,int numberSteps) {
+        
+        if (numberSteps == 0) {
+            return Color.BLACK;
+        }
+        
+        Intersection intersection = Intersection.invalidIntersection();
+        Item closest = null;
+        
+        for (Item item : Loader.cornellBox()) {
+            Intersection current = item.intersection(ray);
+            if (current.valid() && current.distance() < intersection.distance() && !item.isLight()) {
+                intersection = current;
+                closest = item;
+            }
+        }
+        
+        if (intersection.valid()) {
+            float r = (float) Math.random();
+            Vector3 shapeNormal = closest.shape().normalAt(intersection.position());
+            Vector3 position = intersection.position();
+            Vector3 directLight = DirectLight(position, shapeNormal);
+            
+            if (closest.isLamp()) {
+                Lamp lamp = closest.asLamp();
+                float pEmit = 0.9f;
+                if(r < 0.9) {
+                    return lamp.color().times(lamp.power() * (1/pEmit));
+                } else {
+                    Vector3 normal = closest.shape().normalAt(intersection.position());
+                    Ray rebound = Ray.generateRandomRay(intersection.position(), normal);
+                    Material material = closest.asLamp().material();
+                    
+                    float f = (1/(1-pEmit)) * (1 - material.absorptionCoef()) * material.diffuseCoef() * normal.dot(rebound.direction());
+                    return tracePathAugmented(rebound, numberSteps - 1)/*.times(f)*/;
+                }
+            } else  {
+                if (r < 0.5) {
+                    return closest.asPhysicalObject().material().reflectance().entrywiseDot(directLight);
+                } else {
+                    Vector3 normal = closest.shape().normalAt(intersection.position());
+                    Ray rebound = Ray.generateRandomRay(intersection.position(), normal);
+                    Material material = closest.asPhysicalObject().material();
+                    
+                    float f = 2 * (1 - material.absorptionCoef()) * material.diffuseCoef() * normal.dot(rebound.direction());
+                    return tracePathAugmented(rebound, numberSteps - 1)/*.times(f)*/;
+                }
+            }
+        } else {
+            return Color.BLACK;
+        }
+    }
     
     /**
      * Draws a pixel at (i, j) in the window of resolution by resolution
@@ -127,4 +181,33 @@ public class Main extends PApplet {
         System.out.println("saving image as " + name);
         saveFrame(name);
     }
+    
+    private static Vector3 DirectLight(Vector3 position, Vector3 normal) {
+        
+        Vector3 totalIllumination = Vector3.zeros();
+        Vector3 illumination;
+        List<Item> lightSources = Loader.lightSources();
+        for(int i = 0; i < lightSources.size(); ++i) {
+            
+            Item currentSource = lightSources.get(i);
+            Shape currentShape = currentSource.shape();
+            Vector3 directionToLight = position.minus(currentShape.getCenter());
+            float r = directionToLight.size();
+            directionToLight = directionToLight.normalise();   
+            
+            if (currentSource.isLamp()) {
+                Lamp currentLamp = currentSource.asLamp();
+                illumination = currentLamp.color().times(currentLamp.power());
+                illumination = illumination.times((float)(Math.max(directionToLight.dot(normal), (float)0) / (4*Math.PI*r*r)));
+            } else {
+                Light currentLight = currentSource.asLight();
+                illumination = currentLight.color().times(currentLight.power());
+                illumination = illumination.times((float)(Math.max(directionToLight.dot(normal), (float)0) / (4*Math.PI*r*r)));
+            }
+            totalIllumination = totalIllumination.plus(illumination);
+        }
+        return totalIllumination ;
+
+    }
 }
+
