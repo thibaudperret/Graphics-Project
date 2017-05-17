@@ -1,6 +1,5 @@
 package se.graphics.proj;
 
-
 public interface Color {
 
     public static Vector3 RED = new Vector3(1f, 0f, 0f);
@@ -13,6 +12,4 @@ public interface Color {
     public static Vector3 ORANGE = new Vector3(1f, 0.5f, 0f);
     public static Vector3 BLACK = new Vector3(0f, 0f, 0f);
 
-
-    
 }
