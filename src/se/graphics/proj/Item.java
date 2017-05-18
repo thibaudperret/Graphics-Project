@@ -20,6 +20,26 @@ public abstract class Item {
         return shape.intersection(ray);
     }
     
+    public Vector3 color() {
+        if(isLight()) {
+            return asLight().color();
+        } else if (isLamp()) {
+            return asLamp().color();
+        } else {
+            return asPhysicalObject().material().reflectance();
+        }
+    }
+    
+    public Vector3 emittedLight() {
+        if(isLight()) {
+            return asLight().color().times(asLight().power());
+        } else if (isLamp()) {
+            return asLamp().color().times(asLamp().power());
+        } else {
+            return Color.BLACK;
+        }
+    }
+    
     public Light asLight() {
         if (isLight()) {
             return (Light) this;

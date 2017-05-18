@@ -32,12 +32,12 @@ public class Main extends PApplet {
     /**
      * The number of rays
      */
-    private final static int n = 100;
+    private final static int n = 20;
     
     /**
      * The max number of rebounds of a ray
      */
-    private final static int numberRebounds = 1;
+    private final static int numberRebounds = 6;
     
     public static void main(String[] args) {
         PApplet.main("se.graphics.proj.Main");
@@ -166,8 +166,9 @@ public class Main extends PApplet {
     
     private static Vector3 radiance(Ray ray) {
         
-        Vector3 accuColor = Vector3.zeros();
-        Vector3 mask = Vector3.ones();
+        Vector3 accuColor = Color.BLACK;
+        Vector3 totalColor = Color.BLACK;
+        Vector3 mask = Color.WHITE;
         Ray r = ray;
         
         Intersection primaryIntersection = Intersection.invalidIntersection();
@@ -185,12 +186,21 @@ public class Main extends PApplet {
             return Color.BLUE;  
         } 
         
-        
-        for(int j = 0; j < n; ++j) {
-            r = Ray.generateRandomRay(primaryIntersection.position(), primaryClosest.shape().normalAt(primaryIntersection.position()));            
-            Vector3 color = Vector3.zeros();
-            for(int i = 0; i < numberRebounds; ++i) {
-                
+       
+        for(int j = 0; j < n ; ++j) {
+            
+            accuColor = Color.BLACK;
+            mask = Color.WHITE;
+            
+            accuColor = accuColor.plus(primaryClosest.emittedLight());
+            Vector3 primaryNormal = primaryClosest.shape().normalAt(primaryIntersection.position());
+            primaryNormal = ((primaryNormal.dot(ray.direction())) > 0 ? (primaryNormal.times(-1)) : primaryNormal);
+            mask = mask.entrywiseDot(primaryClosest.color());
+            mask = mask.times(2 * r.direction().dot(primaryNormal));            
+            r = Ray.generateRandomRay(primaryIntersection.position(), primaryNormal);
+            Vector3 color = Color.BLACK;
+            
+            for(int i = 0; i < numberRebounds; ++i) {                
                 
                 Intersection intersection = Intersection.invalidIntersection();
                 Item closest = null;
@@ -204,28 +214,25 @@ public class Main extends PApplet {
                 }
                 
                 if(!intersection.valid()) {                
-                    color = Vector3.zeros();                
+                    color = Color.BLACK;                
                 } else {
-                    Vector3 normal = closest.shape().normalAt(intersection.position());
-                    normal = normal.dot(ray.direction()) > 0 ? normal.times(-1f) : normal;
-                    if(closest.isPhysical()) {
-                        color = mask.entrywiseDot(closest.asPhysicalObject().material().reflectance());
-                        
-                    } else if (closest.isLamp()) {
-                        color = mask.entrywiseDot(closest.asLamp().material().reflectance().times(closest.asLamp().power()));
-                    } else {
-                        color = mask.entrywiseDot(closest.asLight().color().times(closest.asLight().power()));
-                    }
                     
+                    Vector3 normal = closest.shape().normalAt(intersection.position());
+                    normal = ((normal.dot(r.direction())) > 0 ? (normal.times(-1)) : normal);
+                    color = closest.color();                    
                     r = Ray.generateRandomRay(intersection.position(), normal);
-                    mask.entrywiseDot(color);
-                    mask.times(2 * r.direction().dot(normal));                
+                    mask = mask.entrywiseDot(color);
+                    mask = mask.times(2 * r.direction().dot(normal));    
+                    accuColor = accuColor.plus(mask.entrywiseDot(closest.emittedLight()));
+
                 }
-            }
-            accuColor = accuColor.plus(color);
+            }             
+            //totalColor = totalColor.plus(accuColor.times(1f / numberRebounds));
+            totalColor = (totalColor.size() < accuColor.times(1f/numberRebounds).size()) ? accuColor.times(1f/ numberRebounds) : totalColor;
         }
         
-        return accuColor.times(1/(float)(n));        
+        //return totalColor.times(1f/n);        
+        return totalColor;
     }
     
     /**
@@ -236,10 +243,6 @@ public class Main extends PApplet {
      */
     public void drawPixel(int i, int j, Vector3 color) {
         int ratio = size / resolution;
-        
-        if (color.x() > 1 || color.y() > 1 || color.z() > 1) {
-            System.out.println("YOYOYO");
-        }
         
         fill(255 * color.x(), 255 * color.y(), 255 * color.z());
         rect(i * ratio, j * ratio, ratio, ratio);
