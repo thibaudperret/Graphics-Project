@@ -17,7 +17,7 @@ public class Main extends PApplet {
     /**
      * The resolution of the windo, not to be confused with the size
      */
-    private final static int resolution = 800;
+    private final static int resolution = 100;
     
     /**
      * The focal length of the camera
@@ -32,12 +32,12 @@ public class Main extends PApplet {
     /**
      * The number of rays
      */
-    private final static int n = 1000;
+    private final static int n = 100;
     
     /**
      * The max number of rebounds of a ray
      */
-    private final static int numberRebounds = 10;
+    private final static int numberRebounds = 1;
     
     public static void main(String[] args) {
         PApplet.main("se.graphics.proj.Main");
@@ -92,17 +92,22 @@ public class Main extends PApplet {
             
             if (closest.isLamp()) {
                 Lamp light = closest.asLamp();
-                return light.color()/*.times(light.power())*/;
-            } else {
-                if (r < 0.5 || numberSteps == 1) { // LAST REBOUND OR LOTO WINNER
-                    return closest.asPhysicalObject().material().reflectance()/*.times(2f)*/;
+                return light.color().times(1f);
+            } else { 
+                if (r < 0.5 || numberSteps == 0) { // LAST REBOUND OR LOTO WINNER
+                    return closest.asPhysicalObject().material().reflectance().times(1f);
                 } else {
                     Vector3 normal = closest.shape().normalAt(intersection.position());
+                    
+                    if (normal.dot(ray.direction()) > 0) {
+                        normal = normal.times(-1f);
+                    }
+                    
                     Ray rebound = Ray.generateRandomRay(intersection.position(), normal);
                     Material material = closest.asPhysicalObject().material();
                     
-//                    float f = 2 * (1 - material.absorptionCoef()) * material.diffuseCoef() * normal.dot(rebound.direction());
-                    return tracePath(rebound, numberSteps - 1)/*.times(0.5f)*/;
+                    float f = 2 * (1 - material.absorptionCoef()) * material.diffuseCoef() * normal.dot(rebound.direction());
+                    return tracePath(rebound, numberSteps - 1).times(1f);
                 }
             }
         } else {
@@ -170,6 +175,10 @@ public class Main extends PApplet {
      */
     public void drawPixel(int i, int j, Vector3 color) {
         int ratio = size / resolution;
+        
+        if (color.x() > 1 || color.y() > 1 || color.z() > 1) {
+            System.out.println("YOYOYO");
+        }
         
         fill(255 * color.x(), 255 * color.y(), 255 * color.z());
         rect(i * ratio, j * ratio, ratio, ratio);

@@ -38,6 +38,7 @@ public final class Loader {
             // Floor
             items.add(PhysicalObject.physicalTriangle(new Triangle(C, B, A), OpaqueObject.idealDiffuse(Color.GREEN)));
             items.add(PhysicalObject.physicalTriangle(new Triangle(C, D, B), OpaqueObject.idealDiffuse(Color.GREEN)));
+            
             // Left wall
             items.add(PhysicalObject.physicalTriangle(new Triangle(A, E, C), OpaqueObject.idealDiffuse(Color.WHITE)));
             items.add(PhysicalObject.physicalTriangle(new Triangle(C, E, G), OpaqueObject.idealDiffuse(Color.WHITE)));
@@ -47,8 +48,15 @@ public final class Loader {
             items.add(PhysicalObject.physicalTriangle(new Triangle(H, F, D), OpaqueObject.idealDiffuse(Color.WHITE)));
 
             // Ceiling
-            Item lamp1 = new Lamp(new Triangle(E, F, G),OpaqueObject.idealDiffuse(Color.WHITE), 14f, Color.WHITE);
-            Item lamp2 = new Lamp(new Triangle(F, H, G),OpaqueObject.idealDiffuse(Color.WHITE), 14f, Color.WHITE);
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, F, G), OpaqueObject.idealDiffuse(Color.YELLOW)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(F, H, G), OpaqueObject.idealDiffuse(Color.YELLOW)));
+            
+            float scale = 1 / 4f;
+            Vector3 v = new Vector3(scale, 0.9f, scale);
+            
+            // Lamp
+            Item lamp1 = new Lamp(new Triangle(E.entrywiseDot(v), F.entrywiseDot(v), G.entrywiseDot(v)),OpaqueObject.idealDiffuse(Color.WHITE), 14f, Color.WHITE);
+            Item lamp2 = new Lamp(new Triangle(F.entrywiseDot(v), H.entrywiseDot(v), G.entrywiseDot(v)),OpaqueObject.idealDiffuse(Color.WHITE), 14f, Color.WHITE);
             items.add(lamp1);
             items.add(lamp2);
             lightSources.add(lamp1);

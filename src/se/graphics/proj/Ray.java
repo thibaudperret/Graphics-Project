@@ -26,7 +26,6 @@ public class Ray {
     }
     
     public static Ray generateRandomRay(Vector3 position, Vector3 normal){
-        normal = normal.times(-1);
         float thetaN = (float) Math.atan2(normal.y(), normal.x());
         float phiN = (float) Math.acos(normal.z());
 
