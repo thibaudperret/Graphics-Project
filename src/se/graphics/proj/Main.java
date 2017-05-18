@@ -12,7 +12,7 @@ public class Main extends PApplet {
     /**
      * The size of the window, not to be confused with the resolution
      */
-    private final static int size = 1600;
+    private final static int size = 600;
     
     /**
      * The resolution of the windo, not to be confused with the size
@@ -59,11 +59,8 @@ public class Main extends PApplet {
         for (int x = 0; x < resolution; ++x) {
             for (int y = 0; y < resolution; ++y) {
                 Ray r = new Ray(camera, new Vector3(x - resolution / 2, y - resolution / 2, f));
-                Vector3 color = Vector3.zeros();
-                for (int i = 0; i < n; ++i) {
-                    color = color.plus(tracePath(r, numberRebounds));
-                }
-                drawPixel(x, y, color.times(1f / n));
+                Vector3 color = radiance(r);
+                drawPixel(x, y, color);
             }
         }
         
@@ -165,6 +162,70 @@ public class Main extends PApplet {
         } else {
             return Color.BLACK;
         }
+    }
+    
+    private static Vector3 radiance(Ray ray) {
+        
+        Vector3 accuColor = Vector3.zeros();
+        Vector3 mask = Vector3.ones();
+        Ray r = ray;
+        
+        Intersection primaryIntersection = Intersection.invalidIntersection();
+        Item primaryClosest = null;
+        
+        for (Item item : Loader.cornellBox()) {
+            Intersection cur = item.intersection(r);
+            if (cur.valid() && cur.distance() < primaryIntersection.distance()) {
+                primaryIntersection = cur;
+                primaryClosest = item;
+            }
+        }
+        
+        if(!primaryIntersection.valid()) {  
+            return Color.BLUE;  
+        } 
+        
+        
+        for(int j = 0; j < n; ++j) {
+            r = Ray.generateRandomRay(primaryIntersection.position(), primaryClosest.shape().normalAt(primaryIntersection.position()));            
+            Vector3 color = Vector3.zeros();
+            for(int i = 0; i < numberRebounds; ++i) {
+                
+                
+                Intersection intersection = Intersection.invalidIntersection();
+                Item closest = null;
+                
+                for (Item item : Loader.cornellBox()) {
+                    Intersection current = item.intersection(r);
+                    if (current.valid() && current.distance() < intersection.distance()) {
+                        intersection = current;
+                        closest = item;
+                    }
+                }
+                
+                if(!intersection.valid()) {                
+                    color = Vector3.zeros();                
+                } else {
+                    Vector3 normal = closest.shape().normalAt(intersection.position());
+                    normal = normal.dot(ray.direction()) > 0 ? normal.times(-1f) : normal;
+                    if(closest.isPhysical()) {
+                        color = mask.entrywiseDot(closest.asPhysicalObject().material().reflectance());
+                        
+                    } else if (closest.isLamp()) {
+                        color = mask.entrywiseDot(closest.asLamp().material().reflectance().times(closest.asLamp().power()));
+                    } else {
+                        color = mask.entrywiseDot(closest.asLight().color().times(closest.asLight().power()));
+                    }
+                    
+                    r = Ray.generateRandomRay(intersection.position(), normal);
+                    mask.entrywiseDot(color);
+                    mask.times(2 * r.direction().dot(normal));                
+                }
+            }
+            accuColor = accuColor.plus(color);
+        }
+        
+        return accuColor.times(1/(float)(n));        
     }
     
     /**
