@@ -12,7 +12,7 @@ public class Main extends PApplet {
     /**
      * The size of the window, not to be confused with the resolution
      */
-    private final static int size = 600;
+    private final static int size = 1600;
     
     /**
      * The resolution of the windo, not to be confused with the size
@@ -32,12 +32,12 @@ public class Main extends PApplet {
     /**
      * The number of rays
      */
-    private final static int n = 20;
+    private final static int numberRays = 200;
     
     /**
      * The max number of rebounds of a ray
      */
-    private final static int numberRebounds = 6;
+    private final static int numberRebounds = 2;
     
     public static void main(String[] args) {
         PApplet.main("se.graphics.proj.Main");
@@ -59,7 +59,7 @@ public class Main extends PApplet {
         for (int x = 0; x < resolution; ++x) {
             for (int y = 0; y < resolution; ++y) {
                 Ray r = new Ray(camera, new Vector3(x - resolution / 2, y - resolution / 2, f));
-                Vector3 color = radiance(r);
+                Vector3 color = radiance2(r);
                 drawPixel(x, y, color);
             }
         }
@@ -187,7 +187,7 @@ public class Main extends PApplet {
         } 
         
        
-        for(int j = 0; j < n ; ++j) {
+        for(int j = 0; j < numberRays ; ++j) {
             
             accuColor = Color.BLACK;
             mask = Color.WHITE;
@@ -233,6 +233,51 @@ public class Main extends PApplet {
         
         //return totalColor.times(1f/n);        
         return totalColor;
+    }
+    
+    private static Vector3 radiance2(Ray originalRay) {
+        Vector3 totalColor = Color.BLACK;
+        
+        for (int i = 0; i < numberRays; ++i) {
+            Ray ray = originalRay;
+            Vector3 accuColor = Color.BLACK;
+            Vector3 mask = Color.WHITE;
+            
+            for (int b = 0; b < numberRebounds; ++b) {               
+                Intersection intersection = Intersection.invalidIntersection();
+                Item closest = null;
+                
+                for (Item item : Loader.cornellBox()) {
+                    Intersection cur = item.intersection(ray);
+                    if (cur.valid() && cur.distance() < intersection.distance()) {
+                        intersection = cur;
+                        closest = item;
+                    }
+                }
+                
+                if (!intersection.valid()) {  
+                    // accuColor = accuColor.plus(Color.BLACK);
+                    b = numberRebounds;
+                } else {
+                    if (closest.isLamp()) {
+                        accuColor = accuColor.plus(mask.entrywiseDot(closest.emittedLight()));
+                    } else {
+                        accuColor = accuColor.plus(mask.entrywiseDot(DirectLight(intersection.position(), closest.shape().normalAt(intersection.position()))));
+                    }
+
+                    Vector3 normal = closest.shape().normalAt(intersection.position());
+                    normal = ((normal.dot(ray.direction())) > 0 ? (normal.times(-1)) : normal);
+
+                    ray = Ray.generateRandomRay(intersection.position(), normal);
+
+                    mask = mask.entrywiseDot(closest.color()).times(ray.direction().dot(normal) * 2);
+                }
+            }
+            
+            totalColor = totalColor.plus(accuColor);
+        }
+        
+        return totalColor.times(1f / numberRays);
     }
     
     /**
