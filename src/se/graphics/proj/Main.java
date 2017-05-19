@@ -13,7 +13,7 @@ public class Main extends PApplet {
     /**
      * The size of the window, not to be confused with the resolution
      */
-    private final static int size = 800;
+    private final static int size = 1600;
     
     /**
      * The resolution of the windo, not to be confused with the size
@@ -38,7 +38,7 @@ public class Main extends PApplet {
     /**
      * The max number of rebounds of a ray
      */
-    private final static int numberRebounds = 2;
+    private final static int numberRebounds = 3;
     
     public static void main(String[] args) {
         PApplet.main("se.graphics.proj.Main");
@@ -54,7 +54,7 @@ public class Main extends PApplet {
     }
     
     public void draw() {
-        drawClassic();
+        drawParallel();
     }
     
     public void drawParallel() {
@@ -82,7 +82,7 @@ public class Main extends PApplet {
             }
         }      
         
-        parList.parallelStream().forEach(i->{
+        parList.parallelStream().forEach(i -> {
             Ray r = new Ray(camera, new Vector3(i.getLeft() - resolution / 2, i.getRight() - resolution / 2, f));
             Vector3 color = radiance2(r, box);
             drawPixel(i.getLeft(), i.getRight(), color);
@@ -109,180 +109,15 @@ public class Main extends PApplet {
         //Better to compute the cornellBox once and then pass it as an argument right?
         final List<Item> box = Loader.cornellBox();
         
-
         for (int x = 0; x < resolution; ++x) {
             for (int y = 0; y < resolution; ++y) {
                 Ray r = new Ray(camera, new Vector3(x - resolution / 2, y - resolution / 2, f));                
-                drawPixel(x, y, radiance3(r));
+                drawPixel(x, y, radiance2(r, box));
             }
         }      
-    }
-    
-    private static Vector3 tracePath(Ray ray, int numberSteps) {
-//        if (numberSteps == 0) {
-//            return Color.BLACK;
-//        }
         
-        Intersection intersection = Intersection.invalidIntersection();
-        Item closest = null;
-        
-        for (Item item : Loader.cornellBox()) {
-            Intersection current = item.intersection(ray);
-            if (current.valid() && current.distance() < intersection.distance()) {
-                intersection = current;
-                closest = item;
-            }
-        }
-        
-        if (intersection.valid()) {
-            float r = (float) Math.random(); // LOTO TICKET
-            
-            if (closest.isLamp()) {
-                Lamp light = closest.asLamp();
-                return light.color().times(1f);
-            } else { 
-                if (r < 0.5 || numberSteps == 0) { // LAST REBOUND OR LOTO WINNER
-                    return closest.asPhysicalObject().material().reflectance().times(1f);
-                } else {
-                    Vector3 normal = closest.shape().normalAt(intersection.position());
-                    
-                    if (normal.dot(ray.direction()) > 0) {
-                        normal = normal.times(-1f);
-                    }
-                    
-                    Ray rebound = Ray.generateRandomRay(intersection.position(), normal);
-                    Material material = closest.asPhysicalObject().material();
-                    
-                    float f = 2 * (1 - material.absorptionCoef()) * material.diffuseCoef() * normal.dot(rebound.direction());
-                    return tracePath(rebound, numberSteps - 1).times(1f);
-                }
-            }
-        } else {
-            return Color.BLACK;
-        }
-    }
-
-    private static Vector3 tracePathAugmented (Ray ray,int numberSteps) {        
-        if (numberSteps == 0) {
-            return Color.BLACK;
-        }
-        
-        Intersection intersection = Intersection.invalidIntersection();
-        Item closest = null;
-        
-        for (Item item : Loader.cornellBox()) {
-            Intersection current = item.intersection(ray);
-            if (current.valid() && current.distance() < intersection.distance() && !item.isLight()) {
-                intersection = current;
-                closest = item;
-            }
-        }
-        
-        if (intersection.valid()) {
-            float r = (float) Math.random();
-            Vector3 shapeNormal = closest.shape().normalAt(intersection.position());
-            Vector3 position = intersection.position();
-            Vector3 directLight = directLight(position, shapeNormal);
-            
-            if (closest.isLamp()) {
-                Lamp lamp = closest.asLamp();
-                float pEmit = 0.9f;
-                if(r < 0.9) {
-                    return lamp.color().times(lamp.power() * (1/pEmit));
-                } else {
-                    Vector3 normal = closest.shape().normalAt(intersection.position());
-                    Ray rebound = Ray.generateRandomRay(intersection.position(), normal);
-                    Material material = closest.asLamp().material();
-                    
-                    float f = (1/(1-pEmit)) * (1 - material.absorptionCoef()) * material.diffuseCoef() * normal.dot(rebound.direction());
-                    return tracePathAugmented(rebound, numberSteps - 1)/*.times(f)*/;
-                }
-            } else  {
-                if (r < 0.5) {
-                    return closest.asPhysicalObject().material().reflectance().entrywiseDot(directLight);
-                } else {
-                    Vector3 normal = closest.shape().normalAt(intersection.position());
-                    Ray rebound = Ray.generateRandomRay(intersection.position(), normal);
-                    Material material = closest.asPhysicalObject().material();
-                    
-                    float f = 2 * (1 - material.absorptionCoef()) * material.diffuseCoef() * normal.dot(rebound.direction());
-                    return tracePathAugmented(rebound, numberSteps - 1)/*.times(f)*/;
-                }
-            }
-        } else {
-            return Color.BLACK;
-        }
-    }
-    
-    private static Vector3 radiance(Ray ray) {
-        
-        Vector3 accuColor = Color.BLACK;
-        Vector3 totalColor = Color.BLACK;
-        Vector3 mask = Color.WHITE;
-        Ray r = ray;
-        
-        Intersection primaryIntersection = Intersection.invalidIntersection();
-        Item primaryClosest = null;
-        
-        for (Item item : Loader.cornellBox()) {
-            Intersection cur = item.intersection(r);
-            if (cur.valid() && cur.distance() < primaryIntersection.distance()) {
-                primaryIntersection = cur;
-                primaryClosest = item;
-            }
-        }
-        
-        if(!primaryIntersection.valid()) {  
-            return Color.BLUE;  
-        } 
-        
-       
-        for(int j = 0; j < numberRays ; ++j) {
-            
-            accuColor = Color.BLACK;
-            mask = Color.WHITE;
-            
-            accuColor = accuColor.plus(primaryClosest.emittedLight());
-            Vector3 primaryNormal = primaryClosest.shape().normalAt(primaryIntersection.position());
-            primaryNormal = ((primaryNormal.dot(ray.direction())) > 0 ? (primaryNormal.times(-1)) : primaryNormal);
-            mask = mask.entrywiseDot(primaryClosest.color());
-            mask = mask.times(2 * r.direction().dot(primaryNormal));            
-            r = Ray.generateRandomRay(primaryIntersection.position(), primaryNormal);
-            Vector3 color = Color.BLACK;
-            
-            for(int i = 0; i < numberRebounds; ++i) {                
-                
-                Intersection intersection = Intersection.invalidIntersection();
-                Item closest = null;
-                
-                for (Item item : Loader.cornellBox()) {
-                    Intersection current = item.intersection(r);
-                    if (current.valid() && current.distance() < intersection.distance()) {
-                        intersection = current;
-                        closest = item;
-                    }
-                }
-                
-                if(!intersection.valid()) {                
-                    color = Color.BLACK;                
-                } else {
-                    
-                    Vector3 normal = closest.shape().normalAt(intersection.position());
-                    normal = ((normal.dot(r.direction())) > 0 ? (normal.times(-1)) : normal);
-                    color = closest.color();                    
-                    r = Ray.generateRandomRay(intersection.position(), normal);
-                    mask = mask.entrywiseDot(color);
-                    mask = mask.times(2 * r.direction().dot(normal));    
-                    accuColor = accuColor.plus(mask.entrywiseDot(closest.emittedLight()));
-
-                }
-            }             
-            //totalColor = totalColor.plus(accuColor.times(1f / numberRebounds));
-            totalColor = (totalColor.size() < accuColor.times(1f/numberRebounds).size()) ? accuColor.times(1f/ numberRebounds) : totalColor;
-        }
-        
-        //return totalColor.times(1f/n);        
-        return totalColor;
+        float dt = (System.currentTimeMillis() - t) / 1000f;
+        System.out.println("time " + dt + " s");
     }
     
     private static Vector3 radiance2(Ray originalRay, final List<Item> box) {
@@ -312,7 +147,7 @@ public class Main extends PApplet {
                     if (closest.isLamp()) {
                         accuColor = accuColor.plus(mask.entrywiseDot(closest.emittedLight()));
                     } else {
-                        accuColor = accuColor.plus(mask.entrywiseDot(getLightAt(intersection.position(), normal, box)));
+                        accuColor = accuColor.plus(mask.entrywiseDot(directLight(intersection.position(), normal, box)));
                     }
                 }
             }
@@ -321,10 +156,9 @@ public class Main extends PApplet {
         }
         
         return totalColor.times(1f / numberRays);
-    }
+    }    
     
-    
-    private static Vector3 radiance3(Ray originalRay) {
+    private static Vector3 radiance3(Ray originalRay, List<Item> box) {
         Vector3 totalColor = Color.BLACK;
         
         for (int i = 0; i < numberRays; ++i) {
@@ -396,7 +230,7 @@ public class Main extends PApplet {
                         if(closest.isLamp()) {
                             accuColor = accuColor.plus(mask.entrywiseDot(closest.emittedLight().times(bias)));
                         } else {
-                            accuColor = accuColor.plus(mask.entrywiseDot(directLight(intersection.position(), closest.shape().normalAt(intersection.position())).times(bias)));
+                            accuColor = accuColor.plus(mask.entrywiseDot(directLight(intersection.position(), closest.shape().normalAt(intersection.position()), box).times(bias)));
                         }
                         
                     } else {
@@ -422,7 +256,7 @@ public class Main extends PApplet {
                                     mask = mask.entrywiseDot(closest.color()).times(ray.direction().dot(normal) * 2 * bias);
                                 }                                
                             }
-                            accuColor = accuColor.plus(mask.entrywiseDot(directLight(intersection.position(), closest.shape().normalAt(intersection.position())).times(bias)));
+                            accuColor = accuColor.plus(mask.entrywiseDot(directLight(intersection.position(), closest.shape().normalAt(intersection.position()), box).times(bias)));
                         }                    
                     }
                 }
@@ -448,36 +282,9 @@ public class Main extends PApplet {
     }
     
     public void mousePressed() {
-        String name = System.currentTimeMillis() + ".png";
+        String name = System.currentTimeMillis() + "-res" + resolution + "-ray" + numberRays + "-reb" + numberRebounds + ".png";
         System.out.println("saving image as " + name);
         saveFrame(name);
-    }
-    
-    private static Vector3 directLight(Vector3 position, Vector3 normal) {
-        Vector3 totalIllumination = Vector3.zeros();
-        Vector3 illumination;
-        List<Item> lightSources = Loader.lightSources();
-        for (int i = 0; i < lightSources.size(); ++i) {
-
-            Item currentSource = lightSources.get(i);
-            Shape currentShape = currentSource.shape();
-            Vector3 directionToLight = position.minus(currentShape.getCenter());
-            float r = directionToLight.size();
-            directionToLight = directionToLight.normalise();
-
-            if (currentSource.isLamp()) {
-                Lamp currentLamp = currentSource.asLamp();
-                illumination = currentLamp.color().times(currentLamp.power());
-                illumination = illumination.times((float) (Math.max(directionToLight.dot(normal), (float) 0) / (4 * Math.PI * r * r)));
-            } else {
-                Light currentLight = currentSource.asLight();
-                illumination = currentLight.color().times(currentLight.power());
-                illumination = illumination.times((float) (Math.max(directionToLight.dot(normal), (float) 0) / (4 * Math.PI * r * r)));
-            }
-            totalIllumination = totalIllumination.plus(illumination);
-        }
-
-        return totalIllumination;
     }
     
     private static Pair<Intersection, Item> getClosestIntersection(Ray ray, List<Item> box) {
@@ -495,7 +302,7 @@ public class Main extends PApplet {
         return new Pair<>(intersection, closest);
     }
     
-    private static Vector3 getLightAt(Vector3 position, Vector3 normal, List<Item> box) {
+    private static Vector3 directLight(Vector3 position, Vector3 normal, List<Item> box) {
         Vector3 totalLight = Vector3.zeros();
         
         for (Item source : Loader.lightSources()) {
@@ -506,11 +313,14 @@ public class Main extends PApplet {
             float rsz = r.size();
             float f = (float) (1 / (4 * Math.PI * rsz * rsz));
             
-            Intersection blocking = getClosestIntersection(new Ray(position, r), box).getLeft();
+            Pair<Intersection, Item> pair = getClosestIntersection(new Ray(position, r), box);
+//            Intersection blocking = Intersection.invalidIntersection();
+            Intersection blockingIntersection = pair.getLeft();
+            Item blocking = pair.getRight();
             
             Vector3 light;
             
-            if (!blocking.valid() || blocking.distance() > r.size()) {
+            if (!blockingIntersection.valid() || blockingIntersection.distance() > rsz || blocking.isLamp()) {
                 light = lamp.color().times(Math.max(rhat.dot(normal), 0f)).times(f).times(lamp.power());
             } else {
                 light = Color.BLACK;
