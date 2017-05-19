@@ -13,7 +13,7 @@ public class Main extends PApplet {
     /**
      * The size of the window, not to be confused with the resolution
      */
-    private final static int size = 600;
+    private final static int size = 1600;
 
     /**
      * The resolution of the windo, not to be confused with the size
@@ -33,12 +33,12 @@ public class Main extends PApplet {
     /**
      * The number of rays
      */
-    private final static int numberRays = 400;
+    private final static int numberRays = 1000;
 
     /**
      * The max number of rebounds of a ray
      */
-    private final static int numberRebounds = 2;
+    private final static int numberRebounds = 4;
 
     public static void main(String[] args) {
         PApplet.main("se.graphics.proj.Main");
@@ -65,17 +65,13 @@ public class Main extends PApplet {
         // right?
         final List<Item> box = Loader.cornellBox();
 
-        /*
-         * =========================== PARALLEL VERSION
-         * ===========================
-         */
-        /*
-         * In this parallel version, we create a List containing all the pixels
+        /* =========================== PARALLEL VERSION
+         * =========================== */
+        /* In this parallel version, we create a List containing all the pixels
          * (stored as pairs, sorry thits..) Then we create a parallel stream so
          * that we can apply par. methods such as forEach where we do the same
          * job as in the non-parallel version. SPEEDUP : between 2 and 2.5.
-         * PROBLEM : we get aliasing from nowhere.. TODO : fix it.
-         */
+         * PROBLEM : we get aliasing from nowhere.. TODO : fix it. */
 
         List<Pair<Integer, Integer>> parList = new ArrayList<Pair<Integer, Integer>>();
 
@@ -86,15 +82,11 @@ public class Main extends PApplet {
             }
         }
 
-        parList.parallelStream()
-                .forEach(
-                        i -> {
-                            Ray r = new Ray(camera, new Vector3(i.getLeft()
-                                    - resolution / 2, i.getRight() - resolution
-                                    / 2, f));
-                            Vector3 color = radiance3(r, box);
-                            drawPixel(i.getLeft(), i.getRight(), color);
-                        });
+        parList.parallelStream().forEach(i -> {
+            Ray r = new Ray(camera, new Vector3(i.getLeft() - resolution / 2, i.getRight() - resolution / 2, f));
+            Vector3 color = radiance3(r, box);
+            drawPixel(i.getLeft(), i.getRight(), color);
+        });
 
         /* =========================== VERSION 1.0 =========================== */
         // for (int x = 0; x < resolution; ++x) {
@@ -120,8 +112,7 @@ public class Main extends PApplet {
 
         for (int x = 0; x < resolution; ++x) {
             for (int y = 0; y < resolution; ++y) {
-                Ray r = new Ray(camera, new Vector3(x - resolution / 2, y
-                        - resolution / 2, f));
+                Ray r = new Ray(camera, new Vector3(x - resolution / 2, y - resolution / 2, f));
                 drawPixel(x, y, radiance2(r, box));
             }
         }
@@ -147,24 +138,17 @@ public class Main extends PApplet {
                     // accuColor = accuColor.plus(Color.BLACK);
                     b = numberRebounds;
                 } else {
-                    Vector3 normal = closest.shape().normalAt(
-                            intersection.position());
-                    normal = ((normal.dot(ray.direction())) > 0 ? (normal
-                            .times(-1)) : normal);
+                    Vector3 normal = closest.shape().normalAt(intersection.position());
+                    normal = ((normal.dot(ray.direction())) > 0 ? (normal.times(-1)) : normal);
 
-                    ray = Ray
-                            .generateRandomRay(intersection.position(), normal);
+                    ray = Ray.generateRandomRay(intersection.position(), normal);
 
-                    mask = mask.entrywiseDot(closest.color()).times(
-                            ray.direction().dot(normal) * 2);
+                    mask = mask.entrywiseDot(closest.color()).times(ray.direction().dot(normal) * 2);
 
                     if (closest.isLamp()) {
-                        accuColor = accuColor.plus(mask.entrywiseDot(closest
-                                .emittedLight()));
+                        accuColor = accuColor.plus(mask.entrywiseDot(closest.emittedLight()));
                     } else {
-                        accuColor = accuColor.plus(mask
-                                .entrywiseDot(directLight(
-                                        intersection.position(), normal, box)));
+                        accuColor = accuColor.plus(mask.entrywiseDot(directLight(intersection.position(), normal, box)));
                     }
                 }
             }
@@ -177,6 +161,7 @@ public class Main extends PApplet {
 
     private static Vector3 radiance3(Ray originalRay, List<Item> box) {
         Vector3 totalColor = Color.BLACK;
+        Medium currentMedium = Medium.VACUUM;
 
         for (int i = 0; i < numberRays; ++i) {
             Ray ray = originalRay;
@@ -196,21 +181,17 @@ public class Main extends PApplet {
                     float specularCoef = 0;
                     float diffuseCoef = 0;
 
-                    Vector3 normal = closest.shape().normalAt(
-                            intersection.position());
-                    normal = ((normal.dot(ray.direction())) > 0 ? (normal
-                            .times(-1)) : normal);
+                    Vector3 normal = closest.shape().normalAt(intersection.position());
+                    normal = ((normal.dot(ray.direction())) > 0 ? (normal.times(-1)) : normal);
 
                     if (closest.isLamp()) {
 
-                        specularCoef = closest.asLamp().material()
-                                .specularCoef();
+                        specularCoef = closest.asLamp().material().specularCoef();
                         diffuseCoef = 1 - specularCoef;
 
                     } else {
 
-                        specularCoef = closest.asPhysicalObject().material()
-                                .specularCoef();
+                        specularCoef = closest.asPhysicalObject().material().specularCoef();
                         diffuseCoef = 1 - specularCoef;
 
                     }
@@ -219,37 +200,25 @@ public class Main extends PApplet {
                     float randomSpec = (float) Math.random();
                     float bias = 0f;
 
-                    if ((!closest.isPhysical() || closest.asPhysicalObject()
-                            .material().isOpaque())) {
+                    if ((!closest.isPhysical() || closest.asPhysicalObject().material().isOpaque())) {
 
                         // Opaque object or lamp, there is no light transmission
                         // possible
 
                         if (randomSpec < specularCoef) {
                             bias = (1f / specularCoef);
-                            ray = Ray.specularBounce(ray, normal,
-                                    intersection.position());
-                            mask = mask.entrywiseDot(closest.color()).times(
-                                    ray.direction().dot(normal) * 2 * bias);
+                            ray = Ray.specularBounce(ray, normal, intersection.position());
+                            mask = mask.entrywiseDot(closest.color()).times(ray.direction().dot(normal) * 2 * bias);
                         } else {
                             bias = (1f / diffuseCoef);
-                            ray = Ray.generateRandomRay(
-                                    intersection.position(), normal);
-                            mask = mask.entrywiseDot(closest.color()).times(
-                                    ray.direction().dot(normal) * 2 * bias);
+                            ray = Ray.generateRandomRay(intersection.position(), normal);
+                            mask = mask.entrywiseDot(closest.color()).times(ray.direction().dot(normal) * 2 * bias);
                         }
 
                         if (closest.isLamp()) {
-                            accuColor = accuColor.plus(mask
-                                    .entrywiseDot(closest.emittedLight().times(
-                                            bias)));
+                            accuColor = accuColor.plus(mask.entrywiseDot(closest.emittedLight().times(bias)));
                         } else {
-                            accuColor = accuColor.plus(mask
-                                    .entrywiseDot(directLight(
-                                            intersection.position(),
-                                            closest.shape().normalAt(
-                                                    intersection.position()),
-                                            box).times(bias)));
+                            accuColor = accuColor.plus(mask.entrywiseDot(directLight(intersection.position(), closest.shape().normalAt(intersection.position()), box).times(bias)));
                         }
 
                     } else {
@@ -257,42 +226,25 @@ public class Main extends PApplet {
                         // Transparent object, we need to take the transmission
                         // into account
                         float randomTrans = (float) Math.random();
-                        float transmissionCoef = Medium
-                                .computeTransmissionCoef(ray.direction(),
-                                        normal);
+                        float transmissionCoef = Medium.computeTransmissionCoef(ray.direction(), normal);
 
                         if (randomTrans < transmissionCoef) {
                             bias = 1f / transmissionCoef;
                             // TODO change ray using n1.sin(i1) = n2.sin(i2)
-                            mask = mask.entrywiseDot(
-                                    closest.asPhysicalObject().material()
-                                            .asTransparent().medium()
-                                            .absorbedColor()).times(
-                                    ray.direction().dot(normal) * 2 * bias);
-
+                            ray = Ray.refractedRay(ray.direction(), normal, intersection.position(), currentMedium, closest.asPhysicalObject().material().asTransparent().medium());
+                            mask = mask.entrywiseDot(Vector3.ones().minus(closest.asPhysicalObject().material().asTransparent().medium().absorbedColor())).times(ray.direction().dot(normal) * 2 * bias);
                         } else {
                             if (randomSpec < specularCoef) {
                                 bias = 1f / ((1 - transmissionCoef) * specularCoef);
-                                ray = Ray.specularBounce(ray, normal,
-                                        intersection.position());
-                                mask = mask.entrywiseDot(closest.color())
-                                        .times(ray.direction().dot(normal) * 2
-                                                * bias);
+                                ray = Ray.specularBounce(ray, normal, intersection.position());
+                                mask = mask.entrywiseDot(closest.color()).times(ray.direction().dot(normal) * 2 * bias);
                             } else {
                                 bias = 1f / ((1 - transmissionCoef) * diffuseCoef);
-                                ray = Ray.generateRandomRay(
-                                        intersection.position(), normal);
-                                mask = mask.entrywiseDot(closest.color())
-                                        .times(ray.direction().dot(normal) * 2
-                                                * bias);
+                                ray = Ray.generateRandomRay(intersection.position(), normal);
+                                mask = mask.entrywiseDot(closest.color()).times(ray.direction().dot(normal) * 2 * bias);
                             }
                         }
-                        accuColor = accuColor.plus(mask
-                                .entrywiseDot(directLight(
-                                        intersection.position(),
-                                        closest.shape().normalAt(
-                                                intersection.position()), box)
-                                        .times(bias)));
+                        accuColor = accuColor.plus(mask.entrywiseDot(directLight(intersection.position(), closest.shape().normalAt(intersection.position()), box).times(bias)));
                     }
                 }
             }
@@ -321,14 +273,12 @@ public class Main extends PApplet {
     }
 
     public void mousePressed() {
-        String name = System.currentTimeMillis() + "-res" + resolution + "-ray"
-                + numberRays + "-reb" + numberRebounds + ".png";
+        String name = System.currentTimeMillis() + "-res" + resolution + "-ray" + numberRays + "-reb" + numberRebounds + ".png";
         System.out.println("saving image as " + name);
         saveFrame(name);
     }
 
-    private static Pair<Intersection, Item> getClosestIntersection(Ray ray,
-            List<Item> box) {
+    private static Pair<Intersection, Item> getClosestIntersection(Ray ray, List<Item> box) {
         Intersection intersection = Intersection.invalidIntersection();
         Item closest = null;
 
@@ -343,8 +293,7 @@ public class Main extends PApplet {
         return new Pair<>(intersection, closest);
     }
 
-    private static Vector3 directLight(Vector3 position, Vector3 normal,
-            List<Item> box) {
+    private static Vector3 directLight(Vector3 position, Vector3 normal, List<Item> box) {
         Vector3 totalLight = Vector3.zeros();
 
         for (Item source : Loader.lightSources()) {
@@ -355,19 +304,15 @@ public class Main extends PApplet {
             float rsz = r.size();
             float f = (float) (1 / (4 * Math.PI * rsz * rsz));
 
-            Pair<Intersection, Item> pair = getClosestIntersection(new Ray(
-                    position, r), box);
+            Pair<Intersection, Item> pair = getClosestIntersection(new Ray(position, r), box);
             // Intersection blocking = Intersection.invalidIntersection();
             Intersection blockingIntersection = pair.getLeft();
             Item blocking = pair.getRight();
 
             Vector3 light;
 
-            if (!blockingIntersection.valid()
-                    || blockingIntersection.distance() > rsz
-                    || blocking.isLamp()) {
-                light = lamp.color().times(Math.max(rhat.dot(normal), 0f))
-                        .times(f).times(lamp.power());
+            if (!blockingIntersection.valid() || blockingIntersection.distance() > rsz || blocking.isLamp()) {
+                light = lamp.color().times(Math.max(rhat.dot(normal), 0f)).times(f).times(lamp.power());
             } else {
                 light = Color.BLACK;
             }

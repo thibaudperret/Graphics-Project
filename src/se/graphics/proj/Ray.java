@@ -46,4 +46,27 @@ public class Ray {
         Vector3 newDir = ray.direction().minus(normal.times(2f).times(normal.dot(ray.direction())));
         return new Ray(collisionPoint, newDir);
     }
+    
+//    public static Ray refractedRay(Vector3 direction, Vector3 normal, Vector3 collisionPoint, Medium oldMedium, Medium newMedium) {
+//        float theta1 = (float) Math.acos(Math.abs(direction.dot(normal)) / (direction.size() * normal.size()));
+//        float theta2 = (float) Math.asin(Math.sin(theta1) * oldMedium.refractiveIndex() / newMedium.refractiveIndex());
+//        
+//        Vector3 xp = direction.minus(normal.times(direction.dot(normal)));
+//        float b = - direction.size() * (float) Math.cos(theta1);
+//        
+//        Vector3 newDirection = xp.times((float) Math.cos(1 - theta2)).plus(normal.times(b * (float) Math.cos(theta2))).plus(direction.minus(xp).minus(normal.times(b)));
+//        
+//        return new Ray(collisionPoint, newDirection);
+//    }
+    
+    public static Ray refractedRay(Vector3 direction, Vector3 normal, Vector3 collisionPoint, Medium oldMedium, Medium newMedium) {
+        direction = direction.normalise(); // ça fait pas de mal
+        
+        float ratio = oldMedium.refractiveIndex() / newMedium.refractiveIndex();
+        Vector3 nCrossDir = normal.cross(direction);
+        Vector3 newDir = (normal.cross(nCrossDir.times(-1f))).times(ratio);
+        newDir = newDir.minus(normal.times((float) Math.sqrt(1 - ratio * ratio * (nCrossDir.dot(nCrossDir)))));
+        return new Ray(collisionPoint, newDir);
+    }
+
 }
