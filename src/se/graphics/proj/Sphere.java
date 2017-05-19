@@ -32,9 +32,9 @@ public final class Sphere extends Shape {
         
         if (delta >= 0) {
             float d = (float) (- (b + Math.sqrt(delta)) / 2f);
-            if (d < 0.0001) {
-                d = (float) (- (b - Math.sqrt(delta)) / 2f);
-            }
+//            if (d < 0.0001) {
+//                d = (float) (- (b - Math.sqrt(delta)) / 2f);
+//            }
             
             if (d > 0) {
                 Vector3 position = start.plus(direction.times(d));
