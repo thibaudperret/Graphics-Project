@@ -35,5 +35,10 @@ public final class PhysicalObject extends Item {
     public boolean isLamp() {
         return false;
     }
+    
+    @Override 
+    public Vector3 emittedLight() {
+        return Color.BLACK;
+    }
 
 }

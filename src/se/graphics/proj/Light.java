@@ -34,4 +34,10 @@ public class Light extends Item {
         return false;
     }
     
+    @Override 
+    public Vector3 emittedLight() {
+        return asLight().color().times(asLight().power());
+
+    }
+    
 }

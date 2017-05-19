@@ -162,7 +162,7 @@ public class Main extends PApplet {
             float r = (float) Math.random();
             Vector3 shapeNormal = closest.shape().normalAt(intersection.position());
             Vector3 position = intersection.position();
-            Vector3 directLight = DirectLight(position, shapeNormal);
+            Vector3 directLight = directLight(position, shapeNormal);
             
             if (closest.isLamp()) {
                 Lamp lamp = closest.asLamp();
@@ -292,7 +292,7 @@ public class Main extends PApplet {
                     if (closest.isLamp()) {
                         accuColor = accuColor.plus(mask.entrywiseDot(closest.emittedLight()));
                     } else {
-                        accuColor = accuColor.plus(mask.entrywiseDot(DirectLight(intersection.position(), closest.shape().normalAt(intersection.position()))));
+                        accuColor = accuColor.plus(mask.entrywiseDot(directLight(intersection.position(), closest.shape().normalAt(intersection.position()))));
                     }
 
                     Vector3 normal = closest.shape().normalAt(intersection.position());
@@ -301,6 +301,117 @@ public class Main extends PApplet {
                     ray = Ray.generateRandomRay(intersection.position(), normal);
 
                     mask = mask.entrywiseDot(closest.color()).times(ray.direction().dot(normal) * 2);
+                }
+            }
+            
+            totalColor = totalColor.plus(accuColor);
+        }
+        
+        return totalColor.times(1f / numberRays);
+    }
+    
+    
+    private static Vector3 radiance3(Ray originalRay) {
+        Vector3 totalColor = Color.BLACK;
+        
+        for (int i = 0; i < numberRays; ++i) {
+            Ray ray = originalRay;
+            Vector3 accuColor = Color.BLACK;
+            Vector3 mask = Color.WHITE;
+            
+            for (int b = 0; b < numberRebounds; ++b) {               
+                Intersection intersection = Intersection.invalidIntersection();
+                Item closest = null;
+                
+                for (Item item : Loader.cornellBox()) {
+                    Intersection cur = item.intersection(ray);
+                    if (cur.valid() && cur.distance() < intersection.distance()) {
+                        intersection = cur;
+                        closest = item;
+                    }
+                }
+                
+                if (!intersection.valid()) {  
+                    // accuColor = accuColor.plus(Color.BLACK);
+                    b = numberRebounds;
+                } else {
+                    
+                    float absorbCoef = 0;
+                    float specularCoef = 0;
+                    float diffuseCoef = 0;
+                    
+                    Vector3 normal = closest.shape().normalAt(intersection.position());
+                    normal = ((normal.dot(ray.direction())) > 0 ? (normal.times(-1)) : normal);
+                    
+                    if (closest.isLamp()) {
+                       
+                        absorbCoef = 0;
+                        specularCoef = closest.asLamp().material().specularCoef();
+                        diffuseCoef = 1 - specularCoef;
+                        
+                    } else if(closest.asPhysicalObject().material().isOpaque()){
+                       
+                       absorbCoef = closest.asPhysicalObject().material().absorptionCoef();
+                       specularCoef = closest.asPhysicalObject().material().specularCoef();
+                       diffuseCoef = 1 - specularCoef;
+                       
+
+                    }
+                    
+                    float randomAbs = (float)Math.random();
+                    float randomSpec = (float)Math.random();
+                    float bias = 0f;
+                    
+                    if((!closest.isPhysical() || closest.asPhysicalObject().material().isOpaque())) {
+                        
+                        //Opaque object or lamp, there is no light transmission possible
+                        
+                        if (randomAbs < absorbCoef) { 
+                            b = numberRebounds;
+                        } else {                            
+                            if(randomSpec < specularCoef) {
+                                bias = (1f / ((1 - absorbCoef) * specularCoef));
+                                ray = Ray.SpecularBounce(ray, normal, intersection.position());
+                                mask = mask.entrywiseDot(closest.color()).times(ray.direction().dot(normal) * 2 * bias);
+                            } else {                                
+                                bias = (1f / ((1 - absorbCoef) * diffuseCoef));
+                                ray = Ray.generateRandomRay(intersection.position(), normal);
+                                mask = mask.entrywiseDot(closest.color()).times(ray.direction().dot(normal) * 2 * bias);
+                            }
+                        } 
+                        
+                        if(closest.isLamp()) {
+                            accuColor = accuColor.plus(mask.entrywiseDot(closest.emittedLight().times(bias)));
+                        } else {
+                            accuColor = accuColor.plus(mask.entrywiseDot(directLight(intersection.position(), closest.shape().normalAt(intersection.position())).times(bias)));
+                        }
+                        
+                    } else {
+                        
+                        //Transparent object, we need to take the transmission into account
+                        float randomTrans = (float)Math.random();
+                        float transmissionCoef = Medium.computeTransmissionCoef(ray.direction(), normal);
+                        
+                        if(randomAbs < absorbCoef) {
+                            b = numberRebounds;
+                        } else {
+                            if(randomTrans < transmissionCoef) {
+                                bias = 1f/((1 - absorbCoef) * transmissionCoef); 
+                                //TODO change ray using n1.sin(i1) = n2.sin(i2) 
+                            } else {
+                                if(randomSpec < specularCoef) {
+                                    bias = 1f/((1 - absorbCoef) * (1-transmissionCoef) * specularCoef);
+                                    ray = Ray.SpecularBounce(ray, normal, intersection.position());
+                                    mask = mask.entrywiseDot(closest.color()).times(ray.direction().dot(normal) * 2 * bias);
+                                } else {
+                                    bias = 1f/((1 - absorbCoef) * (1-transmissionCoef) * diffuseCoef);
+                                    ray = Ray.generateRandomRay(intersection.position(), normal);
+                                    mask = mask.entrywiseDot(closest.color()).times(ray.direction().dot(normal) * 2 * bias);
+                                }                                
+                            }
+                            accuColor = accuColor.plus(mask.entrywiseDot(directLight(intersection.position(), closest.shape().normalAt(intersection.position())).times(bias)));
+                        }                    
+                    }
                 }
             }
             
@@ -329,7 +440,7 @@ public class Main extends PApplet {
         saveFrame(name);
     }
     
-    private static Vector3 DirectLight(Vector3 position, Vector3 normal) {
+    private static Vector3 directLight(Vector3 position, Vector3 normal) {
         Vector3 totalIllumination = Vector3.zeros();
         Vector3 illumination;
         List<Item> lightSources = Loader.lightSources();

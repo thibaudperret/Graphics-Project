@@ -29,5 +29,9 @@ public class Medium {
         public Medium setAbsorbedColor(Vector3 absorbedColor) {
             return new Medium(refractiveIndex, absorbedColor);
         }
+        
+        public static float computeTransmissionCoef(Vector3 incident, Vector3 normal) {
+            return incident.normalise().dot(normal.times(-1f));
+        }
     
 }

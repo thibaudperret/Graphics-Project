@@ -12,6 +12,8 @@ public abstract class Item {
     abstract public boolean isLight();
     abstract public boolean isLamp();
     
+    abstract public Vector3 emittedLight();
+    
     public Shape shape() {
         return shape;
     }
@@ -30,16 +32,7 @@ public abstract class Item {
         }
     }
     
-    public Vector3 emittedLight() {
-        if(isLight()) {
-            return asLight().color().times(asLight().power());
-        } else if (isLamp()) {
-            return asLamp().color().times(asLamp().power());
-        } else {
-            return Color.BLACK;
-        }
-    }
-    
+        
     public Light asLight() {
         if (isLight()) {
             return (Light) this;

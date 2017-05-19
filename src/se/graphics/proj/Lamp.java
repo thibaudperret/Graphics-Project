@@ -47,5 +47,11 @@ public class Lamp extends Item {
     public boolean isLamp() {
         return true;
     }
+    
+    @Override 
+    public Vector3 emittedLight() {
+        return asLamp().color().times(asLamp().power());
+
+    }
 
 }
