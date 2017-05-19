@@ -1,5 +1,6 @@
 package se.graphics.proj;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import processing.core.PApplet;
@@ -12,12 +13,12 @@ public class Main extends PApplet {
     /**
      * The size of the window, not to be confused with the resolution
      */
-    private final static int size = 1600;
+    private final static int size = 800;
     
     /**
      * The resolution of the windo, not to be confused with the size
      */
-    private final static int resolution = 100;
+    private final static int resolution = 400;
     
     /**
      * The focal length of the camera
@@ -56,13 +57,42 @@ public class Main extends PApplet {
         long t = System.currentTimeMillis();
         background(0);
         
+        //Better to compute the cornellBox once and then pass it as an argument right?
+        final List<Item> box = Loader.cornellBox();
+
+/*=========================== PARALLEL VERSION ===========================*/
+ /* In this parallel version, we create a List containing all the pixels (stored as pairs, sorry tits..)
+  * Then we create a parallel stream so that we can apply par. methods such as forEach where we do the same job as 
+  * in the non-parallel version.
+  * SPEEDUP : between 2 and 2.5.
+  * PROBLEM : we get aliasing from nowhere.. 
+  * TODO : fix it.
+ */
+        
+        List<Pair<Integer, Integer>> parList = new ArrayList<Pair<Integer, Integer>>();
+        
         for (int x = 0; x < resolution; ++x) {
             for (int y = 0; y < resolution; ++y) {
-                Ray r = new Ray(camera, new Vector3(x - resolution / 2, y - resolution / 2, f));
-                Vector3 color = radiance2(r);
-                drawPixel(x, y, color);
+                Pair<Integer, Integer> p = new Pair<Integer, Integer>(x, y);
+                parList.add(p);
             }
-        }
+        }      
+        
+        parList.parallelStream().forEach(i->{
+            Ray r = new Ray(camera, new Vector3(i.getLeft() - resolution / 2, i.getRight() - resolution / 2, f));
+            Vector3 color = radiance2(r, box);
+            drawPixel(i.getLeft(), i.getRight(), color);
+        });
+        
+        
+/*=========================== VERSION 1.0 ===========================*/
+//        for (int x = 0; x < resolution; ++x) {
+//            for (int y = 0; y < resolution; ++y) {
+//                Ray r = new Ray(camera, new Vector3(x - resolution / 2, y - resolution / 2, f));
+//                Vector3 color = radiance2(r, box);
+//                drawPixel(x, y, color);
+//            }
+//        }
         
         float dt = (System.currentTimeMillis() - t) / 1000f;
         System.out.println("time " + dt + " s");
@@ -235,7 +265,7 @@ public class Main extends PApplet {
         return totalColor;
     }
     
-    private static Vector3 radiance2(Ray originalRay) {
+    private static Vector3 radiance2(Ray originalRay, final List<Item> box) {
         Vector3 totalColor = Color.BLACK;
         
         for (int i = 0; i < numberRays; ++i) {
@@ -247,7 +277,7 @@ public class Main extends PApplet {
                 Intersection intersection = Intersection.invalidIntersection();
                 Item closest = null;
                 
-                for (Item item : Loader.cornellBox()) {
+                for (Item item : box) {
                     Intersection cur = item.intersection(ray);
                     if (cur.valid() && cur.distance() < intersection.distance()) {
                         intersection = cur;
