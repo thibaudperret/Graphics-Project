@@ -54,6 +54,10 @@ public class Main extends PApplet {
     }
     
     public void draw() {
+        drawClassic();
+    }
+    
+    public void drawParallel() {
         long t = System.currentTimeMillis();
         background(0);
         
@@ -96,6 +100,22 @@ public class Main extends PApplet {
         
         float dt = (System.currentTimeMillis() - t) / 1000f;
         System.out.println("time " + dt + " s");
+    }
+
+    public void drawClassic() {
+        long t = System.currentTimeMillis();
+        background(0);
+        
+        //Better to compute the cornellBox once and then pass it as an argument right?
+        final List<Item> box = Loader.cornellBox();
+        
+
+        for (int x = 0; x < resolution; ++x) {
+            for (int y = 0; y < resolution; ++y) {
+                Ray r = new Ray(camera, new Vector3(x - resolution / 2, y - resolution / 2, f));                
+                drawPixel(x, y, radiance3(r));
+            }
+        }      
     }
     
     private static Vector3 tracePath(Ray ray, int numberSteps) {
