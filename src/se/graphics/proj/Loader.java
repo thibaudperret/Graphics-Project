@@ -35,20 +35,20 @@ public final class Loader {
             Vector3 H = vec3(0, L, L).times(2f / 555).minus(ones()).entrywiseDot(new Vector3(-1f, -1f, 1f));
             
             // Floor
-            items.add(PhysicalObject.physicalTriangle(new Triangle(C, B, A), OpaqueObject.idealDiffuse(Color.GREEN)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(C, D, B), OpaqueObject.idealDiffuse(Color.GREEN)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(C, B, A), OpaqueObject.idealDiffuse(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(C, D, B), OpaqueObject.idealDiffuse(Color.WHITE)));
             
             // Left wall
-            items.add(PhysicalObject.physicalTriangle(new Triangle(A, E, C), OpaqueObject.idealDiffuse(Color.WHITE)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(C, E, G), OpaqueObject.idealDiffuse(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(A, E, C), OpaqueObject.idealDiffuse(Color.GREEN)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(C, E, G), OpaqueObject.idealDiffuse(Color.GREEN)));
 
             // Right wall
-            items.add(PhysicalObject.physicalTriangle(new Triangle(F, B, D), OpaqueObject.idealDiffuse(Color.WHITE)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(H, F, D), OpaqueObject.idealDiffuse(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(F, B, D), OpaqueObject.idealDiffuse(Color.RED)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(H, F, D), OpaqueObject.idealDiffuse(Color.RED)));
 
             // Ceiling
-            items.add(PhysicalObject.physicalTriangle(new Triangle(E, F, G), OpaqueObject.idealDiffuse(Color.YELLOW)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(F, H, G), OpaqueObject.idealDiffuse(Color.YELLOW)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, F, G), OpaqueObject.idealDiffuse(Color.ORANGE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(F, H, G), OpaqueObject.idealDiffuse(Color.ORANGE)));
             
             float scale = 1 / 2f;
             Vector3 v = new Vector3(scale, 0.9999f, scale);
@@ -62,8 +62,8 @@ public final class Loader {
             lightSources.add(lamp2);            
 
             // Back wall
-            items.add(PhysicalObject.physicalTriangle(new Triangle(G, D, C), OpaqueObject.idealDiffuse(Color.ORANGE)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, D), OpaqueObject.idealDiffuse(Color.ORANGE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, D, C), OpaqueObject.idealDiffuse(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, D), OpaqueObject.idealDiffuse(Color.WHITE)));
 
             // ------------------- BL1 -------------------
             A = vec3(290, 0, 114).times(2f / 555).minus(ones()).entrywiseDot(new Vector3(-1f, -1f, 1f));
@@ -76,25 +76,25 @@ public final class Loader {
             G = vec3(240, 165, 272).times(2f / 555).minus(ones()).entrywiseDot(new Vector3(-1f, -1f, 1f));
             H = vec3(82, 165, 225).times(2f / 555).minus(ones()).entrywiseDot(new Vector3(-1f, -1f, 1f));
             
-//            // Front
-//            items.add(PhysicalObject.physicalTriangle(new Triangle(E, B, A), OpaqueObject.idealDiffuse(Color.RED)));
-//            items.add(PhysicalObject.physicalTriangle(new Triangle(E, F, B), OpaqueObject.idealDiffuse(Color.RED)));
-//
-//            // Front
-//            items.add(PhysicalObject.physicalTriangle(new Triangle(F, D, B), OpaqueObject.idealDiffuse(Color.RED)));
-//            items.add(PhysicalObject.physicalTriangle(new Triangle(F, H, D), OpaqueObject.idealDiffuse(Color.RED)));
-//
-//            // Back
-//            items.add(PhysicalObject.physicalTriangle(new Triangle(H, C, D), OpaqueObject.idealDiffuse(Color.RED)));
-//            items.add(PhysicalObject.physicalTriangle(new Triangle(H, G, C), OpaqueObject.idealDiffuse(Color.RED)));
-//
-//            // Left
-//            items.add(PhysicalObject.physicalTriangle(new Triangle(G, E, C), OpaqueObject.idealDiffuse(Color.RED)));
-//            items.add(PhysicalObject.physicalTriangle(new Triangle(E, A, C), OpaqueObject.idealDiffuse(Color.RED)));
-//
-//            // Top
-//            items.add(PhysicalObject.physicalTriangle(new Triangle(G, F, E), OpaqueObject.idealDiffuse(Color.RED)));
-//            items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, F), OpaqueObject.idealDiffuse(Color.RED)));
+            // Front
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, B, A), OpaqueObject.idealDiffuse(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, F, B), OpaqueObject.idealDiffuse(Color.WHITE)));
+
+            // Front
+            items.add(PhysicalObject.physicalTriangle(new Triangle(F, D, B), OpaqueObject.idealDiffuse(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(F, H, D), OpaqueObject.idealDiffuse(Color.WHITE)));
+
+            // Back
+            items.add(PhysicalObject.physicalTriangle(new Triangle(H, C, D), OpaqueObject.idealDiffuse(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(H, G, C), OpaqueObject.idealDiffuse(Color.WHITE)));
+
+            // Left
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, E, C), OpaqueObject.idealDiffuse(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, A, C), OpaqueObject.idealDiffuse(Color.WHITE)));
+
+            // Top
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, F, E), OpaqueObject.idealDiffuse(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, F), OpaqueObject.idealDiffuse(Color.WHITE)));
 
             // ------------------- BL2 -------------------
             A = vec3(423, 0, 247).times(2f / 555).minus(ones()).entrywiseDot(new Vector3(-1f, -1f, 1f));
@@ -108,26 +108,26 @@ public final class Loader {
             H = vec3(314, 330, 456).times(2f / 555).minus(ones()).entrywiseDot(new Vector3(-1f, -1f, 1f));
 
             // Front
-            items.add(PhysicalObject.physicalTriangle(new Triangle(E, B, A), OpaqueObject.idealDiffuse(Color.BLUE)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(E, F, B), OpaqueObject.idealDiffuse(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, B, A), OpaqueObject.idealDiffuse(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, F, B), OpaqueObject.idealDiffuse(Color.WHITE)));
 
             // Front
-            items.add(PhysicalObject.physicalTriangle(new Triangle(F, D, B), OpaqueObject.idealDiffuse(Color.BLUE)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(F, H, D), OpaqueObject.idealDiffuse(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(F, D, B), OpaqueObject.idealDiffuse(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(F, H, D), OpaqueObject.idealDiffuse(Color.WHITE)));
 
             // Back
-            items.add(PhysicalObject.physicalTriangle(new Triangle(H, C, D), OpaqueObject.idealDiffuse(Color.BLUE)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(H, G, C), OpaqueObject.idealDiffuse(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(H, C, D), OpaqueObject.idealDiffuse(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(H, G, C), OpaqueObject.idealDiffuse(Color.WHITE)));
 
             // Left
-            items.add(PhysicalObject.physicalTriangle(new Triangle(G, E, C), OpaqueObject.idealDiffuse(Color.BLUE)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(E, A, C), OpaqueObject.idealDiffuse(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, E, C), OpaqueObject.idealDiffuse(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(E, A, C), OpaqueObject.idealDiffuse(Color.WHITE)));
 
             // Top
-            items.add(PhysicalObject.physicalTriangle(new Triangle(G, F, E), OpaqueObject.idealDiffuse(Color.BLUE)));
-            items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, F), OpaqueObject.idealDiffuse(Color.BLUE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, F, E), OpaqueObject.idealDiffuse(Color.WHITE)));
+            items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, F), OpaqueObject.idealDiffuse(Color.WHITE)));
             
-            items.add(PhysicalObject.physicalSphere(new Sphere(new Vector3(0.5f, 0.2f, 0.2f), 0.4f), OpaqueObject.idealDiffuse(Color.RED)));
+//            items.add(PhysicalObject.physicalSphere(new Sphere(new Vector3(0.5f, 0.2f, 0.2f), 0.4f), OpaqueObject.idealDiffuse(Color.RED)));
             
 //            items = items.stream().map(t -> {
 //                if(t.shape().isTriangle()) {
