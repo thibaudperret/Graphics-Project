@@ -2,8 +2,8 @@ package se.graphics.proj;
 
 public class Ray {
     
-    private Vector3 position;
-    private Vector3 direction;
+    private final Vector3 position;
+    private final Vector3 direction;
     
     public Ray(Vector3 position, Vector3 direction) {
         this.position = position;
