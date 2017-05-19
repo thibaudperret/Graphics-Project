@@ -35,8 +35,8 @@ public final class Loader {
         items.add(PhysicalObject.physicalTriangle(new Triangle(C, D, B), OpaqueObject.idealDiffuse(Color.WHITE)));
         
         // Left wall
-        items.add(PhysicalObject.physicalTriangle(new Triangle(A, E, C), OpaqueObject.idealDiffuse(Color.GREEN)));
-        items.add(PhysicalObject.physicalTriangle(new Triangle(C, E, G), OpaqueObject.idealDiffuse(Color.GREEN)));
+        items.add(PhysicalObject.physicalTriangle(new Triangle(A, E, C), OpaqueObject.idealSpecular(Color.LIGHT_BLUE)));
+        items.add(PhysicalObject.physicalTriangle(new Triangle(C, E, G), OpaqueObject.idealSpecular(Color.LIGHT_BLUE)));
 
         // Right wall
         items.add(PhysicalObject.physicalTriangle(new Triangle(F, B, D), OpaqueObject.idealDiffuse(Color.RED)));
@@ -121,8 +121,8 @@ public final class Loader {
 //        items.add(PhysicalObject.physicalTriangle(new Triangle(G, F, E), OpaqueObject.idealDiffuse(Color.WHITE)));
 //        items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, F), OpaqueObject.idealDiffuse(Color.WHITE)));
 
-        items.add(PhysicalObject.physicalSphere(new Sphere(new Vector3(1f, 0.2f, 0.2f), 0.4f), OpaqueObject.idealDiffuse(Color.WHITE)));
-        items.add(PhysicalObject.physicalSphere(new Sphere(new Vector3(-0.5f, 0.6f, -0.4f), 0.4f), OpaqueObject.idealDiffuse(Color.WHITE)));
+        items.add(PhysicalObject.physicalSphere(new Sphere(new Vector3(0.2f, 0.2f, 0.2f), 0.4f), OpaqueObject.idealSpecular(Color.WHITE)));
+        items.add(PhysicalObject.physicalSphere(new Sphere(new Vector3(-0.5f, 0.6f, -0.4f), 0.4f), OpaqueObject.tradeOff(Color.WHITE)));
         
         return items;
     }

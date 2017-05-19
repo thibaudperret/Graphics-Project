@@ -60,5 +60,21 @@ public abstract class Material {
     public abstract boolean isOpaque();
     public abstract boolean isTransparent();
     
+    public OpaqueObject asOpaque() {
+        if(isOpaque()) {
+            return (OpaqueObject) this;
+        } else {
+            throw new IllegalStateException("Cannot interpret material as Opaque");
+        }
+    }
+    
+    public LightConductor asTransparent() {
+        if(isOpaque()) {
+            return (LightConductor) this;
+        } else {
+            throw new IllegalStateException("Cannot interpret material as Transparent");
+        }
+    }
+    
     
 }

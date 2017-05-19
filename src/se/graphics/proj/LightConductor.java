@@ -4,6 +4,8 @@ public class LightConductor extends Material{
     
     private Medium medium;
     
+  
+    
     public LightConductor(float diffuseCoef, float specularCoef, float absorptionCoef, Medium medium) {
         super(medium.absorbedColor(), diffuseCoef, specularCoef, absorptionCoef);
         this.medium = medium;
@@ -15,6 +17,14 @@ public class LightConductor extends Material{
     
     public LightConductor setMedium(Medium newMedium) {
         return new LightConductor(diffuseCoef(), specularCoef(), absorptionCoef(), newMedium);
+    }
+    
+    public static LightConductor idealSpecular(){
+        return new LightConductor(0f, 1f, 0.01f, Medium.WATER);
+    }
+    
+    public static LightConductor mainlySpecular() {
+        return new LightConductor(0.2f, 0.8f, 0.01f, Medium.WATER);
     }
     
     @Override

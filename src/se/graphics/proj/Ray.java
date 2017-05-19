@@ -42,7 +42,7 @@ public class Ray {
         return new Ray(position, newDirection);
     }
     
-    public static Ray SpecularBounce(Ray ray, Vector3 normal, Vector3 collisionPoint) {
+    public static Ray specularBounce(Ray ray, Vector3 normal, Vector3 collisionPoint) {
         Vector3 newDir = ray.direction().minus(normal.times(2f).times(normal.dot(ray.direction())));
         return new Ray(collisionPoint, newDir);
     }
