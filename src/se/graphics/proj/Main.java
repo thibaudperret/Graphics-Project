@@ -215,7 +215,7 @@ public class Main extends PApplet {
         }
     }
 
-    private static Pair<Intersection, Item> getClosestIntersection(Ray ray, List<Item> box) {
+    public static Pair<Intersection, Item> getClosestIntersection(Ray ray, List<Item> box) {
         Intersection intersection = Intersection.invalidIntersection();
         Item closest = null;
 

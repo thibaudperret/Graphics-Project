@@ -32,7 +32,11 @@ public class Ray {
 //        float theta = thetaN + (float) (Math.random() * Math.PI);
         float theta = thetaN + (float) (((Math.random() * 2) - 1) * Math.PI / 2);
         float phi = phiN + (float) (((Math.random() * 2) - 1) * Math.PI / 2);
-        
+         
+        return generateRay(position, normal, phi, theta);
+    }
+    
+    public static Ray generateRay(Vector3 position, Vector3 normal, float phi, float theta) {
         Vector3 newDirection = new Vector3(
                                             (float) (Math.sin(phi) * Math.cos(theta)),
                                             (float) (Math.sin(phi) * Math.sin(theta)),
