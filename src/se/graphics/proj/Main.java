@@ -207,7 +207,7 @@ public class Main extends PApplet {
         saveFrame(name);
         
         try{
-            AudioClip clip = Applet.newAudioClip(new URL("file:///C:/User/Thibaud/Documents/GitHub/Graphics-Project/tada.wav"));
+            AudioClip clip = Applet.newAudioClip(new URL("file:///C:/User/Thibaud/Music/tada.wav"));
             clip.play();
             Thread.sleep(2000);
         } catch (Exception e){
