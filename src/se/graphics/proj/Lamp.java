@@ -1,6 +1,6 @@
 package se.graphics.proj;
 
-public class Lamp extends Item {
+public abstract class Lamp extends Item {
 
     private final Material material;
     private final float lightPower;
@@ -11,14 +11,6 @@ public class Lamp extends Item {
         this.material = material;
         this.lightPower = lightPower;
         this.lightColor = lightColor;
-    }
-
-    public static Lamp physicalTriangleLamp(Triangle triangle, Material material, float power, Vector3 color) {
-        return new Lamp(triangle, material, power, color);
-    }
-
-    public static Lamp physicalSphereLamp(Sphere sphere, Material material, float power, Vector3 color) {
-        return new Lamp(sphere, material, power, color);
     }
 
     public Material material() {
@@ -49,5 +41,8 @@ public class Lamp extends Item {
         return asLamp().color().times(asLamp().power());
 
     }
+    
+    public abstract boolean isDiffuse();
+    public abstract boolean isDirectionnal();
 
 }
