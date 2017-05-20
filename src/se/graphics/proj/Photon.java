@@ -55,4 +55,9 @@ public class Photon {
     public Photon setFlag(short flag) {
         return new Photon(position, power, phi, theta, flag);
     }
+    
+    public float distance(Photon p) {
+        return (float) Math.sqrt( Math.pow(this.position.x() - p.position.x(), 2) + Math.pow(this.position.y() - p.position.y(), 2)
+                                    + Math.pow(this.position.z() - p.position.z(), 2));
+    }
 }
