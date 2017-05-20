@@ -21,7 +21,7 @@ public class Main extends PApplet {
     /**
      * The resolution of the window, not to be confused with the size
      */
-    private final static int resolution = 200;
+    private final static int resolution = 100;
 
     /**
      * The focal length of the camera
@@ -36,12 +36,12 @@ public class Main extends PApplet {
     /**
      * The number of rays
      */
-    private final static int numberRays = 1000;
+    private final static int numberRays = 100;
 
     /**
      * The max number of rebounds of a ray
      */
-    private final static int numberRebounds = 4;
+    private final static int numberRebounds = 3;
 
     public static void main(String[] args) {
         PApplet.main("se.graphics.proj.Main");
@@ -215,7 +215,7 @@ public class Main extends PApplet {
         }
     }
 
-    private static Pair<Intersection, Item> getClosestIntersection(Ray ray, List<Item> box) {
+    public static Pair<Intersection, Item> getClosestIntersection(Ray ray, List<Item> box) {
         Intersection intersection = Intersection.invalidIntersection();
         Item closest = null;
 

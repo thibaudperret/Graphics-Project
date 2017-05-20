@@ -1,6 +1,8 @@
 package se.graphics.proj;
 
-public class Lamp extends Item {
+import java.util.List;
+
+public abstract class Lamp extends Item {
 
     private final Material material;
     private final float lightPower;
@@ -12,14 +14,7 @@ public class Lamp extends Item {
         this.lightPower = lightPower;
         this.lightColor = lightColor;
     }
-
-    public static Lamp physicalTriangleLamp(Triangle triangle, Material material, float power, Vector3 color) {
-        return new Lamp(triangle, material, power, color);
-    }
-
-    public static Lamp physicalSphereLamp(Sphere sphere, Material material, float power, Vector3 color) {
-        return new Lamp(sphere, material, power, color);
-    }
+    
 
     public Material material() {
         return material;
@@ -29,6 +24,22 @@ public class Lamp extends Item {
         return lightPower;
     }
 
+    public DiffuseLamp asDiffuse() {
+        if(isDiffuse()) {
+            return (DiffuseLamp)this;
+        } else {
+            throw new IllegalStateException("Lamp cannot be interpreted as diffuse");
+        }
+    }
+    
+    public DirectionalLamp asDirectional() {
+        if(isDirectional()) {
+            return (DirectionalLamp)this;
+        } else {
+            throw new IllegalStateException("Lamp cannot be interpreted as directional");
+        }
+    }
+    
     @Override
     public Vector3 color() {
         return lightColor;
@@ -49,5 +60,10 @@ public class Lamp extends Item {
         return asLamp().color().times(asLamp().power());
 
     }
+    
+    public abstract List<Photon> emitPhotons(int nbPhotons, ProjectionMap map, List<Item> box);
+    
+    public abstract boolean isDiffuse();
+    public abstract boolean isDirectional();
 
 }

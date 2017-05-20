@@ -26,6 +26,10 @@ public class DiffuseProjectionMap {
         private Map<Pair<Vector3, Pair<Float, Float>>, Boolean> cells;
         private int validCells = 0;
         
+        public Builder() {
+            cells = new HashMap<Pair<Vector3,Pair<Float,Float>>, Boolean>();
+        }
+        
         public void setCell(Vector3 positionOnLamp,float theta, float phi, boolean value) {
             cells.put(new Pair<>(positionOnLamp, new Pair<>(theta, phi)), value);
             validCells += (value == true) ? 1 : 0;

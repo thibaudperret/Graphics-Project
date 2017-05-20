@@ -50,8 +50,8 @@ public final class Loader {
         Vector3 v = new Vector3(scale, 0.9999f, scale);
         
         // Lamp
-        Item lamp1 = new Lamp(new Triangle(E.entrywiseDot(v), F.entrywiseDot(v), G.entrywiseDot(v)),Opaque.idealDiffuse(Color.WHITE), 10f, Color.WHITE);
-        Item lamp2 = new Lamp(new Triangle(F.entrywiseDot(v), H.entrywiseDot(v), G.entrywiseDot(v)),Opaque.idealDiffuse(Color.WHITE), 10f, Color.WHITE);
+        Item lamp1 = new DiffuseLamp(new Triangle(E.entrywiseDot(v), F.entrywiseDot(v), G.entrywiseDot(v)),Opaque.idealDiffuse(Color.WHITE), 10f, Color.WHITE);
+        Item lamp2 = new DiffuseLamp(new Triangle(F.entrywiseDot(v), H.entrywiseDot(v), G.entrywiseDot(v)),Opaque.idealDiffuse(Color.WHITE), 10f, Color.WHITE);
         items.add(lamp1);
         items.add(lamp2);          
 
@@ -143,8 +143,8 @@ public final class Loader {
         float scale = 1 / 2f;
         Vector3 v = new Vector3(scale, 0.9999f, scale);
         
-        Item lamp1 = new Lamp(new Triangle(E.entrywiseDot(v), F.entrywiseDot(v), G.entrywiseDot(v)),Opaque.idealDiffuse(Color.WHITE), 14f, Color.WHITE);
-        Item lamp2 = new Lamp(new Triangle(F.entrywiseDot(v), H.entrywiseDot(v), G.entrywiseDot(v)),Opaque.idealDiffuse(Color.WHITE), 14f, Color.WHITE);
+        Item lamp1 = new DiffuseLamp(new Triangle(E.entrywiseDot(v), F.entrywiseDot(v), G.entrywiseDot(v)),Opaque.idealDiffuse(Color.WHITE), 14f, Color.WHITE);
+        Item lamp2 = new DiffuseLamp(new Triangle(F.entrywiseDot(v), H.entrywiseDot(v), G.entrywiseDot(v)),Opaque.idealDiffuse(Color.WHITE), 14f, Color.WHITE);
         lightSources.add(lamp1);
         lightSources.add(lamp2);  
         
@@ -162,6 +162,7 @@ public final class Loader {
     public static List<Item> lightSources() {
         return lightSources;
     }
+
     
     
    
