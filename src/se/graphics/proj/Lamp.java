@@ -29,17 +29,13 @@ public class Lamp extends Item {
         return lightPower;
     }
 
+    @Override
     public Vector3 color() {
         return lightColor;
     }
 
     @Override
     public boolean isPhysical() {
-        return false;
-    }
-
-    @Override
-    public boolean isLight() {
         return false;
     }
 

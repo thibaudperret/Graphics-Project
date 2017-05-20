@@ -9,7 +9,6 @@ public abstract class Item {
     }
     
     abstract public boolean isPhysical();
-    abstract public boolean isLight();
     abstract public boolean isLamp();
     
     abstract public Vector3 emittedLight();
@@ -22,28 +21,11 @@ public abstract class Item {
         return shape.intersection(ray);
     }
     
-    public Vector3 color() {
-        if(isLight()) {
-            return asLight().color();
-        } else if (isLamp()) {
-            return asLamp().color();
-        } else {
-            return asPhysicalObject().material().reflectance();
-        }
-    }
-    
-        
-    public Light asLight() {
-        if (isLight()) {
-            return (Light) this;
-        } else {
-            throw new IllegalStateException("cannot interpret item as light");
-        }
-    }
+    public abstract Vector3 color();
     
     public Lamp asLamp() {
         if(isLamp()) {
-            return (Lamp)this;
+            return (Lamp) this;
         } else {
             throw new IllegalStateException("cannot interpret item as lamp");
         }

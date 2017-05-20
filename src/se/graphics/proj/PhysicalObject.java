@@ -22,13 +22,13 @@ public final class PhysicalObject extends Item {
     }
     
     @Override
-    public boolean isPhysical() {
-        return true;
+    public Vector3 color() {
+        return material.reflectance();
     }
     
     @Override
-    public boolean isLight() {
-        return false;
+    public boolean isPhysical() {
+        return true;
     }
     
     @Override
