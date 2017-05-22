@@ -63,6 +63,8 @@ public abstract class Lamp extends Item {
     
     public abstract List<Photon> emitPhotons(int nbPhotons, ProjectionMap map, List<Item> box);
     
+    public abstract List<Photon> emitPhotons(int nbPhotons, List<Item> box);
+    
     public abstract boolean isDiffuse();
     public abstract boolean isDirectional();
 

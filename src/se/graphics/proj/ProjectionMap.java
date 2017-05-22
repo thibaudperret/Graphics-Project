@@ -4,7 +4,6 @@ import java.util.List;
 
 public abstract class ProjectionMap {
 
-    
     public static DiffuseProjectionMap computeDiffuseTriangleMap(Lamp lamp, List<Item> box) {
         
         if(! lamp.shape().isTriangle() || !lamp.isDiffuse()) {
@@ -80,6 +79,20 @@ public abstract class ProjectionMap {
         }
         
         return builder.build();        
+    }
+    
+    
+    public float closerTo(float value, float a, float b) {
+        if(Math.abs(value - a) < Math.abs(value - b)) {
+            return a;
+        } else {
+            return b;
+        }
+    }
+    
+    public Pair<Float, Float> boundingValues(float value, float step) {
+        float mod = value % step;
+        return new Pair<>(value - mod, value + (step - mod));
     }
     
 }

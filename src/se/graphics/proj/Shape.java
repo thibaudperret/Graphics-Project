@@ -13,6 +13,8 @@ public abstract class Shape {
     public abstract Intersection intersection(Ray ray);
     public abstract Vector3 normalAt(Vector3 position);
     public abstract Vector3 getCenter();
+    public abstract Vector3 randomPoint();
+
     
     /**
      * Transforms the object into a instance of the Triangle class
@@ -24,7 +26,7 @@ public abstract class Shape {
         } else {
             throw new IllegalStateException("cannot interpret sphere as triangle");
         }
-    }
+    }    
     
     /**
      * Transforms the object into a instance of the Sphere class

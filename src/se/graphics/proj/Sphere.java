@@ -60,6 +60,10 @@ public final class Sphere extends Shape {
     public Vector3 getCenter() {
         return center;
     }
+    
+    public Vector3 randomPoint() {
+        return center.plus(new Vector3((float)(2 * Math.random()) - 1, (float)(2 * Math.random()) - 1, (float)(2 * Math.random()) - 1).normalise().times(radius));
+    }
 
     @Override
     public boolean isSphere() {

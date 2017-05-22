@@ -35,6 +35,11 @@ public class Ray {
          
         return generateRay(position, normal, phi, theta);
     }
+    public static Pair<Float, Float> generateSphericalRandomDirection(Vector3 normal) {
+        float thetaN = (float) Math.atan2(normal.y(), normal.x());
+        float phiN = (float) Math.acos(normal.z());
+        return new Pair<>(thetaN + (float) (((Math.random() * 2) - 1) * Math.PI / 2), phiN + (float) (((Math.random() * 2) - 1) * Math.PI / 2));
+    }
     
     public static Ray generateRay(Vector3 position, Vector3 normal, float phi, float theta) {
         Vector3 newDirection = new Vector3(
@@ -72,5 +77,26 @@ public class Ray {
         newDir = newDir.minus(normal.times((float) Math.sqrt(1 - ratio * ratio * (nCrossDir.dot(nCrossDir)))));
         return new Ray(collisionPoint, newDir);
     }
+    
+    public static Pair<Float, Float> cartesianToSphericalDir(Vector3 cartesianDirection) {
+        float x = cartesianDirection.x();
+        float y = cartesianDirection.y();
+        float z = cartesianDirection.z();
+        float size = cartesianDirection.size();
+        
+        return new Pair<Float, Float>((float)Math.acos(z/size), (float)Math.atan(y/x));
+    }
+    
+    public static Vector3 sphericalToCartesianDir(Pair<Float, Float> angles) {
+        float theta = angles.getLeft();
+        float phi = angles.getRight();
+        
+        float sinTheta = (float)Math.sin(theta);
+        
+        return new Vector3((float)(sinTheta*Math.cos(phi)),(float)(sinTheta*Math.sin(phi)), (float)Math.cos(theta)).normalise();
+        
+    }
+    
 
-}
+    
+   }
