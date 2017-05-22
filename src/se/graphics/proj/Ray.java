@@ -79,6 +79,7 @@ public class Ray {
     }
     
     public static Pair<Float, Float> cartesianToSphericalDir(Vector3 cartesianDirection) {
+        //TODO check if conversion is valid given our conventions
         float x = cartesianDirection.x();
         float y = cartesianDirection.y();
         float z = cartesianDirection.z();
@@ -88,6 +89,8 @@ public class Ray {
     }
     
     public static Vector3 sphericalToCartesianDir(Pair<Float, Float> angles) {
+        //TODO check if conversion is valid given our conventions
+
         float theta = angles.getLeft();
         float phi = angles.getRight();
         

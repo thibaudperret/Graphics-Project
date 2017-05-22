@@ -3,9 +3,11 @@ package se.graphics.proj;
 public abstract class Item {
 
     private final Shape shape;
+    private Material material;
     
-    public Item(Shape shape) {
+    public Item(Shape shape, Material material) {
         this.shape = shape;
+        this.material = material;
     }
     
     abstract public boolean isPhysical();
@@ -15,6 +17,10 @@ public abstract class Item {
     
     public Shape shape() {
         return shape;
+    }
+    
+    public Material material() {
+        return material;
     }
     
     public Intersection intersection(Ray ray) {

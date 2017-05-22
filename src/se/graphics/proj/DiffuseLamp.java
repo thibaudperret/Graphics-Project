@@ -9,26 +9,19 @@ public class DiffuseLamp extends Lamp {
         super(shape, material, lightPower, lightColor);
     }
     
-
-    public List<Photon> emitPrimaryPhotons(int nbPhotons, ProjectionMap map, List<Item> box) {
-      //TODO
-        
-        List<Photon> results = new ArrayList<>();
-        Pair<Float, Float> angles;
-        
-        for(int i = 0; i < nbPhotons; ++i) {
-            Vector3 pos = shape().randomPoint();
-            do{
-                Pair<Float, Float> angles = Ray.generateSphericalRandomRay(pos, shape().normalAt(pos));
-            } while(!map.validCell(pos, angles));
-            Intersection intersection = Main.getClosestIntersection(ray, box).getLeft();
-           //Photon photon = new Photon(intersection.position(), )
-            
+    @Override
+    public List<Ray> emitRays(int nbRays, ProjectionMap map) {
+        //TODO
+        Vector3 pos;
+        List<Ray> emitted = new ArrayList<Ray>();
+        for(int i = 0; i < nbRays; ++i){
+            pos = shape().randomPoint();
+            emitted.add(Ray.generateRandomRay(pos, shape().normalAt(pos)));
         }
-        
-        return null;
+        return emitted;
     }
     
+
     @Override
     public boolean isDiffuse() {
         return true;
@@ -38,6 +31,8 @@ public class DiffuseLamp extends Lamp {
     public boolean isDirectional() {
         return false;
     }
+    
+    
 
     
 }

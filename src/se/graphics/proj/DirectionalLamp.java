@@ -1,5 +1,6 @@
 package se.graphics.proj;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DirectionalLamp extends Lamp{
@@ -19,10 +20,14 @@ public class DirectionalLamp extends Lamp{
         return new DirectionalLamp(shape(), material(), power(), color(), lightDirection);
     }
     
-
-    public List<Photon> emitPhotons(int nbPhotons, ProjectionMap map, List<Item> box) {
+    @Override
+    public List<Ray> emitRays(int nbRays, ProjectionMap map) {
         //TODO
-        return null;
+        List<Ray> emitted = new ArrayList<Ray>();
+        for(int i = 0; i < nbRays; ++i){
+            emitted.add(Ray.generateRandomRay(shape().randomPoint(), lightDirection));
+        }
+        return emitted;
     }
     
     

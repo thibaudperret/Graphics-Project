@@ -7,19 +7,30 @@ import java.util.Map;
 public final class PointProjectionMap extends ProjectionMap{
 
     private final Map<Pair<Float, Float>, Boolean> cells;
-    private final float ratioValidCells;
     
     public PointProjectionMap(Map<Pair<Float, Float>, Boolean> cells, float ratioValidCells) {
+        super(ratioValidCells);
         this.cells = new HashMap<>(Collections.unmodifiableMap(cells));
-        this.ratioValidCells = ratioValidCells;
     }
     
     public boolean cellValid(Float theta, float phi) {
         return cells.get(new Pair<Float, Float>(theta, phi));
     }
     
-    public float ratioValidCells() {
-        return ratioValidCells;
+    
+    @Override
+    public boolean isDiffuse() {
+        return false;
+    }
+    
+    @Override
+    public boolean isDirectional() {
+        return false;
+    }
+    
+    @Override
+    public boolean isPoint() {
+        return true;
     }
     
     public final static class Builder {
@@ -30,6 +41,10 @@ public final class PointProjectionMap extends ProjectionMap{
         public void setCell(float theta, float phi, boolean value) {
             cells.put(new Pair<Float, Float>(theta, phi), value);
             validCells += (value == true) ? 1 : 0;
+        }
+        
+        public boolean getCell(float theta, float phi) {
+            return cells.get(new Pair<>(theta, phi));
         }
         
         public PointProjectionMap build() {

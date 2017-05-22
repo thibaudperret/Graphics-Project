@@ -3,6 +3,12 @@ package se.graphics.proj;
 import java.util.List;
 
 public abstract class ProjectionMap {
+    
+    private float ratioValidCells;
+    
+    public ProjectionMap(float ratioValidCells) {
+        this.ratioValidCells = ratioValidCells;
+    }
 
     public static DiffuseProjectionMap computeDiffuseTriangleMap(Lamp lamp, List<Item> box) {
         
@@ -40,14 +46,25 @@ public abstract class ProjectionMap {
             }
         }
         
+        for ( float stepV2 = 0; stepV2 < dist1; stepV2 += translationStep) {
+            for ( float stepV3 = 0; stepV3 < dist2; stepV3 += translationStep) {
+                orig = v1.plus(v2.times(stepV2)).plus(v3.times(stepV3));
+                for(float theta = (float)-Math.PI/2f; theta < Math.PI/2f; theta += rotationStep) {
+                    for(float phi = (float)-Math.PI/2f; phi < Math.PI/2f; phi += rotationStep) {
+                       
+                    }
+                }
+            }
+        }
+        
         return builder.build();        
     }
     
     
-    public static DirectionalProjectionMap computeDirectionalTriangleMap(Lamp lamp, List<Item> box) {
+    public static DirectionalProjectionMap computeDirectionalTriangleMap(DirectionalLamp lamp, List<Item> box) {
         
-        if(! lamp.shape().isTriangle() || !lamp.isDirectional()) {
-            throw new IllegalStateException("Impossible to create projection map for non-triangle shape / non-directional lamp");
+        if(! lamp.shape().isTriangle()) {
+            throw new IllegalStateException("Impossible to create projection map for non-triangle shape");
         }
         
         
@@ -78,7 +95,19 @@ public abstract class ProjectionMap {
             }
         }
         
-        return builder.build();        
+        DirectionalProjectionMap map = builder.build();
+        DirectionalProjectionMap.Builder mapExtended = new DirectionalProjectionMap.Builder(); 
+        
+        for ( float stepV2 = 0; stepV2 < dist1; stepV2 += translationStep) {
+            for ( float stepV3 = 0; stepV3 < dist2; stepV3 += translationStep) {
+                orig = v1.plus(v2.times(stepV2)).plus(v3.times(stepV3));
+                mapExtended.setCell(orig, map.surroundingsContainValidCell(orig, v2, v3) || map.cellValid(orig));
+                
+                   
+            }
+        }
+        
+        return mapExtended.build(); 
     }
     
     
@@ -90,9 +119,43 @@ public abstract class ProjectionMap {
         }
     }
     
+    public float ratioValidCells() {
+        return ratioValidCells;
+    }
+    
+    public abstract boolean isDiffuse();
+    public abstract boolean isDirectional();
+    public abstract boolean isPoint();
+    
+    public DirectionalProjectionMap asDirectionalMap() {
+        if(isDirectional()) {
+            return (DirectionalProjectionMap) this;
+        } else {
+            throw new IllegalStateException("Impossible to cast a non-directional map into a directional one");
+        }
+    }
+    
+    public DiffuseProjectionMap asDiffuseMap() {
+        if(isDiffuse()) {
+            return (DiffuseProjectionMap) this;
+        } else {
+            throw new IllegalStateException("Impossible to cast a non-diffuse map into a diffuse one");
+        }
+    }
+    
+    public PointProjectionMap asPointMap() {
+        if(isDirectional()) {
+            return (PointProjectionMap) this;
+        } else {
+            throw new IllegalStateException("Impossible to cast a non-point map into a point one");
+        }
+    }
+    
     public Pair<Float, Float> boundingValues(float value, float step) {
         float mod = value % step;
         return new Pair<>(value - mod, value + (step - mod));
     }
+    
+
     
 }

@@ -6,21 +6,20 @@ import java.util.Map;
 
 public class DiffuseProjectionMap extends ProjectionMap{
     
-    private Map<Pair<Vector3, Pair<Float, Float>>, Boolean> cells;
-    private float ratioValidCells;
+    private Map<Pair<Vector3, Pair<Float, Float>>, Boolean> cells;    
     private float translationStep = (float)Math.PI / 40f;
     private float rotationStep = 0.001f;
     
     public DiffuseProjectionMap(Map<Pair<Vector3, Pair<Float, Float>>, Boolean> cells, float ratioValidCells, float translationStep, float rotationStep) {
+        super(ratioValidCells);
         this.translationStep = translationStep;
         this.rotationStep = rotationStep;
         this.cells = new HashMap<>(Collections.unmodifiableMap(cells));
-        this.ratioValidCells = ratioValidCells;
     }
     
     public DiffuseProjectionMap(Map<Pair<Vector3, Pair<Float, Float>>, Boolean> cells, float ratioValidCells) {
+        super(ratioValidCells);
         this.cells = new HashMap<>(Collections.unmodifiableMap(cells));
-        this.ratioValidCells = ratioValidCells;
     }
     
     public boolean cellValid(Vector3 coordinates,float theta, float phi) {
@@ -49,9 +48,21 @@ public class DiffuseProjectionMap extends ProjectionMap{
         return cells.get(new Pair<>(positionOnLamp, new Pair<>(newTheta, newPhi)));
     }
     
-    public float ratioValidCells() {
-        return ratioValidCells;
+    @Override
+    public boolean isDiffuse() {
+        return true;
     }
+    
+    @Override
+    public boolean isDirectional() {
+        return false;
+    }
+    
+    @Override
+    public boolean isPoint() {
+        return false;
+    }
+    
     
     public final static class Builder {
         
@@ -68,6 +79,10 @@ public class DiffuseProjectionMap extends ProjectionMap{
         public void setCell(Vector3 positionOnLamp,float theta, float phi, boolean value) {
             cells.put(new Pair<>(positionOnLamp, new Pair<>(theta, phi)), value);
             validCells += (value == true) ? 1 : 0;
+        }
+        
+        public boolean getCell(Vector3 pos, float theta, float phi) {
+            return cells.get(new Pair<>(pos, new Pair<>(theta, phi)));
         }
         
         public DiffuseProjectionMap build() {

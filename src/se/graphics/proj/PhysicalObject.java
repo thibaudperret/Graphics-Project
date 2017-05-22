@@ -2,11 +2,9 @@ package se.graphics.proj;
 
 public final class PhysicalObject extends Item {
     
-    private final Material material;
 
     public PhysicalObject(Shape shape, Material material) {
-        super(shape);
-        this.material = material;
+        super(shape, material);
     }
     
     public static PhysicalObject physicalTriangle(Triangle triangle, Material material) {
@@ -17,13 +15,10 @@ public final class PhysicalObject extends Item {
         return new PhysicalObject(sphere, material);
     }
     
-    public Material material() {
-        return material;
-    }
     
     @Override
     public Vector3 color() {
-        return material.reflectance();
+        return material().reflectance();
     }
     
     @Override

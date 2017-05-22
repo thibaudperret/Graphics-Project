@@ -8,7 +8,7 @@ public class Photon {
     private final float theta;
     private final short flag;
     
-    public Photon(Vector3 position, Vector3 power, float phi, float theta, short flag) {
+    public Photon(Vector3 position, Vector3 power, float theta, float phi, short flag) {
         this.position = position;
         this.power = power;
         this.phi = phi;

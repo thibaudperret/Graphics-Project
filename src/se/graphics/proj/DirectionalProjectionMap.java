@@ -7,18 +7,17 @@ import java.util.Map;
 public class DirectionalProjectionMap extends ProjectionMap {
 
     private Map<Vector3, Boolean> cells;
-    private float ratioValidCells;
     private float translationStep = 0.01f;
     
     public DirectionalProjectionMap(Map<Vector3, Boolean> cells, float ratioValidCells, float translationStep) {
+        super(ratioValidCells);
         this.cells = new HashMap<>(Collections.unmodifiableMap(cells));
-        this.ratioValidCells = ratioValidCells;
         this.translationStep = translationStep;
     }
     
     public DirectionalProjectionMap(Map<Vector3, Boolean> cells, float ratioValidCells) {
+        super(ratioValidCells);
         this.cells = new HashMap<>(Collections.unmodifiableMap(cells));
-        this.ratioValidCells = ratioValidCells;
     }
     
     public boolean cellValid(Vector3 coordinates) {
@@ -41,8 +40,28 @@ public class DirectionalProjectionMap extends ProjectionMap {
         return cells.get(positionOnLamp);
     }
     
-    public float ratioValidCells() {
-        return ratioValidCells;
+    @Override
+    public boolean isDiffuse() {
+        return false;
+    }
+    
+    @Override
+    public boolean isDirectional() {
+        return true;
+    }
+    
+    @Override
+    public boolean isPoint() {
+        return false;
+    }
+    
+    public boolean surroundingsContainValidCell(Vector3 pos, Vector3 axis1, Vector3 axis2) {
+        boolean cell1 = cellValid(pos.plus(axis1.times(translationStep)).plus(axis2).times(translationStep));
+        boolean cell2 = cellValid(pos.plus(axis1.times(translationStep)).minus(axis2).times(translationStep));
+        boolean cell3 = cellValid(pos.minus(axis1.times(translationStep)).plus(axis2).times(translationStep));
+        boolean cell4 = cellValid(pos.minus(axis1.times(translationStep)).minus(axis2).times(translationStep));
+        return cell1 || cell2 || cell3 || cell4;
+
     }
     
     public final static class Builder {
@@ -53,6 +72,10 @@ public class DirectionalProjectionMap extends ProjectionMap {
         public void setCell(Vector3 positionOnLamp, boolean value) {
             cells.put(positionOnLamp, value);
             validCells += (value == true) ? 1 : 0;
+        }
+        
+        public boolean getCell(Vector3 pos) {
+            return cells.get(pos);
         }
         
         public DirectionalProjectionMap build() {
