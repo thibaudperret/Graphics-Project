@@ -1,10 +1,19 @@
 package se.graphics.proj;
 
-import static se.graphics.proj.Vector3.vec3;
-import static se.graphics.proj.Vector3.ones;
+import static math.Vector3.ones;
+import static math.Vector3.vec3;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import geometry.Sphere;
+import geometry.Triangle;
+import item.DiffuseLamp;
+import item.Item;
+import item.PhysicalObject;
+import material.Opaque;
+import math.Vector3;
+import util.Color;
 
 public final class Loader {
 

@@ -1,7 +1,13 @@
-package se.graphics.proj;
+package item;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import geometry.Shape;
+import material.Material;
+import math.Vector3;
+import projection.ProjectionMap;
+import se.graphics.proj.Ray;
 
 public class DiffuseLamp extends Lamp {
     

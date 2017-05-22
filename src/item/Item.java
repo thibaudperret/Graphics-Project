@@ -1,4 +1,10 @@
-package se.graphics.proj;
+package item;
+
+import geometry.Shape;
+import material.Material;
+import math.Intersection;
+import math.Vector3;
+import se.graphics.proj.Ray;
 
 public abstract class Item {
 

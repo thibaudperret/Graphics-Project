@@ -1,4 +1,11 @@
-package se.graphics.proj;
+package item;
+
+import geometry.Shape;
+import geometry.Sphere;
+import geometry.Triangle;
+import material.Material;
+import math.Vector3;
+import util.Color;
 
 public final class PhysicalObject extends Item {
     

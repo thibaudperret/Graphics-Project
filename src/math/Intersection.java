@@ -1,7 +1,6 @@
-package se.graphics.proj;
+package math;
 
-import se.graphics.proj.Intersection;
-import se.graphics.proj.Vector3;
+import math.Intersection;
 
 public final class Intersection {
     

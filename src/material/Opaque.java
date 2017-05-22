@@ -1,4 +1,6 @@
-package se.graphics.proj;
+package material;
+
+import math.Vector3;
 
 public class Opaque extends Material{
     

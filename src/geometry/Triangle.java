@@ -1,7 +1,11 @@
-package se.graphics.proj;
+package geometry;
 
 import java.util.Arrays;
 import java.util.List;
+
+import math.Intersection;
+import math.Vector3;
+import se.graphics.proj.Ray;
 
 public final class Triangle extends Shape {
     

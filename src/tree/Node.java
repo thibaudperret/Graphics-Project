@@ -1,4 +1,6 @@
-package se.graphics.proj;
+package tree;
+
+import se.graphics.proj.Photon;
 
 public class Node extends Tree {
     

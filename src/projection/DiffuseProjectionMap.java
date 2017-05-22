@@ -1,8 +1,11 @@
-package se.graphics.proj;
+package projection;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import math.Vector3;
+import util.Pair;
 
 public class DiffuseProjectionMap extends ProjectionMap{
     

@@ -1,7 +1,11 @@
-package se.graphics.proj;
+package tree;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import math.Vector3;
+import se.graphics.proj.Photon;
+import util.Pair;
 
 public abstract class Tree {
     

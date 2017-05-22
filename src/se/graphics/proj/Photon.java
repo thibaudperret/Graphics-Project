@@ -1,5 +1,7 @@
 package se.graphics.proj;
 
+import math.Vector3;
+
 public class Photon {
     
     private final Vector3 position;

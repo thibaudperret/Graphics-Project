@@ -1,4 +1,7 @@
-package se.graphics.proj;
+package material;
+
+import math.Vector3;
+import util.Color;
 
 public class Medium {
 

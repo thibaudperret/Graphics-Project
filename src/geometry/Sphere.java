@@ -1,4 +1,8 @@
-package se.graphics.proj;
+package geometry;
+
+import math.Intersection;
+import math.Vector3;
+import se.graphics.proj.Ray;
 
 public final class Sphere extends Shape {
     

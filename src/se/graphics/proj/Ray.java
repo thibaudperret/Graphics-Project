@@ -1,5 +1,9 @@
 package se.graphics.proj;
 
+import material.Medium;
+import math.Vector3;
+import util.Pair;
+
 public class Ray {
     
     private final Vector3 position;

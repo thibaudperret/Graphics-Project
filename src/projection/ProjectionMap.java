@@ -1,6 +1,15 @@
-package se.graphics.proj;
+package projection;
 
 import java.util.List;
+
+import item.DirectionalLamp;
+import item.Item;
+import item.Lamp;
+import math.Vector3;
+import projection.DiffuseProjectionMap.Builder;
+import se.graphics.proj.Main;
+import se.graphics.proj.Ray;
+import util.Pair;
 
 public abstract class ProjectionMap {
     

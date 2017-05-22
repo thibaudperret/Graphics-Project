@@ -1,4 +1,4 @@
-    package se.graphics.proj;
+    package math;
 
 public final class Vector3 {
 

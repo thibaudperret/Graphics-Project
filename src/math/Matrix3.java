@@ -1,4 +1,4 @@
-package se.graphics.proj;
+package math;
 
 import static java.lang.Math.*;
 

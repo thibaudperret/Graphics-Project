@@ -1,4 +1,6 @@
-package se.graphics.proj;
+package util;
+
+import math.Vector3;
 
 public interface Color {
 

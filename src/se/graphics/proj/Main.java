@@ -6,7 +6,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import item.Item;
+import item.Lamp;
+import material.Medium;
+import math.Intersection;
+import math.Vector3;
 import processing.core.PApplet;
+import util.Color;
+import util.Pair;
 
 /**
  * Main class for the project

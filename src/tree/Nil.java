@@ -1,4 +1,4 @@
-package se.graphics.proj;
+package tree;
 
 public class Nil extends Tree {
 

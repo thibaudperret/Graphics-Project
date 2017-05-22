@@ -1,4 +1,4 @@
-package se.graphics.proj;
+package util;
 
 public class Pair<L,R> {
 

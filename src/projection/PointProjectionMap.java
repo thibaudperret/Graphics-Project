@@ -1,8 +1,10 @@
-package se.graphics.proj;
+package projection;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import util.Pair;
 
 public final class PointProjectionMap extends ProjectionMap{
 
