@@ -1,12 +1,14 @@
 package projection;
 
-import java.util.List;
-
+import item.DiffuseLamp;
 import item.DirectionalLamp;
 import item.Item;
 import item.Lamp;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import math.Vector3;
-import projection.DiffuseProjectionMap.Builder;
 import se.graphics.proj.Main;
 import se.graphics.proj.Ray;
 import util.Pair;
@@ -19,7 +21,7 @@ public abstract class ProjectionMap {
         this.ratioValidCells = ratioValidCells;
     }
 
-    public static DiffuseProjectionMap computeDiffuseTriangleMap(Lamp lamp, List<Item> box) {
+    public static DiffuseProjectionMap computeDiffuseGlobalTriangleMap(Lamp lamp, List<Item> box) {
         
         if(! lamp.shape().isTriangle() || !lamp.isDiffuse()) {
             throw new IllegalStateException("Impossible to create diffuse projection map for non-triangle shape / non-diffuse lamp");
@@ -70,7 +72,7 @@ public abstract class ProjectionMap {
     }
     
     
-    public static DirectionalProjectionMap computeDirectionalTriangleMap(DirectionalLamp lamp, List<Item> box) {
+    public static DirectionalProjectionMap computeDirectionalGlobalTriangleMap(DirectionalLamp lamp, List<Item> box) {
         
         if(! lamp.shape().isTriangle()) {
             throw new IllegalStateException("Impossible to create projection map for non-triangle shape");
@@ -117,6 +119,31 @@ public abstract class ProjectionMap {
         }
         
         return mapExtended.build(); 
+    }
+    
+    
+    public static DiffuseProjectionMap computeDiffuseCausticTriangleMap(DiffuseLamp lamp, List<Item> box) {
+        List<Item> caustics = new ArrayList<>();
+        
+        for(int i = 0; i < box.size(); ++i) {
+            if(box.get(i).material().specularCoef() > 0f) {
+                caustics.add(box.get(i));
+            }
+        }
+        
+        return computeDiffuseGlobalTriangleMap(lamp, caustics);
+    }
+    
+    public static DirectionalProjectionMap computeDirectionalCausticTrianglenMap(DirectionalLamp lamp, List<Item> box) {
+        List<Item> caustics = new ArrayList<>();
+        
+        for(int i = 0; i < box.size(); ++i) {
+            if(box.get(i).material().specularCoef() > 0f) {
+                caustics.add(box.get(i));
+            }
+        }
+        
+        return computeDirectionalGlobalTriangleMap(lamp, caustics);
     }
     
     

@@ -60,4 +60,10 @@ public abstract class Tree {
         Photon median = sorted.get(size/2);
         return new Node(median, balance(left), balance(right));
     }
+
+    //returns a list containing the nearestPhotons, as well as the max distance between position and a photon in the tree
+    public Pair<List<Photon>, Float> nearestPhotons(int nbPhotons, Vector3 position, float maxDistance) {
+        //TODO
+        return null;
+    }
 }
