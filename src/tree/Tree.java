@@ -68,6 +68,7 @@ public abstract class Tree {
             return new Pair<>(maxHeap, maxDistance);
         }
         
+        Node node = this.asNode();
         Vector3 nodePos = node.photon().position();
         
         Vector3 diff = position.minus(nodePos);
