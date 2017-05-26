@@ -69,6 +69,10 @@ public final class Vector3 {
         return new Vector3(this.x * that.x, this.y * that.y, this.z * that.z);
     }
     
+    public float lengthSquared() {
+        return (this.dot(this));
+    }
+    
     @Override
     public String toString() {
         return "(" + x + ", " + y + ", " + z + ")T";
