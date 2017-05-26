@@ -93,7 +93,7 @@ public abstract class Tree {
         float d = pair.getRight();
         
         if (deltaSquare < d * d) {
-            returnHeap.insert(node.photon());
+            returnHeap.insert(node.photon(), delta);
             d = nodePos.minus(returnHeap.root().getLeft().position());
         }
         
