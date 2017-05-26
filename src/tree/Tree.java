@@ -17,7 +17,7 @@ public abstract class Tree {
             return (Node) this;
         }
         else{
-            throw new IllegalStateException("Niiil");
+            throw new IllegalStateException("cannot interpret nil as node");
         }
     }
     
@@ -48,6 +48,7 @@ public abstract class Tree {
         Vector3 dim = max1.position().minus(max2.position());
         Vector3 dimhat = dim.normalise();
         Vector3 m2 = max2.position();
+        
         List<Photon> sorted = list.stream().map(p -> {
             Vector3 d = p.position().minus(m2);
             Vector3 projected = dimhat.times(d.dot(dimhat));
@@ -58,12 +59,12 @@ public abstract class Tree {
         List<Photon> left = sorted.subList(0, size/2);
         List<Photon> right = sorted.subList(size/2+1, size);
         Photon median = sorted.get(size/2);
-        return new Node(median, balance(left), balance(right));
+        return new Node(median, balance(left), balance(right), dim.normalise());
     }
 
-    //returns a list containing the nearestPhotons, as well as the max distance between position and a photon in the tree
     public Pair<List<Photon>, Float> nearestPhotons(int nbPhotons, Vector3 position, float maxDistance) {
-        //TODO
+        
+        
         return null;
     }
 }
