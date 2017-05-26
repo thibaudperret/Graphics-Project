@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import math.Vector3;
 import se.graphics.proj.Photon;
+import util.MaxHeap;
 import util.Pair;
 
 public abstract class Tree {
@@ -62,9 +63,40 @@ public abstract class Tree {
         return new Node(median, balance(left), balance(right), dim.normalise());
     }
 
-    public Pair<List<Photon>, Float> nearestPhotons(int nbPhotons, Vector3 position, float maxDistance) {
+    public Pair<MaxHeap, Float> nearestPhotons(int nbPhotons, Vector3 position, float maxDistance, MaxHeap maxHeap) {
+        if (this.isNil() || nbPhotons <= 0) {
+            return new Pair<>(maxHeap, maxDistance);
+        }
         
+        Node node = this.asNode();
+        Vector3 nodePos = node.photon().position();
         
-        return null;
+        Vector3 diff = position.minus(nodePos);
+        float delta = diff.dot(node.normal());
+        
+        Pair<MaxHeap, Float> pair;
+        
+        if (delta < 0) {
+            pair = node.left().nearestPhotons(nbPhotons, position, maxDistance, maxHeap);
+            if (Math.pow(delta, 2) < Math.pow(pair.getRight(), 2)) {
+                pair = node.right().nearestPhotons(/* ??? */ nbPhotons - pair.getLeft().inserted(), position, pair.getRight(), pair.getLeft());
+            }
+        } else {
+            pair = node.right().nearestPhotons(nbPhotons, position, maxDistance, maxHeap);
+            if (Math.pow(delta, 2) < Math.pow(pair.getRight(), 2)) {
+                pair = node.left().nearestPhotons(/* ??? */ nbPhotons - pair.getLeft().inserted(), position, pair.getRight(), pair.getLeft());
+            }
+        }
+        
+        float deltaSquare = delta * delta;
+        MaxHeap returnHeap = pair.getLeft();
+        float d = pair.getRight();
+        
+        if (deltaSquare < d * d) {
+            returnHeap.insert(node.photon());
+            d = nodePos.minus(returnHeap.root().getLeft().position());
+        }
+        
+        return new Pair<>(returnHeap, d);
     }
 }
