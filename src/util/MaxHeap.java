@@ -3,7 +3,6 @@ package util;
 import java.util.ArrayList;
 import java.util.List;
 
-import math.Vector3;
 import se.graphics.proj.Photon;
 
 
@@ -136,8 +135,8 @@ public class MaxHeap {
         return heapDistances[2 * i + 1]; 
     }
     
-    private Pair<Float, Photon> root(){
-        return new Pair<>(heapDistances[1], heapPhotons[1]);
+    public Pair<Photon, Float> root(){
+        return new Pair<>( heapPhotons[1], heapDistances[1]);
     }
     
     public int inserted() {
