@@ -71,8 +71,6 @@ public class DiffuseProjectionMap extends ProjectionMap{
         
         private Map<Pair<Vector3, Pair<Float, Float>>, Boolean> cells;
         private int validCells = 0;
-        private float translationStep;
-        private float rotationStep;
         
         
         public Builder() {

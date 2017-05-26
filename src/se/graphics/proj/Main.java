@@ -1,17 +1,19 @@
 package se.graphics.proj;
 
+import item.Item;
+import item.Lamp;
+
 import java.applet.Applet;
 import java.applet.AudioClip;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import item.Item;
-import item.Lamp;
 import material.Medium;
 import math.Intersection;
 import math.Vector3;
 import processing.core.PApplet;
+import tree.Tree;
 import util.Color;
 import util.Pair;
 
@@ -220,6 +222,18 @@ public class Main extends PApplet {
         } catch (Exception e){
             System.out.println(e);
         }
+    }
+    
+    public static Vector3 radianceEstimate(Tree photonMap, Vector3 position, float coneFilterConstant) {
+        
+        Pair<List<Photon>, Float> callToNearest = photonMap.nearestPhotons(50, position, 2f);
+        Vector3 currentRadiance = Vector3.zeros();
+        for(int i = 0; i < photons.size(); ++i) {
+            Photon currentPhoton = photons.get(i);
+            float distance = currentPhoton.position().minus(position).size();
+            float weight = 1 - (distance / coneFilterConstant * )
+        }
+        
     }
 
     public static Pair<Intersection, Item> getClosestIntersection(Ray ray, List<Item> box) {
