@@ -32,6 +32,10 @@ public abstract class Tree {
             return new Node(list.get(0));
         }
         
+        if (list.size() == 2) {
+            return new Node(list.get(0), new Node(list.get(1)));
+        }
+        
         float dist = 0;
         Photon max1 = null;
         Photon max2 = null;
@@ -94,7 +98,7 @@ public abstract class Tree {
         
         if (deltaSquare < d * d) {
             returnHeap.insert(node.photon(), delta);
-            d = nodePos.minus(returnHeap.root().getLeft().position());
+            d = nodePos.minus(returnHeap.root().getLeft().position()).size();
         }
         
         return new Pair<>(returnHeap, d);

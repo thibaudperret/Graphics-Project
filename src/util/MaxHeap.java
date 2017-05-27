@@ -136,8 +136,8 @@ public class MaxHeap {
         return heapDistances[2 * i + 1]; 
     }
     
-    private Pair<Float, Photon> root(){
-        return new Pair<>(heapDistances[1], heapPhotons[1]);
+    public Pair<Photon, Float> root(){
+        return new Pair<>(heapPhotons[1], heapDistances[1]);
     }
     
     public int inserted() {

@@ -19,7 +19,7 @@ public class Node extends Tree {
         this.planeNormal = Vector3.zeros();
     }
     
-    public Node(Photon p, Node l){
+    public Node(Photon p, Tree l){
         this.photon = p;
         this.left = l;
         this.right = new Nil();
@@ -58,4 +58,10 @@ public class Node extends Tree {
     public boolean isNil() {
         return false;
     }
+    
+    @Override
+    public String toString() {
+        return "(" + photon.position() + ", " + left + ", " + right + ")";
+    }
+    
 }

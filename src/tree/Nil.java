@@ -11,5 +11,10 @@ public class Nil extends Tree {
     public boolean isNil() {
         return true;
     }
+    
+    @Override
+    public String toString() {
+        return "---";
+    }
 
 }
