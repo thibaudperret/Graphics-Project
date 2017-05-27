@@ -15,8 +15,8 @@ public class MaxHeap {
     private int maxCapacity;
     
     public MaxHeap(int maxCapacity) {
-        heapPhotons = new Photon[maxCapacity + 2];
-        heapDistances = new Float[maxCapacity + 2];
+        heapPhotons = new Photon[maxCapacity + 1];
+        heapDistances = new Float[maxCapacity + 1];
         insertIn = 1; 
         this.maxCapacity = maxCapacity;
     }
@@ -59,8 +59,8 @@ public class MaxHeap {
                 if(greaterChild == 1) {
                     heapDistances[pos] = heapDistances[2*pos];
                     heapPhotons[pos] = heapPhotons[2*pos];
-                    heapDistances[pos] = distTemp;
-                    heapPhotons[pos] = photonTemp;
+                    heapDistances[2*pos] = distTemp;
+                    heapPhotons[2*pos] = photonTemp;
                     pos = 2*pos;
                     hasFirstChild = (2*pos <= maxCapacity && insertIn > 2*pos);
                     hasSecondChild = (2*pos+1 <= maxCapacity && insertIn > 2*pos+1); 
@@ -70,8 +70,8 @@ public class MaxHeap {
                 } else {
                     heapDistances[pos] = heapDistances[2*pos+1];
                     heapPhotons[pos] = heapPhotons[2*pos+1];
-                    heapDistances[pos] = distTemp;
-                    heapPhotons[pos] = photonTemp;
+                    heapDistances[2*pos+1] = distTemp;
+                    heapPhotons[2*pos+1] = photonTemp;
                     pos = 2*pos+1;
                     hasFirstChild = (2*pos <= maxCapacity && insertIn > 2*pos);
                     hasSecondChild = (2*pos+1 <= maxCapacity && insertIn > 2*pos+1); 
@@ -81,8 +81,8 @@ public class MaxHeap {
             } else if(hasFirstChild) {
                 heapDistances[pos] = heapDistances[2*pos];
                 heapPhotons[pos] = heapPhotons[2*pos];
-                heapDistances[pos] = distTemp;
-                heapPhotons[pos] = photonTemp;
+                heapDistances[2*pos] = distTemp;
+                heapPhotons[2*pos] = photonTemp;
                 pos = 2*pos;
                 hasFirstChild = (2*pos <= maxCapacity && insertIn > 2*pos);
                 hasSecondChild = (2*pos+1 <= maxCapacity && insertIn > 2*pos+1); 
@@ -91,8 +91,8 @@ public class MaxHeap {
             } else {
                 heapDistances[pos] = heapDistances[2*pos+1];
                 heapPhotons[pos] = heapPhotons[2*pos+1];
-                heapDistances[pos] = distTemp;
-                heapPhotons[pos] = photonTemp;
+                heapDistances[2*pos+1] = distTemp;
+                heapPhotons[2*pos+1] = photonTemp;
                 pos = 2*pos+1;
                 hasFirstChild = (2*pos <= maxCapacity && insertIn > 2*pos);
                 hasSecondChild = (2*pos+1 <= maxCapacity && insertIn > 2*pos+1); 
@@ -117,7 +117,7 @@ public class MaxHeap {
             }else if(!isFull()) {
                 heapDistances[insertIn] = distance;
                 heapPhotons[insertIn] = p;
-                for(int i = insertIn/2; i < 1; --i) {
+                for(int i = (insertIn)/2; i >=1; i/=2) {
                     percolateDown(i);
                 }
                 insertIn++;
