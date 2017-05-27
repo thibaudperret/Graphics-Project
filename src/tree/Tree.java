@@ -107,53 +107,5 @@ public abstract class Tree {
             maxHeap.insert(currentNode.photon(), delta);
         }
     }
-
-//    public MaxHeap nearestPhotons(int nbPhotons, Vector3 position, float maxDistance, MaxHeap maxHeap) {
-//        if (this.isNil()/* || nbPhotons <= 0*/) {
-//            return maxHeap;
-//        }
-//        
-//        Node node = this.asNode();
-//        Vector3 nodePos = node.photon().position();
-//        
-//        Vector3 diff = position.minus(nodePos);
-//        float delta = diff.dot(node.normal());
-//        
-//        if (node.left().isNil() && node.right().isNil()) {
-//            if(diff.size() < maxDistance) {
-//                maxHeap.insert(node.photon(), diff.size());
-//            }
-//            return maxHeap;
-//        }
-//        if (!node.left().isNil() && node.right().isNil()) {
-//            
-//        }
-//        
-//        float d = 0;
-//        
-//        if(maxHeap.inserted() > 0){
-//            if (delta <= 0) {
-//                maxHeap = node.left().nearestPhotons(nbPhotons, position, maxDistance, maxHeap);
-//                d = nodePos.minus(maxHeap.root().getLeft().position()).size();
-//                if (Math.pow(delta, 2) < Math.pow(d, 2)) {
-//                    maxHeap = node.right().nearestPhotons(/* ??? */ nbPhotons - maxHeap.inserted(), position, d, maxHeap);
-//                }
-//            } else {
-//                maxHeap = node.right().nearestPhotons(nbPhotons, position, maxDistance, maxHeap);
-//                d = nodePos.minus(maxHeap.root().getLeft().position()).size();
-//                if (Math.pow(delta, 2) < Math.pow(d, 2)) {
-//                    maxHeap = node.left().nearestPhotons(/* ??? */ nbPhotons - maxHeap.inserted(), position, d, maxHeap);
-//                }
-//            }
-//            
-//            float deltaSquare = delta * delta;
-//            d = nodePos.minus(maxHeap.root().getLeft().position()).size();
-//            
-//            if (deltaSquare < d * d && diff.size() < maxDistance) {
-//                maxHeap.insert(node.photon(), diff.size());
-//            }
-//        }
-//        return maxHeap;
-//    }
     
 }
