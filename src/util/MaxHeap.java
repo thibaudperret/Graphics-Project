@@ -3,156 +3,125 @@ package util;
 import java.util.ArrayList;
 import java.util.List;
 
-import math.Vector3;
 import se.graphics.proj.Photon;
 
+public class MaxHeap
 
-public class MaxHeap {
-
-    private Photon[] heapPhotons;
+{
     private Float[] heapDistances;
-    private int insertIn;
-    private int maxCapacity;
-    
-    public MaxHeap(int maxCapacity) {
-        heapPhotons = new Photon[maxCapacity + 1];
-        heapDistances = new Float[maxCapacity + 1];
-        insertIn = 1; 
-        this.maxCapacity = maxCapacity;
-    }
-    
-    //returns 1 for left child, 2 for second child
-    private int greaterChild(int i) {
-        
-        boolean hasFirstChild = (2*i <= maxCapacity && insertIn > 2*i);
-        boolean hasSecondChild = (2*i+1 <= maxCapacity && insertIn > 2*i+1); 
-        
-        if(hasFirstChild && hasSecondChild) {
-            if(heapDistances[2*i] > heapDistances[2*i+1]){
-                return 1;
-            } else {
-                return 2;
-            }
-        } else if(hasFirstChild) {
-            return 1;
-        } else if(hasSecondChild) {
-            return 2;
-        } else {
-            return -1;
-        }
-    }
-    
-    private void percolateDown(int k){         
-        
-        int pos = k;
-        boolean hasFirstChild = (2*pos <= maxCapacity && insertIn > 2*pos);
-        boolean hasSecondChild = (2*pos+1 <= maxCapacity && insertIn > 2*pos+1); 
-        boolean firstChildGreater = hasFirstChild && heapDistances[2*pos] > heapDistances[pos];
-        boolean secondChildGreater = hasSecondChild && heapDistances[2*pos+1] > heapDistances[pos];
-        
-        while ((hasFirstChild && firstChildGreater) || (hasSecondChild && secondChildGreater)){
-            float distTemp = heapDistances[pos];
-            Photon photonTemp = heapPhotons[pos];
-            
-            if(hasFirstChild && hasSecondChild) {
-                int greaterChild = greaterChild(pos);
-                if(greaterChild == 1) {
-                    heapDistances[pos] = heapDistances[2*pos];
-                    heapPhotons[pos] = heapPhotons[2*pos];
-                    heapDistances[2*pos] = distTemp;
-                    heapPhotons[2*pos] = photonTemp;
-                    pos = 2*pos;
-                    hasFirstChild = (2*pos <= maxCapacity && insertIn > 2*pos);
-                    hasSecondChild = (2*pos+1 <= maxCapacity && insertIn > 2*pos+1); 
-                    firstChildGreater = hasFirstChild && heapDistances[2*pos] > heapDistances[pos];
-                    secondChildGreater = hasSecondChild && heapDistances[2*pos+1] > heapDistances[pos];
+    private Photon[] heapPhoton;
+    private int size;
+    private int maxsize;
+ 
+    private static final int FRONT = 1;
+ 
+    public MaxHeap(int maxsize)
+    {
+        this.maxsize = maxsize;
+        this.size = 0;
+        heapDistances = new Float[this.maxsize + 1];
+        heapDistances[0] = Float.MAX_VALUE;
 
-                } else {
-                    heapDistances[pos] = heapDistances[2*pos+1];
-                    heapPhotons[pos] = heapPhotons[2*pos+1];
-                    heapDistances[2*pos+1] = distTemp;
-                    heapPhotons[2*pos+1] = photonTemp;
-                    pos = 2*pos+1;
-                    hasFirstChild = (2*pos <= maxCapacity && insertIn > 2*pos);
-                    hasSecondChild = (2*pos+1 <= maxCapacity && insertIn > 2*pos+1); 
-                    firstChildGreater = hasFirstChild && heapDistances[2*pos] > heapDistances[pos];
-                    secondChildGreater = hasSecondChild && heapDistances[2*pos+1] > heapDistances[pos];
+        heapPhoton = new Photon[this.maxsize + 1];
+        heapPhoton[0] = null;
+    }
+ 
+    private int parent(int pos)
+    {
+        return pos / 2;
+    }
+ 
+    private int leftChild(int pos)
+    {
+        return (2 * pos);
+    }
+ 
+    private int rightChild(int pos)
+    {
+        return (2 * pos) + 1;
+    }
+ 
+    private boolean isLeaf(int pos)
+    {
+        if (pos >=  (size / 2)  &&  pos <= size)
+        {
+            return true;
+        }
+        return false;
+    }
+ 
+    private void swap(int fpos,int spos)
+    {
+        float tmpDist;
+        Photon tmpPhot;
+        tmpDist = heapDistances[fpos];
+        tmpPhot = heapPhoton[fpos];
+        heapDistances[fpos] = heapDistances[spos];
+        heapPhoton[fpos] = heapPhoton[spos];
+
+        heapDistances[spos] = tmpDist;
+        heapPhoton[spos] = tmpPhot;
+    }
+ 
+    private void maxHeapify(int pos)
+    {
+        if (!isLeaf(pos))
+        { 
+            if ( heapDistances[pos] < heapDistances[leftChild(pos)]  || heapDistances[pos] < heapDistances[rightChild(pos)])
+            {
+                if (heapDistances[leftChild(pos)] > heapDistances[rightChild(pos)])
+                {
+                    swap(pos, leftChild(pos));
+                    maxHeapify(leftChild(pos));
+                }else
+                {
+                    swap(pos, rightChild(pos));
+                    maxHeapify(rightChild(pos));
                 }
-            } else if(hasFirstChild) {
-                heapDistances[pos] = heapDistances[2*pos];
-                heapPhotons[pos] = heapPhotons[2*pos];
-                heapDistances[2*pos] = distTemp;
-                heapPhotons[2*pos] = photonTemp;
-                pos = 2*pos;
-                hasFirstChild = (2*pos <= maxCapacity && insertIn > 2*pos);
-                hasSecondChild = (2*pos+1 <= maxCapacity && insertIn > 2*pos+1); 
-                firstChildGreater = hasFirstChild && heapDistances[2*pos] > heapDistances[pos];
-                secondChildGreater = hasSecondChild && heapDistances[2*pos+1] > heapDistances[pos];
-            } else {
-                heapDistances[pos] = heapDistances[2*pos+1];
-                heapPhotons[pos] = heapPhotons[2*pos+1];
-                heapDistances[2*pos+1] = distTemp;
-                heapPhotons[2*pos+1] = photonTemp;
-                pos = 2*pos+1;
-                hasFirstChild = (2*pos <= maxCapacity && insertIn > 2*pos);
-                hasSecondChild = (2*pos+1 <= maxCapacity && insertIn > 2*pos+1); 
-                firstChildGreater = hasFirstChild && heapDistances[2*pos] > heapDistances[pos];
-                secondChildGreater = hasSecondChild && heapDistances[2*pos+1] > heapDistances[pos];
-            }           
+            }
         }
     }
-    
-   
-    public void insert(Photon p, float distance) {
-       
-        if(insertIn == 1) {
-            heapDistances[1] = distance;
-            heapPhotons[1] = p;
-            insertIn++;
-        } else {
-            if(distance < heapDistances[1] && isFull()) {
-                heapDistances[1] = distance;
-                heapPhotons[1] = p;
-                percolateDown(1);
-            }else if(!isFull()) {
-                heapDistances[insertIn] = distance;
-                heapPhotons[insertIn] = p;
-                for(int i = (insertIn)/2; i >=1; i/=2) {
-                    percolateDown(i);
-                }
-                insertIn++;
+ 
+    public void insert(Photon elementPhot, float elementDist)
+    {
+        if(size == maxsize) {
+            if(elementDist < heapDistances[FRONT]) {
+                heapDistances[FRONT] = elementDist;
+                heapPhoton[FRONT] = elementPhot;
+                maxHeapify(FRONT);
             }
+        } else {
+            int current = ++size;
+
+            heapDistances[current] = elementDist;
+            heapPhoton[current] = elementPhot;
+     
+            while(parent(current) >= FRONT && heapDistances[current] > heapDistances[parent(current)])
+            {
+                swap(current,parent(current));
+                current = parent(current);
+            }   
         }        
     }
-    
-    private float parent(int i)     {
-        return heapDistances[(i - 1) / 2]; 
-    }
-    
-    private float leftChild(int i)  {
-        return heapDistances[2 * i];
-    }
-    
-    private float rightChild(int i) {
-        return heapDistances[2 * i + 1]; 
-    }
-    
-    public Pair<Photon, Float> root(){
-        return new Pair<>(heapPhotons[1], heapDistances[1]);
+ 
+   
+ 
+    public void maxHeap()
+    {
+        for (int pos = (size / 2); pos >= 1; pos--)
+        {
+            maxHeapify(pos);
+        }
     }
     
     public int inserted() {
-        return insertIn - 1;
+        return size;
     }
     
-    public boolean isFull() {
-        return inserted() == maxCapacity;
-    }
-    
-    public List<Pair<Float,Photon>> asList() {
-        List<Pair<Float,Photon>> result = new ArrayList<>();
-        for(int i = 1; i < insertIn; ++i) {
-            result.add(new Pair<Float, Photon>(heapDistances[i], heapPhotons[i]));
+    public List<Pair<Photon,Float>> asList() {
+        List<Pair<Photon,Float>> result = new ArrayList<>();
+        for(int i = FRONT; i <= size; ++i) {
+            result.add(new Pair<Photon,Float>(heapPhoton[i], heapDistances[i]));
         }
         return result;
     }
@@ -162,8 +131,8 @@ public class MaxHeap {
     }
     
     private String printTree(int i) {
-        boolean hasFirstChild = (2*i <= maxCapacity && insertIn > 2*i);
-        boolean hasSecondChild = (2*i+1 <= maxCapacity && insertIn > 2*i+1);         
+        boolean hasFirstChild = (2*i <= maxsize && size >= 2*i);
+        boolean hasSecondChild = (2*i+1 <= maxsize && size >= 2*i+1);         
         String node;
         if(hasFirstChild && hasSecondChild) {
             node = (heapDistances[i] + " --> ((" + printTree(i*2) +") || (" + printTree(2*i + 1)+"))");
@@ -178,4 +147,7 @@ public class MaxHeap {
     }
     
     
-}
+    
+ 
+   
+  }

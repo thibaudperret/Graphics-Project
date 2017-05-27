@@ -1,6 +1,6 @@
 package util;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import math.Vector3;
 
 import org.junit.Test;
@@ -11,52 +11,76 @@ public class MaxHeapTest {
 
     @Test
     public void firstInsert() {
-        Photon p1 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f, (short)0);
+        Photon p1 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f);
         MaxHeap heap = new MaxHeap(7);
         heap.insert(p1, 0.3f);
-        assert(heap.inserted() == 1);
-        assert(heap.asList().get(0).equals(p1));
+        assertTrue(heap.inserted() == 1);
+        assertTrue(heap.asList().get(0).getLeft().equals(p1));
     }
     
     @Test
     public void severalInsert() {
-        Photon p1 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f, (short)0);
-        Photon p2 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f, (short)0);
-        Photon p3 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f, (short)0);
-        Photon p4 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f, (short)0);
-        Photon p5 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f, (short)0);
-        Photon p6 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f, (short)0);
+        Photon p1 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f);
+        Photon p2 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f);
+        Photon p3 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f);
+        Photon p4 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f);
+        Photon p5 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f);
+        Photon p6 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f);
         MaxHeap heap = new MaxHeap(7);
         heap.insert(p1, 1f);
-        heap.insert(p2, 2f);
-        heap.insert(p3, 3f);
-        heap.insert(p4, 4f);
-        heap.insert(p5, 5f);
-        heap.insert(p6, 6f);
+        System.out.println(heap + "size = " + heap.inserted());
 
-        System.out.println(heap);
-        assert(heap.inserted() == 6);        
+        heap.insert(p2, 2f);
+        System.out.println(heap + "size = " + heap.inserted());
+
+        heap.insert(p3, 3f);
+        System.out.println(heap + "size = " + heap.inserted());
+
+        heap.insert(p4, 4f);
+        System.out.println(heap + "size = " + heap.inserted());
+
+        heap.insert(p5, 5f);
+        System.out.println(heap + "size = " + heap.inserted());
+
+        heap.insert(p6, 6f);
+        System.out.println(heap + "size = " + heap.inserted());
+
+
+        assertTrue(heap.inserted() == 6);        
 
     }
     
     @Test
     public void insertionOnFullHeap() {
-        Photon p1 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f, (short)0);
-        Photon p2 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f, (short)0);
-        Photon p3 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f, (short)0);
-        Photon p4 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f, (short)0);
-        Photon p5 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f, (short)0);
-        Photon p6 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f, (short)0);
+        Photon p1 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f);
+        Photon p2 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f);
+        Photon p3 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f);
+        Photon p4 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f);
+        Photon p5 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f);
+        Photon p6 = new Photon(new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 1f), 2f, 5f);
         MaxHeap heap = new MaxHeap(5);
         heap.insert(p1, 1f);
-        heap.insert(p2, 2f);
-        heap.insert(p3, 3f);
-        heap.insert(p4, 4f);
-        heap.insert(p5, 5f);
-        heap.insert(p6, 6f);
+        System.out.println(heap + " size = " + heap.inserted());
 
-        System.out.println(heap);
-        assert(heap.inserted() == 6);        
+        heap.insert(p2, 2f);
+        System.out.println(heap + " size = " + heap.inserted());
+
+        heap.insert(p6, 6f);
+        System.out.println(heap + "size = " + heap.inserted());
+
+        
+        heap.insert(p3, 3f);
+        System.out.println(heap + "size = " + heap.inserted());
+
+        heap.insert(p4, 4f);
+        System.out.println(heap + "size = " + heap.inserted());
+
+        heap.insert(p5, 5f);
+        System.out.println(heap + "size = " + heap.inserted());
+
+        
+
+        assertTrue(heap.inserted() == 5);        
     }
     
 }
