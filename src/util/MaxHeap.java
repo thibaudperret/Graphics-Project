@@ -11,8 +11,8 @@ public class MaxHeap {
 
     private Photon[] heapPhotons;
     private Float[] heapDistances;
-    int insertIn;
-    int maxCapacity;
+    private int insertIn;
+    private int maxCapacity;
     
     public MaxHeap(int maxCapacity) {
         heapPhotons = new Photon[maxCapacity + 2];
@@ -108,6 +108,7 @@ public class MaxHeap {
         if(insertIn == 1) {
             heapDistances[1] = distance;
             heapPhotons[1] = p;
+            insertIn++;
         } else {
             if(distance < heapDistances[1] && isFull()) {
                 heapDistances[1] = distance;
@@ -116,7 +117,7 @@ public class MaxHeap {
             }else if(!isFull()) {
                 heapDistances[insertIn] = distance;
                 heapPhotons[insertIn] = p;
-                for(int i = 0; i < insertIn/2; ++i) {
+                for(int i = insertIn/2; i < 1; --i) {
                     percolateDown(i);
                 }
                 insertIn++;
@@ -154,6 +155,26 @@ public class MaxHeap {
             result.add(new Pair<Float, Photon>(heapDistances[i], heapPhotons[i]));
         }
         return result;
+    }
+    
+    @Override public String toString() {
+        return printTree(1);
+    }
+    
+    private String printTree(int i) {
+        boolean hasFirstChild = (2*i <= maxCapacity && insertIn > 2*i);
+        boolean hasSecondChild = (2*i+1 <= maxCapacity && insertIn > 2*i+1);         
+        String node;
+        if(hasFirstChild && hasSecondChild) {
+            node = (heapDistances[i] + " --> ((" + printTree(i*2) +") || (" + printTree(2*i + 1)+"))");
+        } else if(hasFirstChild) {
+            node = (heapDistances[i] + " --> ((" + printTree(i*2) +") || ())");
+        } else if(hasSecondChild) {
+            node = (heapDistances[i] + " --> ((),(" + printTree(i*2+1) +"))");
+        } else {
+            node = heapDistances[i].toString();
+        }        
+        return node;
     }
     
     

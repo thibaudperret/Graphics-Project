@@ -62,4 +62,8 @@ public class Photon {
         return (float) Math.sqrt( Math.pow(this.position.x() - p.position.x(), 2) + Math.pow(this.position.y() - p.position.y(), 2)
                                     + Math.pow(this.position.z() - p.position.z(), 2));
     }
+    
+    public boolean equals(Photon other) {
+        return position.equals(other.position()) && power.equals(other.power) && phi == other.phi && theta == other.theta && flag == other.flag;
+    }
 }

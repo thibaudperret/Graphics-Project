@@ -78,4 +78,8 @@ public final class Vector3 {
         return "(" + x + ", " + y + ", " + z + ")T";
     }
     
+    public boolean equals(Vector3 other) {
+        return this.minus(other).lengthSquared() == 0;
+    }
+    
 }
