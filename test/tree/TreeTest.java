@@ -36,12 +36,12 @@ public class TreeTest {
         
         List<Photon> photons = Arrays.asList(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10);*/
         List<Photon> photons = new ArrayList<>();
-        for (int i = 0; i < 10000; ++i) {
+        for (int i = 0; i < 100000; ++i) {
             Vector3 pos = new Vector3((float) Math.random() * 100, (float) Math.random() * 100, (float) Math.random() * 100);
-            photons.add(new Photon(pos, null, 0, 0, (short) 0));
+            photons.add(new Photon(pos, null, 0, 0));
         }
         Tree t = Tree.balance(photons);
-        
+
         System.out.println(t);
     }
 

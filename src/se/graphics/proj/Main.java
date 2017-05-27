@@ -15,6 +15,7 @@ import math.Vector3;
 import processing.core.PApplet;
 import tree.Tree;
 import util.Color;
+import util.MaxHeap;
 import util.Pair;
 
 /**
@@ -69,11 +70,7 @@ public class Main extends PApplet {
         pathTracingParallel();
     }
 
-    
-    /*
-     * PROBLEM : we get aliasing. 
-     * TODO : fix it. 
-     */
+    /* PROBLEM : we get aliasing. TODO : fix it. */
     public void pathTracingParallel() {
         long t = System.currentTimeMillis();
         background(0);
@@ -97,7 +94,6 @@ public class Main extends PApplet {
         float dt = (System.currentTimeMillis() - t) / 1000f;
         System.out.println("time " + dt + " s");
     }
-   
 
     private static Vector3 radiance(Ray originalRay, List<Item> box) {
         Vector3 totalColor = Color.BLACK;
@@ -156,7 +152,9 @@ public class Main extends PApplet {
                         if (closest.isLamp()) {
                             accuColor = accuColor.plus(mask.entrywiseDot(closest.emittedLight().times(bias)));
                         } else {
-                            // accuColor = accuColor.plus(mask.entrywiseDot(directLight(intersection.position(), normal, box).times(bias)));
+                            // accuColor =
+                            // accuColor.plus(mask.entrywiseDot(directLight(intersection.position(),
+                            // normal, box).times(bias)));
                         }
 
                     } else {
@@ -214,19 +212,20 @@ public class Main extends PApplet {
         String name = System.currentTimeMillis() + "-res" + resolution + "-ray" + numberRays + "-reb" + numberRebounds + ".png";
         System.out.println("saving image as " + name);
         saveFrame(name);
-        
-        try{
+
+        try {
             AudioClip clip = Applet.newAudioClip(new URL("file:///C:/User/Thibaud/Music/tada.wav"));
             clip.play();
             Thread.sleep(2000);
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e);
         }
     }
-    
+
     public static Vector3 radianceEstimate(Tree photonMap, Vector3 position, float coneFilterConstant) {
         
-        Pair<List<Photon>, Float> callToNearest = photonMap.nearestPhotons(50, position, 2f);
+        Pair<MaxHeap, Float> callToNearest = photonMap.nearestPhotons(50, position, 2f);
+        List<Photon> photons = callToNearest.getLeft().asList();
         Vector3 currentRadiance = Vector3.zeros();
         for(int i = 0; i < photons.size(); ++i) {
             Photon currentPhoton = photons.get(i);
@@ -280,5 +279,5 @@ public class Main extends PApplet {
 
         return totalLight;
     }
-    
+
 }

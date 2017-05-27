@@ -66,6 +66,11 @@ public abstract class Tree {
         Photon median = sorted.get(size/2);
         return new Node(median, balance(left), balance(right), dim.normalise());
     }
+    
+    public Pair<MaxHeap, Float> nearestPhotons(int nbPhotons, Vector3 position, float maxDistance) {
+        MaxHeap maxHeap = new MaxHeap(nbPhotons);
+        return nearestPhotons(nbPhotons, position, maxDistance, maxHeap);
+    }
 
     public Pair<MaxHeap, Float> nearestPhotons(int nbPhotons, Vector3 position, float maxDistance, MaxHeap maxHeap) {
         if (this.isNil() || nbPhotons <= 0) {
@@ -100,7 +105,7 @@ public abstract class Tree {
             returnHeap.insert(node.photon(), delta);
             d = nodePos.minus(returnHeap.root().getLeft().position()).size();
         }
-        
+
         return new Pair<>(returnHeap, d);
     }
 }
