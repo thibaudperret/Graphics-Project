@@ -48,6 +48,10 @@ public class Node extends Tree {
     public Vector3 normal() {
         return planeNormal;
     }
+    
+    public boolean isLeaf() {
+        return left.isNil() && right.isNil();
+    }
 
     @Override
     public boolean isNode() {

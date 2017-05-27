@@ -22,8 +22,7 @@ public abstract class Tree {
         }
     }
     
-    public static Tree balance(List<Photon> list) {
-        
+    public static Tree balance(List<Photon> list) {        
         if(list.isEmpty()) {
             return new Nil();
         }
@@ -67,45 +66,94 @@ public abstract class Tree {
         return new Node(median, balance(left), balance(right), dim.normalise());
     }
     
-    public Pair<MaxHeap, Float> nearestPhotons(int nbPhotons, Vector3 position, float maxDistance) {
+    public MaxHeap nearestPhotons(int nbPhotons, Vector3 position, float maxDistance) {
         MaxHeap maxHeap = new MaxHeap(nbPhotons);
-        return nearestPhotons(nbPhotons, position, maxDistance, maxHeap);
+        nearestPhotons(maxHeap, position, maxDistance, nbPhotons);
+        return maxHeap;
     }
-
-    public Pair<MaxHeap, Float> nearestPhotons(int nbPhotons, Vector3 position, float maxDistance, MaxHeap maxHeap) {
-        if (this.isNil() || nbPhotons <= 0) {
-            return new Pair<>(maxHeap, maxDistance);
-        }
-        
-        Node node = this.asNode();
-        Vector3 nodePos = node.photon().position();
-        
-        Vector3 diff = position.minus(nodePos);
-        float delta = diff.dot(node.normal());
-        
-        Pair<MaxHeap, Float> pair;
-        
-        if (delta < 0) {
-            pair = node.left().nearestPhotons(nbPhotons, position, maxDistance, maxHeap);
-            if (Math.pow(delta, 2) < Math.pow(pair.getRight(), 2)) {
-                pair = node.right().nearestPhotons(/* ??? */ nbPhotons - pair.getLeft().inserted(), position, pair.getRight(), pair.getLeft());
-            }
-        } else {
-            pair = node.right().nearestPhotons(nbPhotons, position, maxDistance, maxHeap);
-            if (Math.pow(delta, 2) < Math.pow(pair.getRight(), 2)) {
-                pair = node.left().nearestPhotons(/* ??? */ nbPhotons - pair.getLeft().inserted(), position, pair.getRight(), pair.getLeft());
-            }
-        }
-        
-        float deltaSquare = delta * delta;
-        MaxHeap returnHeap = pair.getLeft();
-        float d = pair.getRight();
-        
-        if (deltaSquare < d * d) {
-            returnHeap.insert(node.photon(), delta);
-            d = nodePos.minus(returnHeap.root().getLeft().position()).size();
+    
+    public void nearestPhotons(MaxHeap maxHeap, Vector3 position, float maxDistance, int nbPhotons) {
+        if (this.isNil()) {
+            // NO MODIFICATION
+            return;
         }
 
-        return new Pair<>(returnHeap, d);
+        Node currentNode = this.asNode();
+    
+        Vector3 median = currentNode.photon().position();
+        Vector3 normal = currentNode.normal();
+        
+        Vector3 p = position.minus(median);
+        if (!currentNode.isLeaf()) {
+            float delta = p.dot(normal);
+            
+            if (delta < 0 || currentNode.right().isNil()) {
+                currentNode.left().nearestPhotons(maxHeap, position, maxDistance, nbPhotons);
+                if (delta * delta < maxDistance * maxDistance && !currentNode.right().isNil()) {
+                    currentNode.right().nearestPhotons(maxHeap, position, maxDistance, nbPhotons);
+                }
+            } else {
+                currentNode.right().nearestPhotons(maxHeap, position, maxDistance, nbPhotons);
+                if (delta * delta < maxDistance * maxDistance) {
+                    currentNode.left().nearestPhotons(maxHeap, position, maxDistance, nbPhotons);
+                }
+            }
+        }
+        
+        
+        float delta = p.size();
+
+        if (delta * delta < maxDistance * maxDistance) {
+            maxHeap.insert(currentNode.photon(), delta);
+        }
     }
+
+//    public MaxHeap nearestPhotons(int nbPhotons, Vector3 position, float maxDistance, MaxHeap maxHeap) {
+//        if (this.isNil()/* || nbPhotons <= 0*/) {
+//            return maxHeap;
+//        }
+//        
+//        Node node = this.asNode();
+//        Vector3 nodePos = node.photon().position();
+//        
+//        Vector3 diff = position.minus(nodePos);
+//        float delta = diff.dot(node.normal());
+//        
+//        if (node.left().isNil() && node.right().isNil()) {
+//            if(diff.size() < maxDistance) {
+//                maxHeap.insert(node.photon(), diff.size());
+//            }
+//            return maxHeap;
+//        }
+//        if (!node.left().isNil() && node.right().isNil()) {
+//            
+//        }
+//        
+//        float d = 0;
+//        
+//        if(maxHeap.inserted() > 0){
+//            if (delta <= 0) {
+//                maxHeap = node.left().nearestPhotons(nbPhotons, position, maxDistance, maxHeap);
+//                d = nodePos.minus(maxHeap.root().getLeft().position()).size();
+//                if (Math.pow(delta, 2) < Math.pow(d, 2)) {
+//                    maxHeap = node.right().nearestPhotons(/* ??? */ nbPhotons - maxHeap.inserted(), position, d, maxHeap);
+//                }
+//            } else {
+//                maxHeap = node.right().nearestPhotons(nbPhotons, position, maxDistance, maxHeap);
+//                d = nodePos.minus(maxHeap.root().getLeft().position()).size();
+//                if (Math.pow(delta, 2) < Math.pow(d, 2)) {
+//                    maxHeap = node.left().nearestPhotons(/* ??? */ nbPhotons - maxHeap.inserted(), position, d, maxHeap);
+//                }
+//            }
+//            
+//            float deltaSquare = delta * delta;
+//            d = nodePos.minus(maxHeap.root().getLeft().position()).size();
+//            
+//            if (deltaSquare < d * d && diff.size() < maxDistance) {
+//                maxHeap.insert(node.photon(), diff.size());
+//            }
+//        }
+//        return maxHeap;
+//    }
+    
 }
