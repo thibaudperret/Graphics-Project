@@ -28,10 +28,27 @@ public class DirectionalLamp extends Lamp{
     
     @Override
     public List<Ray> emitRays(int nbRays, ProjectionMap map) {
-        //TODO
+        
+        Vector3 pos;        
         List<Ray> emitted = new ArrayList<Ray>();
         for(int i = 0; i < nbRays; ++i){
-            emitted.add(Ray.generateRandomRay(shape().randomPoint(), lightDirection));
+            
+            do{
+                pos = shape().randomPoint();
+
+            }while(!map.asDirectionalMap().cellValid(pos));
+            emitted.add(new Ray(pos, lightDirection));
+        }
+        return emitted;
+    }
+    
+    @Override
+    public List<Ray> emitRays(int nbRays) {
+        Vector3 pos;
+        List<Ray> emitted = new ArrayList<Ray>();
+        for(int i = 0; i < nbRays; ++i){
+            pos = shape().randomPoint();
+            emitted.add(new Ray(pos, lightDirection));
         }
         return emitted;
     }

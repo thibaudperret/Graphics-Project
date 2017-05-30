@@ -3,7 +3,7 @@ package math;
 import static java.lang.Math.*;
 
 /**
- * 
+ * Stored as
  * c1x c2x c3x
  * c1y c2y c3y
  * c1z c2z c3z

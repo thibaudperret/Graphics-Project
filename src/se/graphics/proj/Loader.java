@@ -2,15 +2,16 @@ package se.graphics.proj;
 
 import static math.Vector3.ones;
 import static math.Vector3.vec3;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import geometry.Sphere;
 import geometry.Triangle;
 import item.DiffuseLamp;
 import item.Item;
+import item.Lamp;
 import item.PhysicalObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import material.Opaque;
 import math.Vector3;
 import util.Color;
@@ -18,7 +19,7 @@ import util.Color;
 public final class Loader {
 
     private static List<Item> items = loadItems();
-    private static List<Item> lightSources = loadLightSources();
+    private static List<Lamp> lightSources = loadLightSources();
     
     private Loader() {
         loadItems();
@@ -138,8 +139,8 @@ public final class Loader {
         return items;
     }
     
-    private static List<Item> loadLightSources() {
-        List<Item> lightSources = new ArrayList<>();
+    private static List<Lamp> loadLightSources() {
+        List<Lamp> lightSources = new ArrayList<>();
         final float L = 555; // Length of Cornell Box side
         
         // ------------------- LIGHTS -------------------
@@ -152,8 +153,8 @@ public final class Loader {
         float scale = 1 / 2f;
         Vector3 v = new Vector3(scale, 0.9999f, scale);
         
-        Item lamp1 = new DiffuseLamp(new Triangle(E.entrywiseDot(v), F.entrywiseDot(v), G.entrywiseDot(v)),Opaque.idealDiffuse(Color.WHITE), 14f, Color.WHITE);
-        Item lamp2 = new DiffuseLamp(new Triangle(F.entrywiseDot(v), H.entrywiseDot(v), G.entrywiseDot(v)),Opaque.idealDiffuse(Color.WHITE), 14f, Color.WHITE);
+        Lamp lamp1 = new DiffuseLamp(new Triangle(E.entrywiseDot(v), F.entrywiseDot(v), G.entrywiseDot(v)),Opaque.idealDiffuse(Color.WHITE), 14f, Color.WHITE);
+        Lamp lamp2 = new DiffuseLamp(new Triangle(F.entrywiseDot(v), H.entrywiseDot(v), G.entrywiseDot(v)),Opaque.idealDiffuse(Color.WHITE), 14f, Color.WHITE);
         lightSources.add(lamp1);
         lightSources.add(lamp2);  
         
@@ -168,7 +169,7 @@ public final class Loader {
         return items;
     }
     
-    public static List<Item> lightSources() {
+    public static List<Lamp> lightSources() {
         return lightSources;
     }
 
