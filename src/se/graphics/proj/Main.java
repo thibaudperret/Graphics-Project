@@ -270,6 +270,13 @@ public class Main extends PApplet {
        return radiance; 
     }
     
+    public static Vector3 renderSpecular(Tree causticPhotoMap, Tree globalPhotonMap, Vector3 position, Vector3 normal, Vector3 incidentRay, List<Item> box) {
+       
+        Vector3 radiance = Vector3.zeros();
+        Ray reflectedRay = Ray.specularBounce(incidentRay, normal, position);
+        
+    }
+    
     public static Pair<Intersection, Item> getClosestIntersection(Ray ray, List<Item> box) {
         Intersection intersection = Intersection.invalidIntersection();
         Item closest = null;
