@@ -92,7 +92,9 @@ public final class Triangle extends Shape {
     }
 
     public Vector3 getCenter() {
-        return v1.plus(v2.times(0.5f).plus(v3.times(0.5f)));
+        Vector3 axis1 = v2.minus(v1);
+        Vector3 axis2 = v3.minus(v1);
+        return v1.plus(axis1.times(0.5f).plus(axis2.times(0.5f)));
     }
 
     public Vector3 randomPoint() {
