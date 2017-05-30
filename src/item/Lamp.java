@@ -116,12 +116,12 @@ public abstract class Lamp extends Item {
         } else if (fate < (absorptionProb + specularProb)) {
             // specular bounce
             newRay = Ray.specularBounce(currentRay, closest.getRight().shape().normalAt(pos), pos);
-            handleGlobalBounces(global, newRay, box, energy.times(1 / specularProb));
+            handleGlobalBounces(global, newRay, box, energy.times(1 / specularProb).entrywiseDot(currentMaterial.reflectance()));
 
         } else {
             // diffuse bounce
             newRay = Ray.generateRandomRay(pos, closest.getRight().shape().normalAt(pos));
-            handleGlobalBounces(global, newRay, box, energy.times(1 / diffuseProb));
+            handleGlobalBounces(global, newRay, box, energy.times(1 / diffuseProb).entrywiseDot(currentMaterial.reflectance()));
             return;
         }
     }
@@ -152,7 +152,7 @@ public abstract class Lamp extends Item {
         } else if (fate < (absorptionProb + specularProb)) {
             // specular bounce
             newRay = Ray.specularBounce(currentRay, closest.getRight().shape().normalAt(pos), pos);
-            handleCausticBounces(caustic, true, false, newRay, box, energy.times(1 / specularProb));
+            handleCausticBounces(caustic, true, false, newRay, box, energy.times(1 / specularProb).entrywiseDot(currentMaterial.reflectance()));
 
         } else {
             return;
