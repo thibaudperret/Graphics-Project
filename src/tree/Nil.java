@@ -1,5 +1,10 @@
 package tree;
 
+/**
+ * The class Nil represent a null object.
+ * NOTE: We implement such a class after having few courses around functional programming in Scala where we used
+ * a lot the object Nil.
+ */
 public class Nil extends Tree {
 
     @Override
@@ -16,5 +21,4 @@ public class Nil extends Tree {
     public String toString() {
         return "---";
     }
-
 }

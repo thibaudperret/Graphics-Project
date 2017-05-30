@@ -2,6 +2,10 @@ package util;
 
 import math.Vector3;
 
+/**
+ * This interface represents different colors using a Vector3 .
+ *
+ */
 public interface Color {
 
     public static Vector3 RED = new Vector3(1f, 0f, 0f);

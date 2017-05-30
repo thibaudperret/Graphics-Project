@@ -1,5 +1,13 @@
 package util;
 
+/**
+ * Generic class representing a pair.
+ *
+ * @param <L> 
+ * The left element of the pair.
+ * @param <R> 
+ * The right element of the pair.
+ */
 public class Pair<L,R> {
 
     private final L left;
@@ -30,5 +38,4 @@ public class Pair<L,R> {
       return this.left.equals(pairo.getLeft()) &&
              this.right.equals(pairo.getRight());
     }
-
   }

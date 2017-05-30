@@ -3,12 +3,15 @@ package tree;
 import math.Vector3;
 import se.graphics.proj.Photon;
 
+/**
+ * The class representing a Node.
+ * A node has a photon, a Vector3 representing the normal to the plane it comes from, and two children.
+ *
+ */
 public class Node extends Tree {
 
     private final Photon photon;
-
     private final Vector3 planeNormal;
-
     private final Tree left;
     private final Tree right;
 
@@ -67,5 +70,4 @@ public class Node extends Tree {
     public String toString() {
         return "(" + photon.position() + ", " + left + ", " + right + ")";
     }
-
 }
