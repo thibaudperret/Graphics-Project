@@ -44,13 +44,13 @@ public final class Loader {
         items.add(PhysicalObject.physicalTriangle(new Triangle(C, B, A), Opaque.idealDiffuse(Color.WHITE)));
         items.add(PhysicalObject.physicalTriangle(new Triangle(C, D, B), Opaque.idealDiffuse(Color.WHITE)));
         
-//        // Left wall
-//        items.add(PhysicalObject.physicalTriangle(new Triangle(A, E, C), OpaqueObject.idealDiffuse(Color.WHITE)));
-//        items.add(PhysicalObject.physicalTriangle(new Triangle(C, E, G), OpaqueObject.idealDiffuse(Color.WHITE)));
-//
-//        // Right wall
-//        items.add(PhysicalObject.physicalTriangle(new Triangle(F, B, D), OpaqueObject.idealDiffuse(Color.WHITE)));
-//        items.add(PhysicalObject.physicalTriangle(new Triangle(H, F, D), OpaqueObject.idealDiffuse(Color.WHITE)));
+        // Left wall
+        items.add(PhysicalObject.physicalTriangle(new Triangle(A, E, C), Opaque.idealDiffuse(Color.WHITE)));
+        items.add(PhysicalObject.physicalTriangle(new Triangle(C, E, G), Opaque.idealDiffuse(Color.WHITE)));
+
+        // Right wall
+        items.add(PhysicalObject.physicalTriangle(new Triangle(F, B, D), Opaque.idealDiffuse(Color.WHITE)));
+        items.add(PhysicalObject.physicalTriangle(new Triangle(H, F, D), Opaque.idealDiffuse(Color.WHITE)));
 
         // Ceiling
         items.add(PhysicalObject.physicalTriangle(new Triangle(E, F, G), Opaque.idealDiffuse(Color.WHITE)));

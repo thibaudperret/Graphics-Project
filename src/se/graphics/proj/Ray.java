@@ -6,12 +6,23 @@ import util.Pair;
 
 public class Ray {
     
-    private final Vector3 position;
-    private final Vector3 direction;
+    private Vector3 position;
+    private Vector3 direction;
+    private float theta;
+    private float phi;
+    private float r;
     
     public Ray(Vector3 position, Vector3 direction) {
         this.position = position;
         this.direction = direction.normalise();
+        computeSphericalDir();
+    }
+    
+    public Ray(float theta, float phi, float r) {
+        this.theta = theta;
+        this.phi = phi;
+        this.r = r;
+        computeCartesianDir();
     }
     
     /**
@@ -27,6 +38,18 @@ public class Ray {
     
     public Vector3 direction(){
         return direction;
+    }
+    
+    public float theta() {
+        return theta;
+    }
+    
+    public float phi() {
+        return phi;
+    }
+    
+    public float r(){
+        return r;
     }
     
     public static Ray generateRandomRay(Vector3 position, Vector3 normal){
@@ -81,22 +104,36 @@ public class Ray {
         return new Ray(collisionPoint, newDir);
     }
     
-    public static Pair<Float, Float> cartesianToSphericalDir(Vector3 cartesianDirection) {
-        //TODO check if conversion is valid given our conventions
-        float x = cartesianDirection.x();
-        float y = cartesianDirection.y();
-        float z = cartesianDirection.z();
-        float size = cartesianDirection.size();
-        
-        return new Pair<Float, Float>((float)Math.atan(y/x), (float)Math.acos(z/size));
+    private void computeSphericalDir() {
+        //returns theta and phi, in that order
+        float x = direction.x();
+        float y = direction.y();
+        float z = direction.z();
+        r = direction.size();
+        theta = (float)Math.atan2(y, x);
+        phi = (float)Math.acos(z/r);
     }
     
-    public static Vector3 sphericalToCartesianDir(Pair<Float, Float> angles) {
-        //TODO check if conversion is valid given our conventions
-        float theta = angles.getLeft();
-        float phi = angles.getRight();
-        float sinPhi = (float)Math.sin(theta);
+    public static Vector3 sphericalToCartesian(float theta, float phi){
+        float sinPhi = (float)Math.sin(phi);        
+        return new Vector3((float)(sinPhi*Math.cos(theta)),(float)(sinPhi*Math.sin(theta)), (float) (Math.cos(phi))).normalise();       
+   
+    }
+    
+    public static Pair<Float, Float> cartesianToSpherical(Vector3 direction) {
+        float x = direction.x();
+        float y = direction.y();
+        float z = direction.z();
+        float r = direction.size();
+        float theta = (float)Math.atan2(y, x);
+        float phi = (float)Math.acos(z/r);
         
-        return new Vector3((float)(sinPhi*Math.cos(theta)),(float)(sinPhi*Math.sin(theta)), (float)Math.cos(phi)).normalise();       
+        return new Pair<Float, Float>(theta, phi);
+    }
+    
+    //computes cartesian direction from theta and phi (in that order)
+    private void computeCartesianDir() {          
+        float sinPhi = (float)Math.sin(phi);        
+        direction = new Vector3((float)(r*sinPhi*Math.cos(theta)),(float)(r*sinPhi*Math.sin(theta)), (float) (r * Math.cos(phi))).normalise();       
     }
 }

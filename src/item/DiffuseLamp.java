@@ -28,8 +28,7 @@ public class DiffuseLamp extends Lamp {
             pos = shape().randomPoint();
             do{
                 randomRay = Ray.generateRandomRay(pos, shape().normalAt(pos));
-                thetaPhi = Ray.cartesianToSphericalDir(randomRay.direction());
-            } while(!map.asDiffuseMap().cellValid(pos, thetaPhi.getLeft(), thetaPhi.getRight()));
+            } while(!map.asDiffuseMap().cellValid(pos, randomRay.theta(), randomRay.phi()));
             
             emitted.add(randomRay);
         }
@@ -41,7 +40,7 @@ public class DiffuseLamp extends Lamp {
         List<Ray> emitted = new ArrayList<Ray>();
         for(int i = 0; i < nbRays; ++i){
             pos = shape().randomPoint();
-            emitted.add(Ray.generateRandomRay(pos, shape().normalAt(pos)));
+            emitted.add(Ray.generateRandomRay(pos, shape().normalAt(pos).times(-1)));
         }
         return emitted;
     }

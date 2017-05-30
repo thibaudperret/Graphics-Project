@@ -107,7 +107,7 @@ public abstract class Lamp extends Item {
         return new Pair<>(globalMap, causticMap);
     }
 
-    public Pair<List<Photon>, List<Photon>> computePhotonMaps(int nbCausticPhotons, int nbGlobalPhotons, List<Item> box) {
+    public Pair<List<Photon>, List<Photon>> computePhotonMaps(int nbGlobalPhotons, int nbCausticPhotons, List<Item> box) {
         
         List<Photon> globalMap = new ArrayList<>();
         List<Photon> causticMap = new ArrayList<>();
@@ -119,11 +119,11 @@ public abstract class Lamp extends Item {
             handleCausticBounces(causticMap, true, true, primaryCausticRays.get(i), box, primaryCausticEnergy);
         }
 
-        List<Ray> primaryGlobalRays = this.emitRays(nbCausticPhotons);
-        Vector3 primaryGlobalEnergy = lightColor.times((this.power() / (float) nbCausticPhotons));
+        List<Ray> primaryGlobalRays = this.emitRays(nbGlobalPhotons);
+        Vector3 primaryGlobalEnergy = lightColor.times((this.power() / (float) nbGlobalPhotons));
 
         for (int i = 0; i < primaryGlobalRays.size(); ++i) {
-            handleGlobalBounces(globalMap, primaryCausticRays.get(i), box, primaryGlobalEnergy);
+            handleGlobalBounces(globalMap, primaryGlobalRays.get(i), box, primaryGlobalEnergy);
         }
 
         return new Pair<>(globalMap, causticMap);
@@ -133,14 +133,16 @@ public abstract class Lamp extends Item {
     private void handleGlobalBounces(List<Photon> global, Ray currentRay, List<Item> box, Vector3 energy) {
         Pair<Intersection, Item> closest = Main.getClosestIntersection(currentRay, box);
 
+        if(!closest.getLeft().valid()) {
+            return;
+        }
+        
         Material currentMaterial = closest.getRight().material();
         Vector3 pos = closest.getLeft().position();
         
         float specularCoef = currentMaterial.specularCoef();
         float absorptionCoef = currentMaterial.absorptionCoef();
-        Pair<Float, Float> angles = Ray.cartesianToSphericalDir(currentRay.direction());
-
-        Photon toStore = new Photon(pos, energy, angles.getLeft(), angles.getRight());
+        Photon toStore = new Photon(pos, energy, currentRay.theta(), currentRay.phi());
         if (!(specularCoef == 1)) {
             global.add(toStore);
 
@@ -170,14 +172,16 @@ public abstract class Lamp extends Item {
     private void handleCausticBounces(List<Photon> caustic, boolean storeCaustic, boolean firstBounce, Ray currentRay, List<Item> box, Vector3 energy) {
         Pair<Intersection, Item> closest = Main.getClosestIntersection(currentRay, box);
 
+        if(!closest.getLeft().valid()) {
+            return;
+        }
+        
         Material currentMaterial = closest.getRight().material();
         Vector3 pos = closest.getLeft().position();
         float specularCoef = currentMaterial.specularCoef();
 
         float absorptionCoef = currentMaterial.absorptionCoef();
-        Pair<Float, Float> angles = Ray.cartesianToSphericalDir(currentRay.direction());
-
-        Photon toStore = new Photon(pos, energy, angles.getLeft(), angles.getRight());
+        Photon toStore = new Photon(pos, energy, currentRay.theta(), currentRay.phi());
         if (!(specularCoef == 1) && storeCaustic && !firstBounce) {
             caustic.add(toStore);
         }

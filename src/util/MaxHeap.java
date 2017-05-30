@@ -85,16 +85,27 @@ public class MaxHeap {
     private void maxHeapify(int pos) {
         if (!isLeaf(pos)) {
             //Check if the left child or the right child is greater.
-            if (heapDistances[pos] < heapDistances[leftChild(pos)] || heapDistances[pos] < heapDistances[rightChild(pos)]) {
-                //If so, check which one is the greatest. Then swap with it and call maxHeapify on it.
-                if (heapDistances[leftChild(pos)] > heapDistances[rightChild(pos)]) {
-                    swap(pos, leftChild(pos));
-                    maxHeapify(leftChild(pos));
-                } else {
-                    swap(pos, rightChild(pos));
-                    maxHeapify(rightChild(pos));
+            
+            if(rightChild(pos) <= size) {
+                if (heapDistances[pos] < heapDistances[leftChild(pos)] || heapDistances[pos] < heapDistances[rightChild(pos)]) {
+                    //If so, check which one is the greatest. Then swap with it and call maxHeapify on it.
+                    if (heapDistances[leftChild(pos)] > heapDistances[rightChild(pos)]) {
+                        swap(pos, leftChild(pos));
+                        maxHeapify(leftChild(pos));
+                    } else {
+                        swap(pos, rightChild(pos));
+                        maxHeapify(rightChild(pos));
+                    }
                 }
+            } else {
+                
+                if(heapDistances[pos] < heapDistances[leftChild(pos)]) {
+                    swap(pos, leftChild(pos));
+                }
+                
             }
+            
+            
         }
     }
 
