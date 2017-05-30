@@ -222,19 +222,54 @@ public class Main extends PApplet {
         }
     }
 
-    public static Vector3 radianceEstimate(Tree photonMap, Vector3 position, float coneFilterConstant) {
+    public static Vector3 radianceEstimate(Tree photonMap, Vector3 position, Vector3 normal, float coneFilterConstant) {
         
-        Pair<MaxHeap, Float> callToNearest = photonMap.nearestPhotons(50, position, 2f);
-        List<Photon> photons = callToNearest.getLeft().asList();
+        MaxHeap callToNearest = photonMap.nearestPhotons(50, position, 2f);
+        List<Pair<Photon, Float>> photons = callToNearest.asList();
+        float maxDistance = callToNearest.root().getRight();
         Vector3 currentRadiance = Vector3.zeros();
+        Pair<Photon, Float> currentPair;
         for(int i = 0; i < photons.size(); ++i) {
-            Photon currentPhoton = photons.get(i);
-            float distance = currentPhoton.position().minus(position).size();
-            float weight = 1 - (distance / coneFilterConstant * )
+            currentPair = photons.get(i);
+            Photon currentPhoton = currentPair.getLeft();
+            float dp = currentPair.getRight();
+            float weight = 1 - (dp / (coneFilterConstant * maxDistance));
+            Vector3 incidentAngle = Ray.sphericalToCartesianDir(new Pair<Float, Float>(currentPhoton.theta(), currentPhoton.phi()));
+            float factor = incidentAngle.normalise().dot(normal);
+            currentRadiance = currentRadiance.plus(currentPhoton.power().times(weight).times(factor));            
         }
-        
+        currentRadiance = currentRadiance.times((float)(1/(1-(2/(3*coneFilterConstant)) * Math.PI * maxDistance*maxDistance)));
+        return currentRadiance;
     }
 
+    public static Vector3 causticsRendering(Tree causticPhotonMap, Vector3 position, Vector3 normal) {
+        return radianceEstimate(causticPhotonMap, position, normal, 3f);
+    }
+    
+    public static Vector3 mdRendering(Tree globalPhotonMap, Vector3 position, Vector3 normal, int nbRays,  List<Item> box) {
+        Vector3 radiance = Vector3.zeros();
+        
+        for(int i = 0; i < nbRays; ++i) {
+            Pair<Intersection, Item>  pair;
+            Intersection intersection;
+            Item item;
+            Ray toCast;
+            
+            do{
+                toCast = Ray.generateRandomRay(position, normal);                
+                pair = getClosestIntersection(toCast, box);
+                intersection = pair.getLeft();
+            }while(!intersection.valid());
+            
+
+            item = pair.getRight();
+            float factor = toCast.direction().normalise().dot(normal);
+            radiance = radiance.plus(radianceEstimate(globalPhotonMap, intersection.position(), item.shape().normalAt(intersection.position()), 3f).times(factor));
+       }
+        
+       return radiance; 
+    }
+    
     public static Pair<Intersection, Item> getClosestIntersection(Ray ray, List<Item> box) {
         Intersection intersection = Intersection.invalidIntersection();
         Item closest = null;

@@ -89,7 +89,7 @@ public class Ray {
         float z = cartesianDirection.z();
         float size = cartesianDirection.size();
         
-        return new Pair<Float, Float>((float)Math.acos(z/size), (float)Math.atan(y/x));
+        return new Pair<Float, Float>((float)Math.atan(y/x), (float)Math.acos(z/size));
     }
     
     public static Vector3 sphericalToCartesianDir(Pair<Float, Float> angles) {
@@ -98,9 +98,9 @@ public class Ray {
         float theta = angles.getLeft();
         float phi = angles.getRight();
         
-        float sinTheta = (float)Math.sin(theta);
+        float sinPhi = (float)Math.sin(theta);
         
-        return new Vector3((float)(sinTheta*Math.cos(phi)),(float)(sinTheta*Math.sin(phi)), (float)Math.cos(theta)).normalise();
+        return new Vector3((float)(sinPhi*Math.cos(theta)),(float)(sinPhi*Math.sin(theta)), (float)Math.cos(phi)).normalise();
         
     }
     
