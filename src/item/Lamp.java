@@ -28,6 +28,11 @@ public abstract class Lamp extends Item {
         return lightPower;
     }
 
+    /**
+     * Transforms the object into a instance of the DiffuseLamp class
+     * 
+     * @return the Triangle version of the object if it is indeed a DiffuseLamp
+     */
     public DiffuseLamp asDiffuse() {
         if (isDiffuse()) {
             return (DiffuseLamp) this;
@@ -36,6 +41,12 @@ public abstract class Lamp extends Item {
         }
     }
 
+    /**
+     * Transforms the object into a instance of the DirectionalLamp class
+     * 
+     * @return the Triangle version of the object if it is indeed a
+     *         DirectionalLamp
+     */
     public DirectionalLamp asDirectional() {
         if (isDirectional()) {
             return (DirectionalLamp) this;
@@ -61,13 +72,21 @@ public abstract class Lamp extends Item {
 
     @Override
     public Vector3 emittedLight() {
-        return asLamp().color().times(asLamp().power());
+        return color().times(power());
 
     }
 
-    // return global and caustic photon maps (in order)
+    /**
+     * Returns global and caustic photon maps (in order)
+     * 
+     * @param nbCausticPhotons
+     * @param nbGlobalPhotons
+     * @param causticProj
+     * @param globalProj
+     * @param box
+     * @return
+     */
     public Pair<List<Photon>, List<Photon>> computePhotonMaps(int nbCausticPhotons, int nbGlobalPhotons, ProjectionMap causticProj, ProjectionMap globalProj, List<Item> box) {
-
         List<Photon> globalMap = new ArrayList<>();
         List<Photon> causticMap = new ArrayList<>();
 
@@ -86,7 +105,6 @@ public abstract class Lamp extends Item {
         }
 
         return new Pair<>(globalMap, causticMap);
-
     }
 
     private void handleGlobalBounces(List<Photon> global, Ray currentRay, List<Item> box, Vector3 energy) {
@@ -94,8 +112,8 @@ public abstract class Lamp extends Item {
 
         Material currentMaterial = closest.getRight().material();
         Vector3 pos = closest.getLeft().position();
+        
         float specularCoef = currentMaterial.specularCoef();
-
         float absorptionCoef = currentMaterial.absorptionCoef();
         Pair<Float, Float> angles = Ray.cartesianToSphericalDir(currentRay.direction());
 
@@ -127,7 +145,6 @@ public abstract class Lamp extends Item {
     }
 
     private void handleCausticBounces(List<Photon> caustic, boolean storeCaustic, boolean firstBounce, Ray currentRay, List<Item> box, Vector3 energy) {
-
         Pair<Intersection, Item> closest = Main.getClosestIntersection(currentRay, box);
 
         Material currentMaterial = closest.getRight().material();
@@ -160,14 +177,23 @@ public abstract class Lamp extends Item {
 
     }
 
-    public List<Photon> computePhotonMaps(int nbPhotons, List<Item> box) {
-        return null;
-    };
-
+    /**
+     * Creates rays for a particular lamp
+     * 
+     * @param nbRays
+     * @param ProjectionMap
+     * @return the list of light rays of the lamp
+     */
     public abstract List<Ray> emitRays(int nbRays, ProjectionMap ProjectionMap);
 
+    /**
+     * @return true if the object is an instance of the DiffuseLamp class
+     */
     public abstract boolean isDiffuse();
 
+    /**
+     * @return true if the object is an instance of the DirectionalLamp class
+     */
     public abstract boolean isDirectional();
 
 }

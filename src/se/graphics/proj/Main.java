@@ -78,6 +78,7 @@ public class Main extends PApplet {
 
         List<Pair<Integer, Integer>> parList = new ArrayList<Pair<Integer, Integer>>();
 
+        // Put every pixel in a list
         for (int x = 0; x < resolution; ++x) {
             for (int y = 0; y < resolution; ++y) {
                 Pair<Integer, Integer> p = new Pair<Integer, Integer>(x, y);
@@ -85,6 +86,7 @@ public class Main extends PApplet {
             }
         }
 
+        // Transform list into strwam to enable Java 8 parallelisation
         parList.parallelStream().forEach(i -> {
             Ray r = new Ray(camera, new Vector3(i.getLeft() - resolution / 2, i.getRight() - resolution / 2, f));
             Vector3 color = radiance(r, box);

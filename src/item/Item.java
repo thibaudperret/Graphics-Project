@@ -16,9 +16,18 @@ public abstract class Item {
         this.material = material;
     }
     
+    /**
+     * @return true if the object is an instance of PhysicalObject
+     */
     abstract public boolean isPhysical();
+    /**
+     * @return true if the object is an instance of Lamp
+     */
     abstract public boolean isLamp();
     
+    /**
+     * @return the emitted light of the object
+     */
     abstract public Vector3 emittedLight();
     
     public Shape shape() {
@@ -29,12 +38,24 @@ public abstract class Item {
         return material;
     }
     
+    /**
+     * Returns the intersection with the shape composing the object
+     * @see geometry.Shape#intersection(se.graphics.proj.Ray)
+     */
     public Intersection intersection(Ray ray) {
         return shape.intersection(ray);
     }
     
+    /**
+     * @return the color of the item
+     */
     public abstract Vector3 color();
     
+    /**
+     * Transforms the object into a instance of the Lamp class
+     * 
+     * @return the Triangle version of the object if it is indeed a Lamp
+     */
     public Lamp asLamp() {
         if(isLamp()) {
             return (Lamp) this;
@@ -43,6 +64,11 @@ public abstract class Item {
         }
     }
     
+    /**
+     * Transforms the object into a instance of the PhysicalObject class
+     * 
+     * @return the Triangle version of the object if it is indeed a PhysicalObject
+     */
     public PhysicalObject asPhysicalObject() {
         if (isPhysical()) {
             return (PhysicalObject) this;
