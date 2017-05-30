@@ -107,6 +107,29 @@ public abstract class Lamp extends Item {
         return new Pair<>(globalMap, causticMap);
     }
 
+    public Pair<List<Photon>, List<Photon>> computePhotonMaps(int nbCausticPhotons, int nbGlobalPhotons, List<Item> box) {
+        
+        List<Photon> globalMap = new ArrayList<>();
+        List<Photon> causticMap = new ArrayList<>();
+
+        List<Ray> primaryCausticRays = this.emitRays(nbCausticPhotons);
+        Vector3 primaryCausticEnergy = lightColor.times((this.power() / (float) nbCausticPhotons));
+
+        for (int i = 0; i < primaryCausticRays.size(); ++i) {
+            handleCausticBounces(causticMap, true, true, primaryCausticRays.get(i), box, primaryCausticEnergy);
+        }
+
+        List<Ray> primaryGlobalRays = this.emitRays(nbCausticPhotons);
+        Vector3 primaryGlobalEnergy = lightColor.times((this.power() / (float) nbCausticPhotons));
+
+        for (int i = 0; i < primaryGlobalRays.size(); ++i) {
+            handleGlobalBounces(globalMap, primaryCausticRays.get(i), box, primaryGlobalEnergy);
+        }
+
+        return new Pair<>(globalMap, causticMap);
+        
+    }
+    
     private void handleGlobalBounces(List<Photon> global, Ray currentRay, List<Item> box, Vector3 energy) {
         Pair<Intersection, Item> closest = Main.getClosestIntersection(currentRay, box);
 
@@ -185,6 +208,8 @@ public abstract class Lamp extends Item {
      * @return the list of light rays of the lamp
      */
     public abstract List<Ray> emitRays(int nbRays, ProjectionMap ProjectionMap);
+    
+    public abstract List<Ray> emitRays(int nbRays);
 
     /**
      * @return true if the object is an instance of the DiffuseLamp class

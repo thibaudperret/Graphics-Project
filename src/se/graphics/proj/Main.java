@@ -1,5 +1,6 @@
 package se.graphics.proj;
 
+import item.DiffuseLamp;
 import item.Item;
 import item.Lamp;
 
@@ -9,10 +10,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import material.Material;
 import material.Medium;
 import math.Intersection;
 import math.Vector3;
 import processing.core.PApplet;
+import projection.DiffuseProjectionMap;
+import projection.ProjectionMap;
 import tree.Tree;
 import util.Color;
 import util.MaxHeap;
@@ -67,9 +71,47 @@ public class Main extends PApplet {
     }
 
     public void draw() {
-        pathTracingParallel();
+        photonMappingSingleLight();
     }
 
+    public void photonMappingSingleLight(){
+        long t = System.currentTimeMillis();
+        background(0);
+        
+        final List<Item> box = Loader.cornellBox();
+        DiffuseLamp lamp = Loader.lightSources().get(0).asDiffuse();
+        
+        //DiffuseProjectionMap projCaus = ProjectionMap.computeDiffuseCausticTriangleMap(lamp, box);
+        //DiffuseProjectionMap projGlob = ProjectionMap.computeDiffuseGlobalTriangleMap(lamp, box);
+        
+        Pair<List<Photon>, List<Photon>> photonMaps = lamp.computePhotonMaps(10000, 1000, box);
+        
+        Tree causticPhotonMap = Tree.balance(photonMaps.getRight());
+        Tree globalPhotonMap = Tree.balance(photonMaps.getLeft());
+        
+        System.out.println("PhotonMaps computed\n\n");
+        
+        
+
+        for (int x = 0; x < resolution; ++x) {
+            for (int y = 0; y < resolution; ++y) {
+                Ray incidentRay = new Ray(camera, new Vector3(x - resolution / 2, y - resolution / 2, f));
+                Pair<Intersection, Item> i = getClosestIntersection(incidentRay, box);
+                Vector3 position = i.getLeft().position();
+                Vector3 normal = i.getRight().shape().normalAt(position);
+                int nbRays = 20;
+                float coneFilterConstant = 2.5f;
+                Vector3 radiance = radianceAt(causticPhotonMap, globalPhotonMap, position, normal, incidentRay, nbRays, coneFilterConstant, box);
+                drawPixel(x, y, radiance);
+            }
+            
+            if(x%10 == 0) {
+                System.out.println("rows up to " + x + " computed\n");
+            }
+        }
+
+    }
+    
     /* PROBLEM : we get aliasing. TODO : fix it. */
     public void pathTracingParallel() {
         long t = System.currentTimeMillis();
@@ -244,13 +286,14 @@ public class Main extends PApplet {
         return currentRadiance;
     }
 
-    public static Vector3 causticsRendering(Tree causticPhotonMap, Vector3 position, Vector3 normal) {
-        return radianceEstimate(causticPhotonMap, position, normal, 3f);
+    public static Vector3 causticsRendering(Tree causticPhotonMap, Vector3 position, Vector3 normal, Ray incidentRay, List<Item> box ) {
+        float diffuseCoef = getClosestIntersection(incidentRay, box).getRight().material().diffuseCoef();
+        return radianceEstimate(causticPhotonMap, position, normal, 3f).times(diffuseCoef);
     }
     
-    public static Vector3 mdRendering(Tree globalPhotonMap, Vector3 position, Vector3 normal, int nbRays,  List<Item> box) {
+    public static Vector3 mdRendering(Tree globalPhotonMap, Vector3 position, Vector3 normal, int nbRays, Ray incidentRay, List<Item> box) {
         Vector3 radiance = Vector3.zeros();
-        
+        float diffuseCoef = getClosestIntersection(incidentRay, box).getRight().material().diffuseCoef();
         for(int i = 0; i < nbRays; ++i) {
             Pair<Intersection, Item>  pair;
             Intersection intersection;
@@ -269,15 +312,33 @@ public class Main extends PApplet {
             radiance = radiance.plus(radianceEstimate(globalPhotonMap, intersection.position(), item.shape().normalAt(intersection.position()), 3f).times(factor));
        }
         
-       return radiance; 
+       return radiance.times(diffuseCoef); 
     }
     
-    public static Vector3 renderSpecular(Tree causticPhotoMap, Tree globalPhotonMap, Vector3 position, Vector3 normal, Vector3 incidentRay, List<Item> box) {
+    public static Vector3 renderSpecular(Tree causticPhotonMap, Tree globalPhotonMap, Vector3 position, Vector3 normal, Ray incidentRay,int nbRays, List<Item> box) {
        
-        Vector3 radiance = Vector3.zeros();
         Ray reflectedRay = Ray.specularBounce(incidentRay, normal, position);
+        Material firstImpact = getClosestIntersection(incidentRay, box).getRight().material();
+        Pair<Intersection, Item> secondImpact = getClosestIntersection(reflectedRay, box);
+        Intersection secondIntersection = secondImpact.getLeft();
+        Item i2 = secondImpact.getRight();
+        Vector3 secondPosition = secondIntersection.position();
+        Vector3 secondNormal = i2.shape().normalAt(secondPosition);   
+        Vector3 causticRadiance = causticsRendering(causticPhotonMap, secondPosition, secondNormal, reflectedRay, box);
+        Vector3 mdRendering = mdRendering(globalPhotonMap, secondPosition, secondNormal, nbRays,reflectedRay, box);
+        Vector3 reflectance = firstImpact.reflectance();
+        return reflectance.entrywiseDot(mdRendering.plus(causticRadiance)).times(firstImpact.specularCoef());
         
     }
+    
+    public static Vector3 radianceAt(Tree causticPhotonMap, Tree globalPhotonMap, Vector3 position, Vector3 normal, Ray incidentRay,
+                             int nbRays, float coneFilterConstant, List<Item> box) 
+    {
+        return mdRendering(globalPhotonMap, position, normal, nbRays, incidentRay, box)
+               .plus(renderSpecular(causticPhotonMap, globalPhotonMap, position, normal, incidentRay, nbRays, box))
+               .plus(causticsRendering(causticPhotonMap, position, normal, incidentRay, box))
+               .plus(directLight(position, normal, box));
+    }   
     
     public static Pair<Intersection, Item> getClosestIntersection(Ray ray, List<Item> box) {
         Intersection intersection = Intersection.invalidIntersection();
