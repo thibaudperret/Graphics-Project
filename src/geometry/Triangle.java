@@ -98,12 +98,15 @@ public final class Triangle extends Shape {
     }
 
     public Vector3 randomPoint() {
+//        float indexV2 = (float) Math.random();
+//        float indexV3;
+//        do {
+//            indexV3 = (float) Math.random();
+//        } while (indexV3 + indexV2 > 1);
         float indexV2 = (float) Math.random();
-        float indexV3;
-        do {
-            indexV3 = (float) Math.random();
-        } while (indexV3 + indexV2 > 1);
-        return v1.plus(v2.minus(v1).times(indexV2)).plus(v3.minus(v1).times(indexV3));
+        float indexV3 = (float) Math.random();
+        float indexVTot = indexV2 + indexV3;
+        return v1.plus(v2.minus(v1).times(indexV2 / indexVTot)).plus(v3.minus(v1).times(indexV3 / indexVTot));
     }
 
 }

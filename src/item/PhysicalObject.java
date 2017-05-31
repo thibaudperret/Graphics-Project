@@ -1,5 +1,6 @@
 package item;
 
+import geometry.Rectangle;
 import geometry.Shape;
 import geometry.Sphere;
 import geometry.Triangle;
@@ -15,6 +16,10 @@ public final class PhysicalObject extends Item {
 
     public static PhysicalObject physicalTriangle(Triangle triangle, Material material) {
         return new PhysicalObject(triangle, material);
+    }
+    
+    public static PhysicalObject physicalRectangle(Rectangle rectangle, Material material) {
+        return new PhysicalObject(rectangle, material);
     }
 
     public static PhysicalObject physicalSphere(Sphere sphere, Material material) {

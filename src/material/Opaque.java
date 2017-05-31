@@ -22,7 +22,7 @@ public class Opaque extends Material{
     }
     
     public static Opaque tradeOff(Vector3 reflectance) {
-        return new Opaque(reflectance, 0.2f, 0.8f, 0.2f);
+        return new Opaque(reflectance, 0.5f, 0.5f, 0.2f);
     }
 
 

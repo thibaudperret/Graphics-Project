@@ -35,7 +35,7 @@ public class Main extends PApplet {
     /**
      * The resolution of the window, not to be confused with the size
      */
-    private final static int resolution = 100;
+    private final static int resolution = 800;
 
     /**
      * The focal length of the camera
@@ -50,12 +50,12 @@ public class Main extends PApplet {
     /**
      * The number of rays
      */
-    private final static int numberRays = 100;
+    private final static int numberRays = 1600;
 
     /**
      * The max number of rebounds of a ray
      */
-    private final static int numberRebounds = 3;
+    private final static int numberRebounds = 5;
 
     public static void main(String[] args) {
         PApplet.main("se.graphics.proj.Main");
@@ -71,7 +71,7 @@ public class Main extends PApplet {
     }
 
     public void draw() {
-        photonMappingSingleLight();
+        pathTracingParallel();
     }
 
     public void photonMappingSingleLight(){
@@ -196,9 +196,9 @@ public class Main extends PApplet {
                         if (closest.isLamp()) {
                             accuColor = accuColor.plus(mask.entrywiseDot(closest.emittedLight().times(bias)));
                         } else {
-                            // accuColor =
-                            // accuColor.plus(mask.entrywiseDot(directLight(intersection.position(),
-                            // normal, box).times(bias)));
+                             accuColor =
+                             accuColor.plus(mask.entrywiseDot(directLight(intersection.position(),
+                             normal, box).times(bias)));
                         }
 
                     } else {
@@ -360,7 +360,7 @@ public class Main extends PApplet {
 
         for (Item source : Loader.lightSources()) {
             Lamp lamp = source.asLamp();
-            Vector3 r = lamp.shape().getCenter().minus(position);
+            Vector3 r = lamp.shape().randomPoint().minus(position);
             Vector3 rhat = r.normalise();
 
             float rsz = r.size();
@@ -374,7 +374,7 @@ public class Main extends PApplet {
             Vector3 light;
 
             if (!blockingIntersection.valid() || blockingIntersection.distance() > rsz || blocking.isLamp()) {
-                light = lamp.color().times(Math.max(rhat.dot(normal), 0f)).times(f).times(lamp.power());
+                light = lamp.color().times(Math.max(rhat.dot(normal), 0f)).times(f).times(lamp.power() / 10);
             } else {
                 light = Color.BLACK;
             }
