@@ -30,12 +30,12 @@ public class Main extends PApplet {
     /**
      * The size of the window, not to be confused with the resolution
      */
-    private final static int size = 1600;
+    private final static int size = 800;
 
     /**
      * The resolution of the window, not to be confused with the size
      */
-    private final static int resolution = 100;
+    private final static int resolution = 400;
 
     /**
      * The focal length of the camera
@@ -50,15 +50,18 @@ public class Main extends PApplet {
     /**
      * The number of rays
      */
-    private final static int numberRays = 100;
+    private final static int numberRays = 10;
 
     /**
      * The max number of rebounds of a ray
      */
     private final static int numberRebounds = 3;
     
+    /**
+     * The number of photons generated in the photon map
+     */
+    private final static int nbPhotons = 5000;
     
-
 
     public static void main(String[] args) {
         PApplet.main("se.graphics.proj.Main");
@@ -71,10 +74,13 @@ public class Main extends PApplet {
     public void setup() {
         background(0);
         noStroke();
+        Loader.loadItems();
+
     }
 
     public void draw() {
         photonMapping();
+        
     }
 
     public void photonMapping(){
@@ -86,13 +92,14 @@ public class Main extends PApplet {
         List<Photon> photons = new ArrayList<>();
         
         for (Lamp lamp : lamps) {
-            photons.addAll(lamp.emittedPhotons(10000, box));
+            photons.addAll(lamp.emittedPhotons(nbPhotons, box, numberRebounds));
         }
         
         Tree tree = Tree.balance(photons);
         
         for (int i = 0; i < resolution; ++i) {
             for (int j = 0; j < resolution; ++j) {
+                
                 Ray ray = new Ray(camera, new Vector3(i - resolution / 2, j - resolution / 2, f));
                 Pair<Intersection, Item> pair = getClosestIntersection(ray, box);
                 Intersection intersection = pair.getLeft();
@@ -101,21 +108,23 @@ public class Main extends PApplet {
                 if (intersection.valid()) {
                     Vector3 normal = item.shape().normalAt(intersection.position());
                     normal = ((normal.dot(ray.direction())) > 0 ? (normal.times(-1)) : normal);
-                    Vector3 color = getRadianceAt(intersection.position(), tree, normal);
-                    if (i == 55 && j == 28) {
-                        System.out.println(color);
-                    }
+                    //Vector3 color = mdRendering(tree, numberRays, ray, box);
+                    //Vector3 color = toColor(toColor(getRadianceAt(intersection.position(), tree, normal)).plus(toColor(item.color().entrywiseDot(directLight(intersection.position(), normal, box)))));
+                    Vector3 color = directLight(intersection.position(), normal, box);
                     drawPixel(i, j, color);
                 }
             }
         }
+        System.out.println(photons.size());
 
         float dt = (System.currentTimeMillis() - t) / 1000f;
         System.out.println("time " + dt + " s");
     }
     
     private Vector3 getRadianceAt(Vector3 position, Tree tree, Vector3 normal) {
-        MaxHeap maxHeap = tree.nearestPhotons(50, position, 0.1f);
+       
+        MaxHeap maxHeap = tree.nearestPhotons(nbPhotons/10, position, 0.3f);
+       
         if (maxHeap.inserted() <= 0) {
             return Color.BLACK;
         }
@@ -130,25 +139,35 @@ public class Main extends PApplet {
         float weight = 0f;
         float maxDistance = maxHeap.rootDistance();
         float brdf = (float)(1/(2*Math.PI));
+        //float brdf = 1f;
         Vector3 total = Vector3.zeros();
         
         for (Pair<Photon, Float> pair : nearest) {
             Photon photon = pair.getLeft();
             Vector3 photonDir = Ray.sphericalToCartesian(photon.theta(), photon.phi()).normalise();
-
-           // weight = 1 - pair.getRight()/maxDistance;
-           // total = total.plus(photon.power().times(-brdf * weight * photonDir.dot(normal)));
-            
-            total = total.plus(toColor(photon.power().times(-brdf * photonDir.dot(normal))));
+            weight = 1 - pair.getRight()/maxDistance;
+            if(weight < 0) {
+                System.out.println("Beurp");
+            }
+            normal = photonDir.dot(normal) < 0 ? normal.times(-1) : normal;
+            total = toColor(total.plus(photon.power().times( brdf * weight * photonDir.dot(normal))));
+            if(total.x() < 0 || total.y() < 0 || total.z() < 0) {
+                System.out.println("neg");
+            }
+            //total = total.plus(toColor(photon.power().times(-brdf * photonDir.dot(normal))));
         }
         
         //total = total.times((float)((1/3f) * Math.PI * maxDistance * maxDistance));
-        total = total.times((float)(Math.PI * maxDistance * maxDistance));
+        total = toColor((total).times((float)(1/( 3 * Math.PI * maxDistance * maxDistance))));
         return total;
     }
     
-    private Vector3 toColor(Vector3 color) {
+    public static Vector3 toColor(Vector3 color) {
         float a = Float.max(color.x(), Float.max(color.y(), color.z()));
+        if(color.x() < 0 || color.y() < 0 || color.z() < 0) {
+            System.out.println("neg");
+            return Color.BLACK;
+        }
         if (a > 1) {
             color = color.times(1 / a);
         }
@@ -182,6 +201,8 @@ public class Main extends PApplet {
         System.out.println("time " + dt + " s");
     }
 
+    
+    
     private static Vector3 radiance(Ray originalRay, List<Item> box) {
         Vector3 totalColor = Color.BLACK;
         Medium currentMedium = Medium.VACUUM;
@@ -309,88 +330,43 @@ public class Main extends PApplet {
         }
     }
 
-    public static Vector3 radianceEstimate(Tree photonMap, Vector3 position, Vector3 normal, float coneFilterConstant) {
-        
-        
-        
-        MaxHeap callToNearest = photonMap.nearestPhotons(10, position, 2f);
-        if(callToNearest.inserted() == 0) {
-            return Color.BLACK;
-        }
-        System.out.println(callToNearest.inserted());
-        List<Pair<Photon, Float>> photons = callToNearest.asList();
-        float maxDistance = callToNearest.root().getRight();
-        Vector3 currentRadiance = Vector3.zeros();
-        Pair<Photon, Float> currentPair;
-        for(int i = 0; i < photons.size(); ++i) {
-            currentPair = photons.get(i);
-            Photon currentPhoton = currentPair.getLeft();
-            float dp = currentPair.getRight();
-            float weight = 1 - (dp / (coneFilterConstant * maxDistance));
-            Vector3 incidentAngle = Ray.sphericalToCartesian(currentPhoton.theta(), currentPhoton.phi());
-            float factor = incidentAngle.normalise().dot(normal);
-            currentRadiance = currentRadiance.plus(currentPhoton.power().times(weight).times(factor));            
-        }
-        currentRadiance = currentRadiance.times((float)(1/(1-(2/(3*coneFilterConstant)) * Math.PI * maxDistance*maxDistance)));
-        return currentRadiance;
-    }
+   
 
-    public static Vector3 causticsRendering(Tree causticPhotonMap, Vector3 position, Vector3 normal, Ray incidentRay, List<Item> box ) {
-        Intersection i = getClosestIntersection(incidentRay, box).getLeft();
-        if(!i.valid()) {
-            return Color.BLACK;
-        }
-        float diffuseCoef = getClosestIntersection(incidentRay, box).getRight().material().diffuseCoef();        
-        return radianceEstimate(causticPhotonMap, position, normal, 3f).times(diffuseCoef);
-    }
-    
-    public static Vector3 mdRendering(Tree globalPhotonMap, Vector3 position, Vector3 normal, int nbRays, Ray incidentRay, List<Item> box, float diffuseCoef) {
+    public Vector3 mdRendering(Tree globalPhotonMap, int nbRays, Ray incidentRay, List<Item> box) {
+       
         Vector3 radiance = Vector3.zeros();
-        for(int i = 0; i < nbRays; ++i) {
-            Pair<Intersection, Item>  pair;
-            Intersection intersection;
-            Item item;
-            Ray toCast;            
-            toCast = Ray.generateRandomRay(position, normal);                
-            pair = getClosestIntersection(toCast, box);
-            intersection = pair.getLeft();
-            if(intersection.valid()) {
-                item = pair.getRight();
-                float factor = toCast.direction().normalise().dot(normal);
-                radiance = radiance.plus(radianceEstimate(globalPhotonMap, intersection.position(), item.shape().normalAt(intersection.position()), 3f).times(factor));
-           
+        Pair<Intersection, Item> pair = getClosestIntersection(incidentRay, box);
+        Intersection intersection = pair.getLeft();
+        Item item = pair.getRight();
+        Ray newRay;
+        
+        if(intersection.valid()) {
+            for(int i = 0; i < nbRays; ++i) {
+                
+                float fate = (float)Math.random();
+                Vector3 normal = item.shape().normalAt(intersection.position());
+                normal = (normal.dot(incidentRay.direction()) > 0) ? normal.times(-1) : normal; 
+                if(fate < item.material().diffuseCoef()) {
+                     newRay = Ray.generateRandomRay(intersection.position(), normal);
+                } else {
+                    newRay = Ray.specularBounce(incidentRay, normal, intersection.position());
+                }
+                
+                Pair<Intersection, Item> p2 = getClosestIntersection(newRay, box);
+                if(p2.getLeft().valid()) {
+                    Vector3 normal2 = p2.getRight().shape().normalAt(p2.getLeft().position());
+                    normal2 = (normal2.dot(newRay.direction()) > 0) ? normal2.times(-1) : normal2; 
+                    radiance = toColor(radiance.plus(item.color().entrywiseDot(getRadianceAt(p2.getLeft().position(), globalPhotonMap, normal2))));
+                
+                }
             }
         }
         
-       return radiance.times(diffuseCoef); 
+        //return radiance.times(1/(float)nbRays);
+        return radiance;
     }
     
-    public static Vector3 renderSpecular(Tree causticPhotonMap, Tree globalPhotonMap, Vector3 position, Vector3 normal, Ray incidentRay,int nbRays, List<Item> box, float specularCoef) {
-       
-        Ray reflectedRay = Ray.specularBounce(incidentRay, normal, position);
-        Pair<Intersection, Item> secondImpact = getClosestIntersection(reflectedRay, box);
-        Intersection secondIntersection = secondImpact.getLeft();
-        if(!secondIntersection.valid()) {
-            return Color.BLACK;
-        }
-        Item i2 = secondImpact.getRight();
-        Vector3 secondPosition = secondIntersection.position();
-        Vector3 secondNormal = i2.shape().normalAt(secondPosition);
-        secondNormal = ((secondNormal.dot(reflectedRay.direction())) > 0 ? (secondNormal.times(-1)) : secondNormal);
-        Vector3 causticRadiance = causticsRendering(causticPhotonMap, secondPosition, secondNormal, reflectedRay, box);
-        Vector3 mdRendering = mdRendering(globalPhotonMap, secondPosition, secondNormal, nbRays,reflectedRay, box, i2.material().diffuseCoef());
-        return mdRendering.plus(causticRadiance).times(specularCoef);
-        
-    }
-    
-    public static Vector3 radianceAt(Tree causticPhotonMap, Tree globalPhotonMap, Vector3 position, Vector3 normal, Ray incidentRay,
-                             int nbRays, float coneFilterConstant, List<Item> box, float diffuseCoef, float specularCoef) 
-    {
-        return mdRendering(globalPhotonMap, position, normal, nbRays, incidentRay, box, diffuseCoef)
-               .plus(renderSpecular(causticPhotonMap, globalPhotonMap, position, normal, incidentRay, nbRays, box, specularCoef))
-               .plus(causticsRendering(causticPhotonMap, position, normal, incidentRay, box))
-               .plus(directLight(position, normal, box));
-    }   
+  
     
     public static Pair<Intersection, Item> getClosestIntersection(Ray ray, List<Item> box) {
         Intersection intersection = Intersection.invalidIntersection();
@@ -413,6 +389,7 @@ public class Main extends PApplet {
         for (Item source : Loader.lightSources()) {
             Lamp lamp = source.asLamp();
             Vector3 LightAggregate = Vector3.zeros();
+            
             for(int i = 0; i < 50; ++i) {
                 Vector3 r = lamp.shape().randomPoint().minus(position);
                 Vector3 rhat = r.normalise();
@@ -427,8 +404,9 @@ public class Main extends PApplet {
 
                 Vector3 light;
 
+                normal = (rhat.dot(normal) < 0) ? normal.times(-1) : normal;
                 if (!blockingIntersection.valid() || blockingIntersection.distance() > rsz || blocking.isLamp()) {
-                    light = lamp.color().times(Math.max(rhat.dot(normal), 0f)).times(f).times(lamp.power());
+                    light = lamp.color().times(rhat.dot(normal)).times(f).times(lamp.power() / 100f);
                 } else {
                     light = Color.BLACK;
                 }

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.text.html.HTMLDocument.HTMLReader.SpecialAction;
+
 import material.Material;
 import math.Intersection;
 import math.Vector3;
@@ -78,21 +80,76 @@ public abstract class Lamp extends Item {
 
     }
     
-    public List<Photon> emittedPhotons(int nbPhotons, List<Item> box) {
+    public List<Photon> emittedPhotons(int nbPhotons, List<Item> box, int nbRebonds) {
         List<Ray> rays = emitRays(nbPhotons);
+        System.out.println("Ray size = " + rays.size());
         List<Photon> photons = new ArrayList<>();
+        int rebond;
+        
         
         for (Ray ray : rays) {
-            Pair<Intersection, Item> pair = Main.getClosestIntersection(ray, box);
-            Intersection intersection = pair.getLeft();
-            Item item = pair.getRight();
             
-            if (intersection.valid()) {
-                Photon photon = new Photon(intersection.position(), lightColor.times(lightPower).entrywiseDot(item.material().reflectance()), ray.theta(), ray.phi());
-                photons.add(photon);
-            }
+            boolean bounce = true;
+            rebond = nbRebonds;
+            Ray currentRay = ray;
+            Vector3 photonPower = lightColor.times(lightPower).times(1/(float)nbPhotons);
+            
+            
+            Pair<Intersection, Item> pair ;
+            Intersection intersection;
+            Item item;            
+            Material material;
+            float absorbProb;
+            float specularProb;
+            float diffuseProb;
+            float russian;
+            Photon photon;
+            Vector3 normal;
+            
+            do {
+                
+                pair = Main.getClosestIntersection(currentRay, box);
+                intersection = pair.getLeft();
+                
+                if (intersection.valid()) {
+                    
+                    item = pair.getRight();            
+                    material = item.material();
+                    
+                    absorbProb = material.absorptionCoef();
+                    specularProb = material.specularCoef() * (1 - absorbProb);
+                    diffuseProb = 1 - (absorbProb + specularProb);
+                    
+                    
+                    russian = (float)Math.random();
+                    photonPower = ((photonPower.entrywiseDot(item.material().reflectance())));
+                    photon = new Photon(intersection.position(), photonPower, ray.theta(), ray.phi());
+                    normal = item.shape().normalAt(intersection.position());
+                    normal = ((normal.dot(currentRay.direction())) > 0 ? (normal.times(-1)) : normal);
+                    rebond -= 1;
+                    
+                    
+                    if(material.specularCoef() != 1f) {
+                        photons.add(photon);
+                    }
+                    
+                    if (russian < absorbProb) {
+                        bounce = false;
+                    } else if(russian < absorbProb + specularProb) {
+                        currentRay = Ray.specularBounce(currentRay, normal, intersection.position());
+                        bounce = true;
+                    } else {
+                        currentRay = Ray.generateRandomRay(intersection.position(), normal);
+                        bounce = true;
+                    }
+                    
+                    
+                } else {
+                    bounce = false;
+                }
+                
+            }while(bounce && rebond > 0);          
         }
-        
         return photons;
     }
 
