@@ -131,8 +131,8 @@ public final class Loader {
 //        items.add(PhysicalObject.physicalTriangle(new Triangle(G, F, E), OpaqueObject.idealDiffuse(Color.WHITE)));
 //        items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, F), OpaqueObject.idealDiffuse(Color.WHITE)));
 
-        items.add(PhysicalObject.physicalSphere(new Sphere(new Vector3(0.2f, 0.2f, 0.2f), 0.4f), Opaque.idealSpecular(Color.WHITE)));
-        items.add(PhysicalObject.physicalSphere(new Sphere(new Vector3(-0.5f, 0.6f, -0.4f), 0.4f), Opaque.tradeOff(Color.WHITE)));
+        items.add(PhysicalObject.physicalSphere(new Sphere(new Vector3(0.2f, 0.2f, 0.2f), 0.4f), Opaque.idealDiffuse(Color.RED)));
+        items.add(PhysicalObject.physicalSphere(new Sphere(new Vector3(-0.5f, 0.6f, -0.4f), 0.4f), Opaque.idealDiffuse(Color.GREEN)));
         
 //        items.add(PhysicalObject.physicalSphere(new Sphere(new Vector3(0f, 0.4f, 0f), 0.8f), LightConductor.idealSpecular()));
         

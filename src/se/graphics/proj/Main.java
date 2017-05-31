@@ -9,7 +9,9 @@ import java.applet.Applet;
 import java.applet.AudioClip;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import material.Medium;
 import math.Intersection;
@@ -28,7 +30,7 @@ public class Main extends PApplet {
     /**
      * The size of the window, not to be confused with the resolution
      */
-    private final static int size = 800;
+    private final static int size = 1600;
 
     /**
      * The resolution of the window, not to be confused with the size
@@ -78,132 +80,80 @@ public class Main extends PApplet {
     public void photonMapping(){
         long t = System.currentTimeMillis();
         background(0);
-        Pair<List<Photon>, List<Photon>> photonMaps = new Pair<>(new ArrayList<Photon>(), new ArrayList<Photon>());
-        final List<Item> box = Loader.cornellBox();
-        List<Lamp> lamps = Loader.lightSources();
-        for(int i =0; i < lamps.size(); ++i) {
-            
-            DirectionalLamp lamp = Loader.lightSources().get(0).asDirectional();
-            
-//         DiffuseProjectionMap projCaus = ProjectionMap.computeDiffuseCausticTriangleMap(lamp, box);
-//          DiffuseProjectionMap projGlob = ProjectionMap.computeDiffuseGlobalTriangleMap(lamp, box);
-          
-         
-          Pair<List<Photon>, List<Photon>> newInfo = lamp.computePhotonMaps(100, 300000, box);
-          photonMaps.getLeft().addAll(newInfo.getLeft()) ;
-          System.out.println("causticDone");
-          photonMaps.getRight().addAll(newInfo.getRight());
-          System.out.println("globalDone");
-            
-        }
-              
-        
-        Tree causticPhotonMap = Tree.balance(photonMaps.getRight());
-        System.out.println("1/2");
-        Tree globalPhotonMap = Tree.balance(photonMaps.getLeft());
-        
-        System.out.println("PhotonMaps computed\n\n");
-        
-        
-
-        for (int x = 0; x < resolution; ++x) {
-            for (int y = 0; y < resolution; ++y) {
-              
-                Ray incidentRay = new Ray(camera, new Vector3(x - resolution / 2, y - resolution / 2, f));
-                Pair<Intersection, Item> i = getClosestIntersection(incidentRay, box);
-                
-                if(!i.getLeft().valid()) {
-                    drawPixel(x, y, Color.BLACK);
-                } else {
-                    Vector3 position = i.getLeft().position();
-                    Vector3 normal = i.getRight().shape().normalAt(position);
-                    normal = ((normal.dot(incidentRay.direction())) > 0 ? (normal.times(-1)) : normal);
-                    int nbRays = 20;
-                    float coneFilterConstant = 1f;
-//                    Vector3 color = i.getRight().material().reflectance().entrywiseDot(
-//                                                                            i.getRight().emittedLight().plus(
-//                                                                                    radianceAt(causticPhotonMap, globalPhotonMap, position, normal, incidentRay, nbRays, coneFilterConstant, box, i.getRight().material().diffuseCoef(), i.getRight().material().specularCoef())));
-                    //Vector3 color = directLight(position, normal, box);
-                    Vector3 color = radianceEstimate(globalPhotonMap, position, normal, coneFilterConstant);
-                    drawPixel(x, y, color);
-                }   
-                
-            }
-            System.out.println("row " + x + " done");
-           
-        }
-
-    }
-    
-    public void photonMappingParallel() {
-        long t = System.currentTimeMillis();
-        background(0);
-        Pair<List<Photon>, List<Photon>> photonMaps = new Pair<>(new ArrayList<Photon>(), new ArrayList<Photon>());
 
         final List<Item> box = Loader.cornellBox();
-        List<Lamp> lamps = Loader.lightSources();
-        for(int i =0; i < lamps.size(); ++i) {
-            
-            DiffuseLamp lamp = Loader.lightSources().get(0).asDiffuse();
-            
-//         DiffuseProjectionMap projCaus = ProjectionMap.computeDiffuseCausticTriangleMap(lamp, box);
-//          DiffuseProjectionMap projGlob = ProjectionMap.computeDiffuseGlobalTriangleMap(lamp, box);
-          
-         
-          Pair<List<Photon>, List<Photon>> newInfo = lamp.computePhotonMaps(10000, 1000, box);
-          photonMaps.getLeft().addAll(newInfo.getLeft()) ;
-          System.out.println("causticDone");
-          photonMaps.getRight().addAll(newInfo.getRight());
-          System.out.println("globalDone");
-            
+        final List<Lamp> lamps = Loader.lightSources();
+        List<Photon> photons = new ArrayList<>();
+        
+        for (Lamp lamp : lamps) {
+            photons.addAll(lamp.emittedPhotons(10000, box));
         }
-              
         
-        Tree causticPhotonMap = Tree.balance(photonMaps.getRight());
-        System.out.println("1/2");
-        Tree globalPhotonMap = Tree.balance(photonMaps.getLeft());
+        Tree tree = Tree.balance(photons);
         
-        System.out.println("PhotonMaps computed\n\n");
-        
-
-
-        List<Pair<Integer, Integer>> parList = new ArrayList<Pair<Integer, Integer>>();
-
-        // Put every pixel in a list
-        for (int x = 0; x < resolution; ++x) {
-            for (int y = 0; y < resolution; ++y) {
-                Pair<Integer, Integer> p = new Pair<Integer, Integer>(x, y);
-                parList.add(p);
+        for (int i = 0; i < resolution; ++i) {
+            for (int j = 0; j < resolution; ++j) {
+                Ray ray = new Ray(camera, new Vector3(i - resolution / 2, j - resolution / 2, f));
+                Pair<Intersection, Item> pair = getClosestIntersection(ray, box);
+                Intersection intersection = pair.getLeft();
+                Item item = pair.getRight();
+                
+                if (intersection.valid()) {
+                    Vector3 normal = item.shape().normalAt(intersection.position());
+                    normal = ((normal.dot(ray.direction())) > 0 ? (normal.times(-1)) : normal);
+                    Vector3 color = getRadianceAt(intersection.position(), tree, normal);
+                    if (i == 55 && j == 28) {
+                        System.out.println(color);
+                    }
+                    drawPixel(i, j, color);
+                }
             }
         }
-
-        // Transform list into stream to enable Java 8 parallelisation
-        parList.parallelStream().forEach(i -> {
-            Ray incidentRay = new Ray(camera, new Vector3(i.getLeft() - resolution / 2, i.getRight() - resolution / 2, f));
-            Pair<Intersection, Item> intersection = getClosestIntersection(incidentRay, box);
-            
-            if(!intersection.getLeft().valid()) {
-                drawPixel(i.getLeft(), i.getRight(), Color.BLACK);
-            } else {
-                Vector3 position = intersection.getLeft().position();
-                Vector3 normal = intersection.getRight().shape().normalAt(position);
-                normal = ((normal.dot(incidentRay.direction())) > 0 ? (normal.times(-1)) : normal);
-                int nbRays = 20;
-                float coneFilterConstant = 1f;
-                Vector3 color = intersection.getRight().material().reflectance().entrywiseDot(
-                                                intersection.getRight().emittedLight().plus(
-                                                           radianceAt(causticPhotonMap, globalPhotonMap, position, normal, incidentRay, nbRays, coneFilterConstant, box, intersection.getRight().material().diffuseCoef(), intersection.getRight().material().specularCoef())));
-                //Vector3 color = directLight(position, normal, box);
-                drawPixel(i.getLeft(), i.getRight(), color);
-            }   
-            
-            
-        });
 
         float dt = (System.currentTimeMillis() - t) / 1000f;
         System.out.println("time " + dt + " s");
     }
     
+    private Vector3 getRadianceAt(Vector3 position, Tree tree, Vector3 normal) {
+        MaxHeap maxHeap = tree.nearestPhotons(50, position, 0.1f);
+        if (maxHeap.inserted() <= 0) {
+            return Color.BLACK;
+        }
+
+        List<Pair<Photon, Float>> nearest = maxHeap.asList();
+//        List<Photon> nearest = photons.stream().sorted((p1, p2) -> {
+//            float dist1 = p1.position().minus(position).size();
+//            float dist2 = p2.position().minus(position).size();
+//            return Float.compare(dist1, dist2);
+//        }).collect(Collectors.toList()).subList(0, 2);
+        
+        float weight = 0f;
+        float maxDistance = maxHeap.rootDistance();
+        float brdf = (float)(1/(2*Math.PI));
+        Vector3 total = Vector3.zeros();
+        
+        for (Pair<Photon, Float> pair : nearest) {
+            Photon photon = pair.getLeft();
+            Vector3 photonDir = Ray.sphericalToCartesian(photon.theta(), photon.phi()).normalise();
+
+           // weight = 1 - pair.getRight()/maxDistance;
+           // total = total.plus(photon.power().times(-brdf * weight * photonDir.dot(normal)));
+            
+            total = total.plus(toColor(photon.power().times(-brdf * photonDir.dot(normal))));
+        }
+        
+        //total = total.times((float)((1/3f) * Math.PI * maxDistance * maxDistance));
+        total = total.times((float)(Math.PI * maxDistance * maxDistance));
+        return total;
+    }
+    
+    private Vector3 toColor(Vector3 color) {
+        float a = Float.max(color.x(), Float.max(color.y(), color.z()));
+        if (a > 1) {
+            color = color.times(1 / a);
+        }
+        return color;
+    }
     
     /* PROBLEM : we get aliasing. TODO : fix it. */
     public void pathTracingParallel() {
@@ -340,7 +290,7 @@ public class Main extends PApplet {
      */
     public void drawPixel(int i, int j, Vector3 color) {
         int ratio = size / resolution;
-
+        color = toColor(color);
         fill(255 * color.x(), 255 * color.y(), 255 * color.z());
         rect(i * ratio, j * ratio, ratio, ratio);
     }
