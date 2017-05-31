@@ -20,14 +20,15 @@ public class DiffuseLamp extends Lamp {
     
     @Override
     public List<Ray> emitRays(int nbRays, ProjectionMap map) {
+        
         Vector3 pos;
-        List<Ray> emitted = new ArrayList<Ray>();
         Ray randomRay;
-        Pair<Float, Float> thetaPhi;
+        List<Ray> emitted = new ArrayList<Ray>();
+        
         for(int i = 0; i < nbRays; ++i){
             pos = shape().randomPoint();
             do{
-                randomRay = Ray.generateRandomRay(pos, shape().normalAt(pos));
+                randomRay = Ray.generateRandomRay(pos, shape().normalAt(pos).times(-1));
             } while(!map.asDiffuseMap().cellValid(pos, randomRay.theta(), randomRay.phi()));
             
             emitted.add(randomRay);
@@ -36,8 +37,10 @@ public class DiffuseLamp extends Lamp {
     }
     
     public List<Ray> emitRays(int nbRays) {
+       
         Vector3 pos;
         List<Ray> emitted = new ArrayList<Ray>();
+        
         for(int i = 0; i < nbRays; ++i){
             pos = shape().randomPoint();
             emitted.add(Ray.generateRandomRay(pos, shape().normalAt(pos).times(-1)));

@@ -1,9 +1,11 @@
 package item;
 
+import geometry.Shape;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import geometry.Shape;
 import material.Material;
 import math.Intersection;
 import math.Vector3;
@@ -72,9 +74,10 @@ public abstract class Lamp extends Item {
 
     @Override
     public Vector3 emittedLight() {
-        return color().times(power());
+        return lightColor.times(power());
 
     }
+    
 
     /**
      * Returns global and caustic photon maps (in order)
@@ -101,7 +104,7 @@ public abstract class Lamp extends Item {
         Vector3 primaryGlobalEnergy = lightColor.times((this.power() / (float) nbCausticPhotons) * globalProj.ratioValidCells());
 
         for (int i = 0; i < primaryGlobalRays.size(); ++i) {
-            handleGlobalBounces(globalMap, primaryCausticRays.get(i), box, primaryGlobalEnergy);
+            handleGlobalBounces(globalMap, primaryCausticRays.get(i), box, primaryGlobalEnergy, 6);
         }
 
         return new Pair<>(globalMap, causticMap);
@@ -123,14 +126,42 @@ public abstract class Lamp extends Item {
         Vector3 primaryGlobalEnergy = lightColor.times((this.power() / (float) nbGlobalPhotons));
 
         for (int i = 0; i < primaryGlobalRays.size(); ++i) {
-            handleGlobalBounces(globalMap, primaryGlobalRays.get(i), box, primaryGlobalEnergy);
+            handleGlobalBounces(globalMap, primaryGlobalRays.get(i), box, primaryGlobalEnergy, 1);
         }
 
         return new Pair<>(globalMap, causticMap);
         
     }
     
-    private void handleGlobalBounces(List<Photon> global, Ray currentRay, List<Item> box, Vector3 energy) {
+  public Pair<List<Photon>, List<Photon>> computePhotonMaps(int nbGlobalPhotons, int nbCausticPhotons,ProjectionMap caustic,  List<Item> box) {
+        
+        List<Photon> globalMap = new ArrayList<>();
+        List<Photon> causticMap = new ArrayList<>();
+
+        List<Ray> primaryCausticRays = this.emitRays(nbCausticPhotons, caustic);
+        Vector3 primaryCausticEnergy = lightColor.times((power() / (float) nbCausticPhotons));
+
+        for (int i = 0; i < primaryCausticRays.size(); ++i) {
+            handleCausticBounces(causticMap, true, true, primaryCausticRays.get(i), box, primaryCausticEnergy);
+        }
+
+        List<Ray> primaryGlobalRays = this.emitRays(nbGlobalPhotons);
+        Vector3 primaryGlobalEnergy = lightColor.times((power() / (float) nbGlobalPhotons));
+
+        for (int i = 0; i < primaryGlobalRays.size(); ++i) {
+            handleGlobalBounces(globalMap, primaryGlobalRays.get(i), box, primaryGlobalEnergy, 6);
+        }
+
+        return new Pair<>(globalMap, causticMap);
+        
+    }
+    
+    private void handleGlobalBounces(List<Photon> global, Ray currentRay, List<Item> box, Vector3 energy, int nbRebonds) {
+        
+        if(nbRebonds == 0) {
+            return;
+        }
+        
         Pair<Intersection, Item> closest = Main.getClosestIntersection(currentRay, box);
 
         if(!closest.getLeft().valid()) {
@@ -139,37 +170,41 @@ public abstract class Lamp extends Item {
         
         Material currentMaterial = closest.getRight().material();
         Vector3 pos = closest.getLeft().position();
-        
+        Vector3 normal = closest.getRight().shape().normalAt(pos);
+        normal = ((normal.dot(currentRay.direction())) > 0 ? (normal.times(-1)) : normal);
         float specularCoef = currentMaterial.specularCoef();
         float absorptionCoef = currentMaterial.absorptionCoef();
-        Photon toStore = new Photon(pos, energy, currentRay.theta(), currentRay.phi());
-        if (!(specularCoef == 1)) {
-            global.add(toStore);
-
-        }
+        Photon toStore = new Photon(pos, energy.entrywiseDot(currentMaterial.reflectance()), currentRay.theta(), currentRay.phi());
         Ray newRay;
 
         float fate = (float) Math.random();
         float absorptionProb = absorptionCoef;
-        float specularProb = absorptionCoef + (specularCoef * (1 - absorptionCoef));
+        float specularProb = absorptionProb + (specularCoef * (1 - absorptionCoef));
         float diffuseProb = 1 - (absorptionProb + specularProb);
         if (fate < absorptionProb) {
             // absorbed photon
+            global.add(toStore);
             return;
+            
         } else if (fate < (absorptionProb + specularProb)) {
             // specular bounce
-            newRay = Ray.specularBounce(currentRay, closest.getRight().shape().normalAt(pos), pos);
-            handleGlobalBounces(global, newRay, box, energy.times(1 / specularProb).entrywiseDot(currentMaterial.reflectance()));
+            newRay = Ray.specularBounce(currentRay, normal, pos);
+            global.add(toStore);
+
+            handleGlobalBounces(global, newRay, box, energy.times(1 / specularProb).entrywiseDot(currentMaterial.reflectance()), nbRebonds - 1);
 
         } else {
             // diffuse bounce
-            newRay = Ray.generateRandomRay(pos, closest.getRight().shape().normalAt(pos));
-            handleGlobalBounces(global, newRay, box, energy.times(1 / diffuseProb).entrywiseDot(currentMaterial.reflectance()));
+            newRay = Ray.generateRandomRay(pos, normal);
+            global.add(toStore);
+            handleGlobalBounces(global, newRay, box, energy.times(1 / diffuseProb).entrywiseDot(currentMaterial.reflectance()), nbRebonds - 1);
+           
             return;
         }
     }
 
     private void handleCausticBounces(List<Photon> caustic, boolean storeCaustic, boolean firstBounce, Ray currentRay, List<Item> box, Vector3 energy) {
+        
         Pair<Intersection, Item> closest = Main.getClosestIntersection(currentRay, box);
 
         if(!closest.getLeft().valid()) {
@@ -182,9 +217,7 @@ public abstract class Lamp extends Item {
 
         float absorptionCoef = currentMaterial.absorptionCoef();
         Photon toStore = new Photon(pos, energy, currentRay.theta(), currentRay.phi());
-        if (!(specularCoef == 1) && storeCaustic && !firstBounce) {
-            caustic.add(toStore);
-        }
+       
         Ray newRay;
         float fate = (float) Math.random();
         float absorptionProb = absorptionCoef;
@@ -192,13 +225,21 @@ public abstract class Lamp extends Item {
 
         if (fate < absorptionProb) {
             // absorbed photon
+            if (!(specularCoef == 1) && storeCaustic && !firstBounce) {
+                caustic.add(toStore);
+            }
             return;
         } else if (fate < (absorptionProb + specularProb)) {
             // specular bounce
-            newRay = Ray.specularBounce(currentRay, closest.getRight().shape().normalAt(pos), pos);
+            Vector3 normal = closest.getRight().shape().normalAt(pos);
+            normal = ((normal.dot(currentRay.direction())) > 0 ? (normal.times(-1)) : normal);
+            newRay = Ray.specularBounce(currentRay, normal , pos);
             handleCausticBounces(caustic, true, false, newRay, box, energy.times(1 / specularProb).entrywiseDot(currentMaterial.reflectance()));
 
         } else {
+            if (!(specularCoef == 1) && storeCaustic && !firstBounce) {
+                caustic.add(toStore);
+            }
             return;
         }
 

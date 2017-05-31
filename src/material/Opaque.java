@@ -14,15 +14,15 @@ public class Opaque extends Material{
     }
     
     public static Opaque idealDiffuse(Vector3 reflectance) {
-        return new Opaque(reflectance, 1f, 0f, 0.2f);
+        return new Opaque(reflectance, 1f, 0f, 0.05f);
     }
     
     public static Opaque idealSpecular(Vector3 reflectance) {
-        return new Opaque(reflectance, 0f, 1f, 0.2f);
+        return new Opaque(reflectance, 0f, 1f, 0.05f);
     }
     
     public static Opaque tradeOff(Vector3 reflectance) {
-        return new Opaque(reflectance, 0.2f, 0.8f, 0.2f);
+        return new Opaque(reflectance, 0.2f, 0.8f, 0.05f);
     }
 
 

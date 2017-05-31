@@ -1,6 +1,7 @@
 package se.graphics.proj;
 
 import item.DiffuseLamp;
+import item.DirectionalLamp;
 import item.Item;
 import item.Lamp;
 
@@ -32,7 +33,7 @@ public class Main extends PApplet {
     /**
      * The resolution of the window, not to be confused with the size
      */
-    private final static int resolution = 300;
+    private final static int resolution = 100;
 
     /**
      * The focal length of the camera
@@ -53,7 +54,8 @@ public class Main extends PApplet {
      * The max number of rebounds of a ray
      */
     private final static int numberRebounds = 3;
-    Pair<List<Photon>, List<Photon>> photonMaps = new Pair<>(new ArrayList<Photon>(), new ArrayList<Photon>());
+    
+    
 
 
     public static void main(String[] args) {
@@ -70,34 +72,38 @@ public class Main extends PApplet {
     }
 
     public void draw() {
-        photonMappingSingleLight();
+        photonMapping();
     }
 
-    public void photonMappingSingleLight(){
+    public void photonMapping(){
         long t = System.currentTimeMillis();
         background(0);
-        
+        Pair<List<Photon>, List<Photon>> photonMaps = new Pair<>(new ArrayList<Photon>(), new ArrayList<Photon>());
         final List<Item> box = Loader.cornellBox();
         List<Lamp> lamps = Loader.lightSources();
-//        for(int i =0; i < lamps.size(); ++i) {
-//            
-//            DiffuseLamp lamp = Loader.lightSources().get(0).asDiffuse();
-//            
-////          DiffuseProjectionMap projCaus = ProjectionMap.computeDiffuseCausticTriangleMap(lamp, box);
-////          DiffuseProjectionMap projGlob = ProjectionMap.computeDiffuseGlobalTriangleMap(lamp, box);
-//          
-//          Pair<List<Photon>, List<Photon>> newInfo = lamp.computePhotonMaps(10000, 1000, box);
-//          photonMaps.getLeft().addAll(newInfo.getLeft()) ;
-//          photonMaps.getRight().addAll(newInfo.getRight());
-//            
-//        }
-//              
-//        
-//        Tree causticPhotonMap = Tree.balance(photonMaps.getRight());
-//        Tree globalPhotonMap = Tree.balance(photonMaps.getLeft());
-//        
-//        System.out.println("PhotonMaps computed\n\n");
-//        
+        for(int i =0; i < lamps.size(); ++i) {
+            
+            DirectionalLamp lamp = Loader.lightSources().get(0).asDirectional();
+            
+//         DiffuseProjectionMap projCaus = ProjectionMap.computeDiffuseCausticTriangleMap(lamp, box);
+//          DiffuseProjectionMap projGlob = ProjectionMap.computeDiffuseGlobalTriangleMap(lamp, box);
+          
+         
+          Pair<List<Photon>, List<Photon>> newInfo = lamp.computePhotonMaps(100, 300000, box);
+          photonMaps.getLeft().addAll(newInfo.getLeft()) ;
+          System.out.println("causticDone");
+          photonMaps.getRight().addAll(newInfo.getRight());
+          System.out.println("globalDone");
+            
+        }
+              
+        
+        Tree causticPhotonMap = Tree.balance(photonMaps.getRight());
+        System.out.println("1/2");
+        Tree globalPhotonMap = Tree.balance(photonMaps.getLeft());
+        
+        System.out.println("PhotonMaps computed\n\n");
+        
         
 
         for (int x = 0; x < resolution; ++x) {
@@ -113,13 +119,17 @@ public class Main extends PApplet {
                     Vector3 normal = i.getRight().shape().normalAt(position);
                     normal = ((normal.dot(incidentRay.direction())) > 0 ? (normal.times(-1)) : normal);
                     int nbRays = 20;
-                    float coneFilterConstant = 2.5f;
-                    //Vector3 color = i.getRight().material().reflectance().entrywiseDot(i.getRight().emittedLight().plus(radianceAt(causticPhotonMap, globalPhotonMap, position, normal, incidentRay, nbRays, coneFilterConstant, box, i.getRight().material().diffuseCoef(), i.getRight().material().specularCoef())));
-                    Vector3 color = directLight(position, normal, box);
+                    float coneFilterConstant = 1f;
+//                    Vector3 color = i.getRight().material().reflectance().entrywiseDot(
+//                                                                            i.getRight().emittedLight().plus(
+//                                                                                    radianceAt(causticPhotonMap, globalPhotonMap, position, normal, incidentRay, nbRays, coneFilterConstant, box, i.getRight().material().diffuseCoef(), i.getRight().material().specularCoef())));
+                    //Vector3 color = directLight(position, normal, box);
+                    Vector3 color = radianceEstimate(globalPhotonMap, position, normal, coneFilterConstant);
                     drawPixel(x, y, color);
                 }   
                 
             }
+            System.out.println("row " + x + " done");
            
         }
 
@@ -128,27 +138,32 @@ public class Main extends PApplet {
     public void photonMappingParallel() {
         long t = System.currentTimeMillis();
         background(0);
-        
-        final List<Item> box = Loader.cornellBox();
-        DiffuseLamp lamp = Loader.lightSources().get(0).asDiffuse();
-        
-//        DiffuseProjectionMap projCaus = ProjectionMap.computeDiffuseCausticTriangleMap(lamp, box);
-//        DiffuseProjectionMap projGlob = ProjectionMap.computeDiffuseGlobalTriangleMap(lamp, box);
-        
-        Pair<List<Photon>, List<Photon>> newInfo = lamp.computePhotonMaps(1000, 10000, box);
-        photonMaps.getLeft().addAll(newInfo.getLeft()) ;
-        System.out.println("1/2");
-        photonMaps.getRight().addAll(newInfo.getRight());
-        System.out.println("2/2");
+        Pair<List<Photon>, List<Photon>> photonMaps = new Pair<>(new ArrayList<Photon>(), new ArrayList<Photon>());
 
-        
+        final List<Item> box = Loader.cornellBox();
+        List<Lamp> lamps = Loader.lightSources();
+        for(int i =0; i < lamps.size(); ++i) {
+            
+            DiffuseLamp lamp = Loader.lightSources().get(0).asDiffuse();
+            
+//         DiffuseProjectionMap projCaus = ProjectionMap.computeDiffuseCausticTriangleMap(lamp, box);
+//          DiffuseProjectionMap projGlob = ProjectionMap.computeDiffuseGlobalTriangleMap(lamp, box);
+          
+         
+          Pair<List<Photon>, List<Photon>> newInfo = lamp.computePhotonMaps(10000, 1000, box);
+          photonMaps.getLeft().addAll(newInfo.getLeft()) ;
+          System.out.println("causticDone");
+          photonMaps.getRight().addAll(newInfo.getRight());
+          System.out.println("globalDone");
+            
+        }
+              
         
         Tree causticPhotonMap = Tree.balance(photonMaps.getRight());
-        System.out.println("causticsBalanced");
+        System.out.println("1/2");
         Tree globalPhotonMap = Tree.balance(photonMaps.getLeft());
         
         System.out.println("PhotonMaps computed\n\n");
-        
         
 
 
@@ -162,7 +177,7 @@ public class Main extends PApplet {
             }
         }
 
-        // Transform list into strwam to enable Java 8 parallelisation
+        // Transform list into stream to enable Java 8 parallelisation
         parList.parallelStream().forEach(i -> {
             Ray incidentRay = new Ray(camera, new Vector3(i.getLeft() - resolution / 2, i.getRight() - resolution / 2, f));
             Pair<Intersection, Item> intersection = getClosestIntersection(incidentRay, box);
@@ -173,13 +188,15 @@ public class Main extends PApplet {
                 Vector3 position = intersection.getLeft().position();
                 Vector3 normal = intersection.getRight().shape().normalAt(position);
                 normal = ((normal.dot(incidentRay.direction())) > 0 ? (normal.times(-1)) : normal);
-
                 int nbRays = 20;
-                float coneFilterConstant = 2.5f;
-                Vector3 color = intersection.getRight().material().reflectance().entrywiseDot(intersection.getRight().emittedLight().plus(radianceAt(causticPhotonMap, globalPhotonMap, position, normal, incidentRay, nbRays, coneFilterConstant, box, intersection.getRight().material().diffuseCoef(), intersection.getRight().material().specularCoef())));
+                float coneFilterConstant = 1f;
+                Vector3 color = intersection.getRight().material().reflectance().entrywiseDot(
+                                                intersection.getRight().emittedLight().plus(
+                                                           radianceAt(causticPhotonMap, globalPhotonMap, position, normal, incidentRay, nbRays, coneFilterConstant, box, intersection.getRight().material().diffuseCoef(), intersection.getRight().material().specularCoef())));
                 //Vector3 color = directLight(position, normal, box);
                 drawPixel(i.getLeft(), i.getRight(), color);
             }   
+            
             
         });
 
@@ -344,7 +361,13 @@ public class Main extends PApplet {
 
     public static Vector3 radianceEstimate(Tree photonMap, Vector3 position, Vector3 normal, float coneFilterConstant) {
         
-        MaxHeap callToNearest = photonMap.nearestPhotons(50, position, 10f);
+        
+        
+        MaxHeap callToNearest = photonMap.nearestPhotons(10, position, 2f);
+        if(callToNearest.inserted() == 0) {
+            return Color.BLACK;
+        }
+        System.out.println(callToNearest.inserted());
         List<Pair<Photon, Float>> photons = callToNearest.asList();
         float maxDistance = callToNearest.root().getRight();
         Vector3 currentRadiance = Vector3.zeros();
@@ -402,7 +425,8 @@ public class Main extends PApplet {
         }
         Item i2 = secondImpact.getRight();
         Vector3 secondPosition = secondIntersection.position();
-        Vector3 secondNormal = i2.shape().normalAt(secondPosition);   
+        Vector3 secondNormal = i2.shape().normalAt(secondPosition);
+        secondNormal = ((secondNormal.dot(reflectedRay.direction())) > 0 ? (secondNormal.times(-1)) : secondNormal);
         Vector3 causticRadiance = causticsRendering(causticPhotonMap, secondPosition, secondNormal, reflectedRay, box);
         Vector3 mdRendering = mdRendering(globalPhotonMap, secondPosition, secondNormal, nbRays,reflectedRay, box, i2.material().diffuseCoef());
         return mdRendering.plus(causticRadiance).times(specularCoef);
@@ -467,4 +491,6 @@ public class Main extends PApplet {
         return totalLight;
     }
 
+    
+    
 }
