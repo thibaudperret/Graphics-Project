@@ -20,5 +20,7 @@ public interface Color {
     public static Vector3 GREY = new Vector3(0.5f, 0.5f, 0.5f);
     public static Vector3 LIGHT_BLUE = new Vector3(0.8f, 0.8f, 1f);
     public static Vector3 LIGHT_PURPLE = new Vector3(1f, 0.8f, 1f);
+    public static Vector3 SALMON = new Vector3(0.98f, 0.5f, 0.447f);
+    public static Vector3 SPRING_GREEN = new Vector3(0f, 1f, 0.5f);
 
 }

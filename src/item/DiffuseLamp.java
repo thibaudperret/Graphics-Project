@@ -1,13 +1,11 @@
 package item;
 
-import geometry.Shape;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import geometry.Shape;
 import material.Material;
 import math.Vector3;
-import projection.DiffuseProjectionMap;
 import projection.ProjectionMap;
 import se.graphics.proj.Ray;
 import util.Pair;
