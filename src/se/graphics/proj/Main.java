@@ -109,8 +109,8 @@ public class Main extends PApplet {
                     Vector3 normal = item.shape().normalAt(intersection.position());
                     normal = ((normal.dot(ray.direction())) > 0 ? (normal.times(-1)) : normal);
                     //Vector3 color = mdRendering(tree, numberRays, ray, box);
-                    //Vector3 color = toColor(toColor(getRadianceAt(intersection.position(), tree, normal)).plus(toColor(item.color().entrywiseDot(directLight(intersection.position(), normal, box)))));
-                    Vector3 color = directLight(intersection.position(), normal, box);
+                    Vector3 color = photonMappingRadiance(intersection, item, tree, normal, box);
+                    //Vector3 color = directLight(intersection.position(), normal, box);
                     drawPixel(i, j, color);
                 }
             }
@@ -367,6 +367,10 @@ public class Main extends PApplet {
     }
     
   
+    public Vector3 photonMappingRadiance(Intersection intersection,Item item, Tree tree, Vector3 normal, List<Item> box) {
+        Vector3 radiance = toColor(toColor(getRadianceAt(intersection.position(), tree, normal)).plus(toColor(item.color().entrywiseDot(directLight(intersection.position(), normal, box)))));
+        return radiance.plus(item.emittedLight());
+    }
     
     public static Pair<Intersection, Item> getClosestIntersection(Ray ray, List<Item> box) {
         Intersection intersection = Intersection.invalidIntersection();
