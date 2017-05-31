@@ -5,6 +5,7 @@ import static math.Vector3.vec3;
 import geometry.Sphere;
 import geometry.Triangle;
 import item.DiffuseLamp;
+import item.DirectionalLamp;
 import item.Item;
 import item.Lamp;
 import item.PhysicalObject;
@@ -66,8 +67,8 @@ public final class Loader {
         items.add(lamp2);          
 
         // Back wall
-        items.add(PhysicalObject.physicalTriangle(new Triangle(G, D, C), Opaque.idealDiffuse(Color.CYAN)));
-        items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, D), Opaque.idealDiffuse(Color.PURPLE)));
+        items.add(PhysicalObject.physicalTriangle(new Triangle(G, D, C), Opaque.idealDiffuse(Color.LIGHT_BLUE)));
+        items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, D), Opaque.idealDiffuse(Color.LIGHT_BLUE)));
 
 //        // ------------------- BL1 -------------------
 //        A = vec3(290, 0, 114).times(2f / 555).minus(ones()).entrywiseDot(new Vector3(-1f, -1f, 1f));
@@ -131,8 +132,8 @@ public final class Loader {
 //        items.add(PhysicalObject.physicalTriangle(new Triangle(G, F, E), OpaqueObject.idealDiffuse(Color.WHITE)));
 //        items.add(PhysicalObject.physicalTriangle(new Triangle(G, H, F), OpaqueObject.idealDiffuse(Color.WHITE)));
 
-        items.add(PhysicalObject.physicalSphere(new Sphere(new Vector3(0.2f, 0.2f, 0.2f), 0.4f), Opaque.idealSpecular(Color.WHITE)));
-        items.add(PhysicalObject.physicalSphere(new Sphere(new Vector3(-0.5f, 0.6f, -0.4f), 0.4f), Opaque.tradeOff(Color.WHITE)));
+//        items.add(PhysicalObject.physicalSphere(new Sphere(new Vector3(0.2f, 0.2f, 0.2f), 0.4f), Opaque.idealDiffuse(Color.WHITE)));
+//        items.add(PhysicalObject.physicalSphere(new Sphere(new Vector3(-0.5f, 0.6f, -0.4f), 0.4f), Opaque.idealDiffuse((Color.WHITE))));
         
 //        items.add(PhysicalObject.physicalSphere(new Sphere(new Vector3(0f, 0.4f, 0f), 0.8f), LightConductor.idealSpecular()));
         

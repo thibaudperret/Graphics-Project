@@ -40,7 +40,7 @@ public class DiffuseLamp extends Lamp {
         List<Ray> emitted = new ArrayList<Ray>();
         for(int i = 0; i < nbRays; ++i){
             pos = shape().randomPoint();
-            emitted.add(Ray.generateRandomRay(pos, shape().normalAt(pos).times(-1)));
+            emitted.add(Ray.generateRandomRay(pos, shape().normalAt(pos).times(1)));
         }
         return emitted;
     }
